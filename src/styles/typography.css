@@ -1,0 +1,107 @@
+/*
+ * Typography utilities — map design tokens to ready-to-use classes.
+ * Prefer <Typography variant="…" /> in components; these power it.
+ */
+
+@utility text-display {
+  font-family: var(--font-display-family);
+  font-size: var(--type-display-size);
+  line-height: var(--type-display-leading);
+  letter-spacing: var(--type-display-tracking);
+  font-weight: var(--type-bold);
+}
+
+@utility text-h1 {
+  font-family: var(--font-display-family);
+  font-size: var(--type-h1-size);
+  line-height: var(--type-heading-leading);
+  letter-spacing: var(--type-heading-tracking);
+  font-weight: var(--type-bold);
+}
+
+@utility text-h2 {
+  font-family: var(--font-display-family);
+  font-size: var(--type-h2-size);
+  line-height: var(--type-heading-leading);
+  letter-spacing: var(--type-heading-tracking);
+  font-weight: var(--type-bold);
+}
+
+@utility text-h3 {
+  font-family: var(--font-display-family);
+  font-size: var(--type-h3-size);
+  line-height: var(--type-tight-leading);
+  letter-spacing: var(--type-heading-tracking);
+  font-weight: var(--type-semibold);
+}
+
+@utility text-h4 {
+  font-family: var(--font-display-family);
+  font-size: var(--type-h4-size);
+  line-height: var(--type-tight-leading);
+  letter-spacing: var(--type-heading-tracking);
+  font-weight: var(--type-semibold);
+}
+
+@utility text-lead {
+  font-family: var(--font-sans-family);
+  font-size: var(--type-lead-size);
+  line-height: var(--type-body-leading);
+  font-weight: var(--type-regular);
+}
+
+@utility text-body {
+  font-family: var(--font-sans-family);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-leading);
+  font-weight: var(--type-regular);
+}
+
+@utility text-muted-body {
+  font-family: var(--font-sans-family);
+  font-size: var(--type-muted-size);
+  line-height: var(--type-body-leading);
+  font-weight: var(--type-regular);
+}
+
+@utility text-eyebrow {
+  font-family: var(--font-sans-family);
+  font-size: var(--type-eyebrow-size);
+  line-height: var(--type-tight-leading);
+  letter-spacing: var(--type-eyebrow-tracking);
+  font-weight: var(--type-semibold);
+  text-transform: uppercase;
+}
+
+@utility text-stat {
+  font-family: var(--font-display-family);
+  font-size: var(--type-stat-size);
+  line-height: var(--type-display-leading);
+  letter-spacing: var(--type-display-tracking);
+  font-weight: var(--type-bold);
+}
+
+@utility py-section {
+  padding-block: var(--space-section);
+}
+
+@utility py-section-sm {
+  padding-block: var(--space-section-sm);
+}
+
+@utility py-section-lg {
+  padding-block: var(--space-section-lg);
+}
+
+@utility container-page {
+  margin-inline: auto;
+  width: 100%;
+  max-width: var(--container-max);
+  padding-inline: var(--container-pad-x);
+}
+
+@media (min-width: 768px) {
+  .container-page {
+    padding-inline: var(--container-pad-x-md);
+  }
+}

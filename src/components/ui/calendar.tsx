@@ -1,0 +1,71 @@
+"use client";
+
+import * as React from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { DayPicker } from "react-day-picker";
+import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/atoms/button";
+
+export type CalendarProps = React.ComponentProps<typeof DayPicker>;
+
+function Calendar({
+  className,
+  classNames,
+  showOutsideDays = true,
+  ...props
+}: CalendarProps) {
+  return (
+    <DayPicker
+      showOutsideDays={showOutsideDays}
+      className={cn("p-3", className)}
+      classNames={{
+        months: "relative flex flex-col gap-4 sm:flex-row",
+        month: "relative w-full space-y-4",
+        month_caption: "flex h-10 items-center justify-center",
+        caption_label: "text-sm font-semibold text-foreground",
+        nav: "absolute inset-x-0 top-0 flex items-center justify-between px-1",
+        button_previous: cn(
+          buttonVariants({ variant: "outline", size: "icon", rounded: "none" }),
+          "size-8 bg-transparent p-0 opacity-70 hover:opacity-100",
+        ),
+        button_next: cn(
+          buttonVariants({ variant: "outline", size: "icon", rounded: "none" }),
+          "size-8 bg-transparent p-0 opacity-70 hover:opacity-100",
+        ),
+        month_grid: "w-full border-collapse",
+        weekdays: "flex",
+        weekday:
+          "w-9 text-[0.7rem] font-semibold tracking-wide text-muted-foreground uppercase",
+        week: "mt-1 flex w-full",
+        day: "relative p-0 text-center text-sm",
+        day_button: cn(
+          buttonVariants({ variant: "ghost", rounded: "none" }),
+          "size-9 p-0 font-normal aria-selected:opacity-100",
+        ),
+        selected:
+          "[&>button]:bg-accent [&>button]:text-accent-foreground [&>button]:hover:bg-accent [&>button]:hover:text-accent-foreground",
+        today: "[&>button]:bg-muted [&>button]:font-semibold",
+        outside:
+          "text-muted-foreground opacity-40 aria-selected:bg-accent/40 aria-selected:opacity-40",
+        disabled: "text-muted-foreground opacity-35",
+        hidden: "invisible",
+        range_middle: "aria-selected:bg-accent/15",
+        range_start: "rounded-l-none",
+        range_end: "rounded-r-none",
+        ...classNames,
+      }}
+      components={{
+        Chevron: ({ orientation }) =>
+          orientation === "left" ? (
+            <ChevronLeft className="size-4" />
+          ) : (
+            <ChevronRight className="size-4" />
+          ),
+      }}
+      {...props}
+    />
+  );
+}
+Calendar.displayName = "Calendar";
+
+export { Calendar };

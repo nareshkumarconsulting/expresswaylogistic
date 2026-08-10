@@ -1,0 +1,159 @@
+/*
+ * ExpressWay Design Tokens
+ * ─────────────────────────────────────────────────────────────
+ * Change fonts, colors, spacing, and radii HERE — Tailwind and
+ * components read these via CSS variables / @theme mappings.
+ *
+ * Quick edits:
+ *   Fonts     → --font-sans-family / --font-display-family
+ *   Brand     → --primary / --accent / --brand
+ *   Spacing   → --space-section / --container-max
+ *   Radius    → --radius
+ *   Type size → --type-*-size in this file
+ */
+
+/* ── Font face ─────────────────────────────────────────────── */
+@font-face {
+  font-family: "geomanist";
+  src: url("/fonts/geomanist-regular-webfont.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* ── Typography families (edit to swap site fonts) ──────── */
+  --font-sans-family: "geomanist", "geomanist", ui-sans-serif, system-ui,
+    sans-serif;
+  --font-display-family: "geomanist", "geomanist", ui-sans-serif, system-ui,
+    sans-serif;
+  --font-mono-family: var(--font-geist-mono), ui-monospace, monospace;
+
+  /* ── Type scale (fluid where useful) ─────────────────────── */
+  --type-display-size: clamp(2.25rem, 5vw + 0.5rem, 4.5rem);
+  --type-h1-size: clamp(2rem, 3.5vw + 0.5rem, 3.75rem);
+  --type-h2-size: clamp(1.75rem, 2.5vw + 0.5rem, 3rem);
+  --type-h3-size: clamp(1.375rem, 1.5vw + 0.5rem, 1.875rem);
+  --type-h4-size: clamp(1.125rem, 0.5vw + 0.75rem, 1.25rem);
+  --type-lead-size: clamp(1.125rem, 0.4vw + 1rem, 1.25rem);
+  --type-body-size: 1rem;
+  --type-muted-size: 0.875rem;
+  --type-eyebrow-size: 0.875rem;
+  --type-stat-size: clamp(2.25rem, 3vw + 1rem, 3.75rem);
+
+  --type-display-leading: 1.1;
+  --type-heading-leading: 1.15;
+  --type-body-leading: 1.625;
+  --type-tight-leading: 1.25;
+
+  --type-display-tracking: -0.02em;
+  --type-heading-tracking: -0.02em;
+  --type-eyebrow-tracking: 0.18em;
+  --type-normal-tracking: 0em;
+
+  --type-regular: 400;
+  --type-medium: 500;
+  --type-semibold: 600;
+  --type-bold: 700;
+
+  /* ── Spacing ─────────────────────────────────────────────── */
+  --space-section: 6rem;
+  --space-section-sm: 4rem;
+  --space-section-lg: 8rem;
+  --space-stack: 1.5rem;
+  --space-stack-lg: 2.5rem;
+  --container-max: 80rem;
+  --container-pad-x: 1rem;
+  --container-pad-x-md: 1.5rem;
+
+  /* ── Radius ──────────────────────────────────────────────── */
+  --radius: 0.5rem;
+
+  /* ── Motion ──────────────────────────────────────────────── */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 150ms;
+  --duration-base: 300ms;
+
+  /* ── Shadows (ds-* avoids clash with Tailwind --shadow-*) ── */
+  --ds-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --ds-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --ds-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --ds-shadow-accent-glow: 0 0 40px rgb(255 138 0 / 0.35);
+
+  /* ── Semantic colors (HSL channels — no hsl() wrapper) ───── */
+  --background: 0 0% 100%;
+  --foreground: 210 40% 10%;
+  --border: 210 20% 90%;
+  --input: 210 20% 90%;
+  --ring: 210 78% 18%;
+  --card: 0 0% 100%;
+  --card-foreground: 210 40% 10%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 210 40% 10%;
+
+  /* Navy brand */
+  --primary: 210 78% 18%;
+  --primary-foreground: 0 0% 100%;
+
+  /* Sky highlight */
+  --secondary: 205 90% 60%;
+  --secondary-foreground: 210 78% 12%;
+
+  --muted: 210 20% 96%;
+  --muted-foreground: 210 10% 40%;
+
+  /* Orange CTA */
+  --accent: 32 100% 50%;
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 84% 55%;
+  --destructive-foreground: 0 0% 100%;
+  --success: 152 60% 36%;
+  --success-foreground: 0 0% 100%;
+  --warning: 38 92% 50%;
+  --warning-foreground: 210 40% 10%;
+
+  /* Deep navy surfaces (footer, stats) — #051a30 */
+  --brand: 210 81% 10%;
+  --brand-foreground: 210 20% 90%;
+  --inverse: 210 81% 10%;
+  --inverse-foreground: 0 0% 100%;
+
+  /* Soft page surfaces */
+  --surface: 210 20% 98%;
+  --surface-foreground: 210 40% 10%;
+}
+
+.dark {
+  --background: 210 50% 6%;
+  --foreground: 210 20% 96%;
+  --border: 210 30% 18%;
+  --input: 210 30% 18%;
+  --ring: 32 100% 50%;
+  --card: 210 45% 9%;
+  --card-foreground: 210 20% 96%;
+  --popover: 210 45% 9%;
+  --popover-foreground: 210 20% 96%;
+  --primary: 205 90% 60%;
+  --primary-foreground: 210 78% 12%;
+  --secondary: 210 40% 18%;
+  --secondary-foreground: 210 20% 96%;
+  --muted: 210 35% 14%;
+  --muted-foreground: 210 15% 65%;
+  --accent: 32 100% 50%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 72% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --success: 152 55% 42%;
+  --success-foreground: 0 0% 100%;
+  --warning: 38 92% 50%;
+  --warning-foreground: 210 40% 10%;
+  --brand: 210 50% 6%;
+  --brand-foreground: 210 15% 70%;
+  --inverse: 210 50% 6%;
+  --inverse-foreground: 210 20% 96%;
+  --surface: 210 35% 10%;
+  --surface-foreground: 210 20% 96%;
+}
