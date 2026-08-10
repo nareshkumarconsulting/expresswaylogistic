@@ -16,23 +16,7 @@ import { siteConfig } from "@/config/site";
 import { SERVICES } from "@/constants/services";
 import { cn } from "@/lib/utils";
 
-/** Routes with a dark first viewport — white nav text while transparent. */
-function hasDarkHero(pathname: string): boolean {
-  if (
-    pathname === "/" ||
-    pathname === "/track" ||
-    pathname === "/quote" ||
-    pathname === "/appointment" ||
-    pathname === "/about" ||
-    pathname === "/privacy" ||
-    pathname === "/terms"
-  ) {
-    return true;
-  }
-  return pathname === "/services" || pathname.startsWith("/services/");
-}
-
-function ServicesDropdown({ solid }: { solid: boolean }) {
+function ServicesDropdown() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLLIElement>(null);
@@ -92,9 +76,7 @@ function ServicesDropdown({ solid }: { solid: boolean }) {
         type="button"
         className={cn(
           "inline-flex items-center gap-1 text-sm font-medium transition-colors hover:text-accent",
-          solid
-            ? "text-foreground/80 dark:text-foreground"
-            : "text-white/90",
+          "text-foreground/80 dark:text-foreground",
           (open || pathname.startsWith("/services")) && "text-accent",
         )}
         aria-expanded={open}
@@ -180,19 +162,8 @@ function ServicesDropdown({ solid }: { solid: boolean }) {
 
 export function SiteHeader() {
   const pathname = usePathname();
-  const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
-
-  const darkHero = hasDarkHero(pathname);
-  const solid = scrolled || !darkHero;
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [pathname]);
 
   useEffect(() => {
     setOpen(false);
@@ -202,30 +173,23 @@ export function SiteHeader() {
   const otherNav = siteConfig.nav.filter((link) => link.name !== "Services");
 
   return (
-    <header
-      className={cn(
-        "fixed inset-x-0 top-0 z-50 transition-all duration-300",
-        solid
-          ? "bg-white/90 py-2 shadow-sm backdrop-blur-md dark:bg-background/90"
-          : "bg-transparent py-3",
-      )}
-    >
-      <div className="container-page flex items-center justify-between">
-        <BrandLogo tone={solid ? "dark" : "light"} size="lg" priority />
+    <header className="fixed inset-x-0 top-0 z-50 bg-white/90 py-2 shadow-sm backdrop-blur-md transition-all duration-300 dark:bg-background/90">
+      <div className="container-page grid grid-cols-3 items-center lg:flex lg:justify-between">
+        {/* Balances hamburger width so logo stays visually centered on mobile */}
+        <div className="size-10 lg:hidden" aria-hidden />
+
+        <div className="flex justify-center lg:justify-start">
+          <BrandLogo tone="dark" size="lg" priority />
+        </div>
 
         <nav className="hidden items-center gap-8 lg:flex" aria-label="Primary">
           <ul className="flex items-center gap-6">
-            <ServicesDropdown solid={solid} />
+            <ServicesDropdown />
             {otherNav.map((link) => (
               <li key={link.name}>
                 <Link
                   href={link.href}
-                  className={cn(
-                    "text-sm font-medium transition-colors hover:text-accent",
-                    solid
-                      ? "text-foreground/80 dark:text-foreground"
-                      : "text-white/90",
-                  )}
+                  className="text-sm font-medium text-foreground/80 transition-colors hover:text-accent dark:text-foreground"
                 >
                   {link.name}
                 </Link>
@@ -234,10 +198,7 @@ export function SiteHeader() {
             <li>
               <Link
                 href={siteConfig.cta.command.href}
-                className={cn(
-                  "relative text-sm font-semibold transition-colors hover:text-accent",
-                  solid ? "text-primary" : "text-accent",
-                )}
+                className="relative text-sm font-semibold text-primary transition-colors hover:text-accent"
               >
                 {siteConfig.cta.command.label}
                 <span className="absolute -top-1 -right-2.5 size-1.5 rounded-full bg-accent" />
@@ -251,14 +212,14 @@ export function SiteHeader() {
           </Button>
         </nav>
 
-        <div className="lg:hidden">
+        <div className="flex justify-end lg:hidden">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
                 aria-label="Open menu"
-                className={solid ? "text-foreground" : "text-white"}
+                className="text-foreground"
               >
                 <Menu className="size-6" />
               </Button>
