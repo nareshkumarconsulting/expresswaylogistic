@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
+import type { FieldErrors } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Send } from "lucide-react";
 import { Button } from "@/components/atoms/button";
@@ -26,8 +27,13 @@ import {
   CONTAINER_TYPES,
   type QuoteFormValues,
 } from "@/features/contact/schemas";
+import {
+  firstErrorFieldPath,
+  scheduleScrollToFormField,
+} from "@/lib/form-errors";
 
 export function QuoteForm() {
+  const formRef = useRef<HTMLFormElement>(null);
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
   >("idle");
@@ -60,6 +66,12 @@ export function QuoteForm() {
     },
   });
 
+  const onInvalid = (formErrors: FieldErrors<QuoteFormValues>) => {
+    scheduleScrollToFormField(firstErrorFieldPath(formErrors), {
+      form: formRef.current,
+    });
+  };
+
   const onSubmit = async (values: QuoteFormValues) => {
     setStatus("loading");
     setErrorMessage(null);
@@ -89,8 +101,9 @@ export function QuoteForm() {
 
   return (
     <form
+      ref={formRef}
       className="space-y-6"
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(onSubmit, onInvalid)}
       noValidate
       aria-busy={status === "loading"}
     >

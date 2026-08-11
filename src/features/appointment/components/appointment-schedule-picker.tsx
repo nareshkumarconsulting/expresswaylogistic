@@ -78,6 +78,7 @@ export function AppointmentSchedulePicker({
         </div>
         {dateError ? (
           <p
+            id="preferredDate-error"
             className="border-t border-border/80 bg-destructive/5 px-4 py-3 text-sm font-medium text-destructive"
             role="alert"
           >
@@ -131,7 +132,11 @@ export function AppointmentSchedulePicker({
             })}
           </div>
           {timeError ? (
-            <p className="text-sm font-medium text-destructive" role="alert">
+            <p
+              id="preferredTime-error"
+              className="text-sm font-medium text-destructive"
+              role="alert"
+            >
               {timeError}
             </p>
           ) : null}

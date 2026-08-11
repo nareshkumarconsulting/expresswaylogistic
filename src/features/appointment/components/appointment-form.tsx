@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
+import type { FieldErrors } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
@@ -35,6 +36,12 @@ import {
   type MeetingMode,
   type MeetingTypeOption,
 } from "@/features/appointment/schemas";
+import {
+  firstErrorFieldPath,
+  getAppointmentStepForField,
+  scheduleScrollToFormField,
+  scheduleScrollToFormTop,
+} from "@/lib/form-errors";
 
 const STEPS = [
   { id: "purpose", label: "Purpose", hint: "What brings you in?" },
@@ -107,10 +114,20 @@ function StepPanel({
   );
 }
 
-function FieldError({ message }: { message?: string }) {
+function FieldError({
+  message,
+  id,
+}: {
+  message?: string;
+  id?: string;
+}) {
   if (!message) return null;
   return (
-    <p className="text-sm font-medium text-destructive" role="alert">
+    <p
+      id={id}
+      className="text-sm font-medium text-destructive"
+      role="alert"
+    >
       {message}
     </p>
   );
@@ -325,6 +342,7 @@ function MeetingTypeCard({
 
 export function AppointmentForm() {
   const reduceMotion = useReducedMotion();
+  const formRef = useRef<HTMLFormElement>(null);
   const [step, setStep] = useState<StepIndex>(0);
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
@@ -340,6 +358,7 @@ export function AppointmentForm() {
     watch,
     setValue,
     getValues,
+    getFieldState,
     formState: { errors },
   } = useForm<AppointmentFormValues>({
     resolver: zodResolver(appointmentFormSchema),
@@ -362,6 +381,7 @@ export function AppointmentForm() {
     (t) => t.id === values.appointmentType,
   );
   const copy = STEP_COPY[step];
+  const scrollBehavior = reduceMotion ? "instant" : "smooth";
 
   const selectAppointmentType = (id: AppointmentType) => {
     setValue("appointmentType", id, {
@@ -379,14 +399,31 @@ export function AppointmentForm() {
   const goNext = async () => {
     const fields = STEP_FIELDS[step];
     const ok = fields.length === 0 ? true : await trigger(fields);
-    if (!ok) return;
+    if (!ok) {
+      const firstInvalidField =
+        fields.find((field) => getFieldState(field).invalid) ?? null;
+      scheduleScrollToFormField(firstInvalidField, {
+        form: formRef.current,
+      });
+      return;
+    }
     setStep((s) => Math.min(s + 1, 3) as StepIndex);
+    scheduleScrollToFormTop(formRef.current, { behavior: scrollBehavior });
   };
 
   const goBack = () => {
     setStatus("idle");
     setErrorMessage(null);
     setStep((s) => Math.max(s - 1, 0) as StepIndex);
+    scheduleScrollToFormTop(formRef.current, { behavior: scrollBehavior });
+  };
+
+  const onInvalid = (formErrors: FieldErrors<AppointmentFormValues>) => {
+    const firstField = firstErrorFieldPath(formErrors);
+    if (firstField) {
+      setStep(getAppointmentStepForField(firstField));
+    }
+    scheduleScrollToFormField(firstField, { form: formRef.current });
   };
 
   const onSubmit = async (formValues: AppointmentFormValues) => {
@@ -490,8 +527,9 @@ export function AppointmentForm() {
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_17.5rem] xl:grid-cols-[minmax(0,1fr)_19rem]">
       <form
-        className="flex min-w-0 flex-col"
-        onSubmit={handleSubmit(onSubmit)}
+        ref={formRef}
+        className="flex min-w-0 flex-col scroll-mt-24"
+        onSubmit={handleSubmit(onSubmit, onInvalid)}
         noValidate
         aria-busy={status === "loading"}
       >
@@ -596,7 +634,10 @@ export function AppointmentForm() {
                       />
                     ))}
                   </div>
-                  <FieldError message={errors.appointmentType?.message} />
+                  <FieldError
+                    id="appointmentType-error"
+                    message={errors.appointmentType?.message}
+                  />
                 </StepPanel>
               </motion.div>
             ) : null}
@@ -666,7 +707,10 @@ export function AppointmentForm() {
                         );
                       })}
                     </div>
-                    <FieldError message={errors.meetingMode?.message} />
+                    <FieldError
+                      id="meetingMode-error"
+                      message={errors.meetingMode?.message}
+                    />
                   </div>
                 </StepPanel>
               </motion.div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { useFieldArray, useForm, Controller, useWatch } from "react-hook-form";
 import type { FieldErrors, Path } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -39,6 +39,8 @@ import {
   firstErrorFieldPath,
   formatZodFlattenErrors,
   getQuoteWizardStepForField,
+  scheduleScrollToFormField,
+  scheduleScrollToFormTop,
   type ZodFlattenedError,
 } from "@/lib/form-errors";
 import {
@@ -532,6 +534,7 @@ function YesNoField({
 
 export function QuoteWizardForm() {
   const reduceMotion = useReducedMotion();
+  const formRef = useRef<HTMLFormElement>(null);
   const [step, setStep] = useState<StepIndex>(0);
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
@@ -539,6 +542,8 @@ export function QuoteWizardForm() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [errorDetails, setErrorDetails] = useState<string[]>([]);
   const [referenceId, setReferenceId] = useState<string | null>(null);
+  const [showContactErrors, setShowContactErrors] = useState(false);
+  const [submitReady, setSubmitReady] = useState(true);
 
   const {
     register,
@@ -549,11 +554,14 @@ export function QuoteWizardForm() {
     watch,
     setValue,
     setError,
+    clearErrors,
+    getFieldState,
     formState: { errors },
   } = useForm<QuoteWizardValues>({
     resolver: zodResolver(quoteWizardSchema),
     defaultValues: createDefaultQuoteWizardValues(),
-    mode: "onChange",
+    mode: "onSubmit",
+    reValidateMode: "onSubmit",
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -566,8 +574,13 @@ export function QuoteWizardForm() {
   const copy = STEP_COPY[step];
   const totals = formatCargoTotals(cargoItems);
 
+  const contactFieldError = (message?: string) =>
+    showContactErrors ? message : undefined;
+
+  const scrollBehavior = reduceMotion ? "instant" : "smooth";
+
   const selectMode = (mode: TransportMode) => {
-    setValue("transportMode", mode, { shouldValidate: true, shouldDirty: true });
+    setValue("transportMode", mode, { shouldDirty: true });
   };
 
   const goNext = async () => {
@@ -577,16 +590,45 @@ export function QuoteWizardForm() {
     const fieldsToValidate = STEP_FIELDS[step];
     const ok =
       fieldsToValidate.length === 0 ? true : await trigger(fieldsToValidate);
-    if (!ok) return;
-    setStep((s) => Math.min(s + 1, 3) as StepIndex);
+    if (!ok) {
+      let firstInvalidField =
+        fieldsToValidate.find((field) => getFieldState(field).invalid) ?? null;
+      if (firstInvalidField === "cargoItems") {
+        firstInvalidField = null;
+      }
+      scheduleScrollToFormField(firstInvalidField, {
+        form: formRef.current,
+      });
+      return;
+    }
+    const nextStep = Math.min(step + 1, 3) as StepIndex;
+    if (nextStep === 3) {
+      setShowContactErrors(false);
+      setSubmitReady(false);
+    }
+    setStep(nextStep);
+    scheduleScrollToFormTop(formRef.current, { behavior: scrollBehavior });
+    if (nextStep === 3) {
+      clearErrors(STEP_FIELDS[3]);
+      window.setTimeout(() => setSubmitReady(true), 400);
+    }
   };
 
   const goBack = () => {
     setStatus("idle");
     setErrorMessage(null);
     setErrorDetails([]);
+    if (step === 3) {
+      setShowContactErrors(false);
+      setSubmitReady(true);
+      clearErrors(STEP_FIELDS[3]);
+    }
     setStep((s) => Math.max(s - 1, 0) as StepIndex);
+    scheduleScrollToFormTop(formRef.current, { behavior: scrollBehavior });
   };
+
+  const showFormAlert =
+    status === "error" && (step !== 3 || showContactErrors);
 
   const showValidationErrors = (
     messages: string[],
@@ -598,13 +640,24 @@ export function QuoteWizardForm() {
     if (firstField) {
       setStep(getQuoteWizardStepForField(firstField));
     }
+    scheduleScrollToFormField(firstField, { form: formRef.current });
   };
 
   const onInvalid = (formErrors: FieldErrors<QuoteWizardValues>) => {
+    const firstField = firstErrorFieldPath(formErrors);
+    if (firstField && getQuoteWizardStepForField(firstField) === 3) {
+      setShowContactErrors(true);
+    }
     showValidationErrors(
       collectReactHookFormErrors(formErrors),
-      firstErrorFieldPath(formErrors),
+      firstField,
     );
+  };
+
+  const submitQuote = () => {
+    if (!submitReady || step !== 3) return;
+    setShowContactErrors(true);
+    void handleSubmit(onSubmit, onInvalid)();
   };
 
   const onSubmit = async (formValues: QuoteWizardValues) => {
@@ -638,6 +691,9 @@ export function QuoteWizardForm() {
             }
           }
           const firstField = Object.keys(json.details.fieldErrors)[0] ?? null;
+          if (firstField && getQuoteWizardStepForField(firstField) === 3) {
+            setShowContactErrors(true);
+          }
           showValidationErrors(messages, firstField);
           return;
         }
@@ -646,10 +702,12 @@ export function QuoteWizardForm() {
       }
       setReferenceId(json.data?.referenceId ?? null);
       setStatus("success");
+      setShowContactErrors(false);
       reset(createDefaultQuoteWizardValues());
       setStep(0);
     } catch (err) {
       setStatus("error");
+      setShowContactErrors(true);
       setErrorMessage(
         err instanceof Error ? err.message : "Something went wrong",
       );
@@ -720,9 +778,10 @@ export function QuoteWizardForm() {
   return (
     <div className="grid gap-0 lg:grid-cols-[minmax(0,1fr)_17.5rem] xl:grid-cols-[minmax(0,1fr)_19rem]">
       <form
+        ref={formRef}
         id="quote-form"
         className="flex min-w-0 flex-col scroll-mt-24"
-        onSubmit={handleSubmit(onSubmit, onInvalid)}
+        onSubmit={(event) => event.preventDefault()}
         noValidate
         aria-busy={status === "loading"}
       >
@@ -803,7 +862,7 @@ export function QuoteWizardForm() {
         </div>
 
         <div className="p-5 md:p-8">
-          {status === "error" ? (
+          {showFormAlert ? (
             <StateAlert
               variant="error"
               title={
@@ -859,7 +918,11 @@ export function QuoteWizardForm() {
                         ))}
                       </div>
                       {errors.transportMode?.message ? (
-                        <p className="text-sm font-medium text-destructive">
+                        <p
+                          id="transportMode-error"
+                          className="text-sm font-medium text-destructive"
+                          role="alert"
+                        >
                           {errors.transportMode.message}
                         </p>
                       ) : null}
@@ -1503,7 +1566,7 @@ export function QuoteWizardForm() {
                           label="First name"
                           htmlFor="firstName"
                           required
-                          error={errors.firstName?.message}
+                          error={contactFieldError(errors.firstName?.message)}
                         >
                           <Input
                             {...register("firstName")}
@@ -1515,7 +1578,7 @@ export function QuoteWizardForm() {
                           label="Last name"
                           htmlFor="lastName"
                           required
-                          error={errors.lastName?.message}
+                          error={contactFieldError(errors.lastName?.message)}
                         >
                           <Input
                             {...register("lastName")}
@@ -1530,7 +1593,7 @@ export function QuoteWizardForm() {
                           label="Company name"
                           htmlFor="company"
                           required
-                          error={errors.company?.message}
+                          error={contactFieldError(errors.company?.message)}
                         >
                           <Input
                             {...register("company")}
@@ -1545,7 +1608,7 @@ export function QuoteWizardForm() {
                           label="Business email"
                           htmlFor="email"
                           required
-                          error={errors.email?.message}
+                          error={contactFieldError(errors.email?.message)}
                         >
                           <Input
                             type="email"
@@ -1557,7 +1620,7 @@ export function QuoteWizardForm() {
                         <FormField
                           label="Phone"
                           htmlFor="phone"
-                          error={errors.phone?.message}
+                          error={contactFieldError(errors.phone?.message)}
                         >
                           <Input
                             type="tel"
@@ -1579,7 +1642,7 @@ export function QuoteWizardForm() {
                           label="Country / area"
                           htmlFor="country"
                           required
-                          error={errors.country?.message}
+                          error={contactFieldError(errors.country?.message)}
                         >
                           <Input
                             {...register("country")}
@@ -1589,7 +1652,7 @@ export function QuoteWizardForm() {
                         <FormField
                           label="State / province"
                           htmlFor="state"
-                          error={errors.state?.message}
+                          error={contactFieldError(errors.state?.message)}
                         >
                           <Input
                             {...register("state")}
@@ -1603,7 +1666,7 @@ export function QuoteWizardForm() {
                           label="City"
                           htmlFor="city"
                           required
-                          error={errors.city?.message}
+                          error={contactFieldError(errors.city?.message)}
                         >
                           <Input
                             {...register("city")}
@@ -1614,7 +1677,7 @@ export function QuoteWizardForm() {
                         <FormField
                           label="Zip / postal code"
                           htmlFor="postalCode"
-                          error={errors.postalCode?.message}
+                          error={contactFieldError(errors.postalCode?.message)}
                         >
                           <Input
                             {...register("postalCode")}
@@ -1629,7 +1692,7 @@ export function QuoteWizardForm() {
                           label="Street address"
                           htmlFor="address"
                           required
-                          error={errors.address?.message}
+                          error={contactFieldError(errors.address?.message)}
                         >
                           <Textarea
                             {...register("address")}
@@ -1645,7 +1708,7 @@ export function QuoteWizardForm() {
                       label="How did you hear about us?"
                       htmlFor="referralSource"
                       required
-                      error={errors.referralSource?.message}
+                      error={contactFieldError(errors.referralSource?.message)}
                     >
                       <Controller
                         control={control}
@@ -1768,10 +1831,12 @@ export function QuoteWizardForm() {
             </Button>
           ) : (
             <Button
-              type="submit"
+              type="button"
               rounded="none"
               className="h-11 min-w-44"
               loading={status === "loading"}
+              disabled={!submitReady}
+              onClick={submitQuote}
             >
               <Send className="size-4" />
               Submit quote

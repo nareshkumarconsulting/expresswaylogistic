@@ -116,6 +116,151 @@ export function firstErrorFieldPath<T extends FieldValues>(
   return null;
 }
 
+type ScrollToFormFieldOptions = {
+  form?: HTMLElement | null;
+  behavior?: ScrollBehavior;
+};
+
+function focusScrollTarget(element: HTMLElement, behavior: ScrollBehavior) {
+  element.scrollIntoView({ behavior, block: "center" });
+  if (element.matches("input, select, textarea, button, [tabindex]")) {
+    element.focus({ preventScroll: true });
+  }
+}
+
+function queryFieldElement(
+  fieldPath: string,
+  root: ParentNode,
+): HTMLElement | null {
+  const byId = root.querySelector<HTMLElement>(`#${CSS.escape(fieldPath)}`);
+  if (byId) return byId;
+
+  const byName = root.querySelector<HTMLElement>(
+    `[name="${CSS.escape(fieldPath)}"]`,
+  );
+  if (byName) return byName;
+
+  const byDataField = root.querySelector<HTMLElement>(
+    `[data-field="${CSS.escape(fieldPath)}"]`,
+  );
+  if (byDataField) return byDataField;
+
+  const byFieldError = root.querySelector<HTMLElement>(
+    `#${CSS.escape(`${fieldPath}-error`)}`,
+  );
+  if (byFieldError) return byFieldError;
+
+  return null;
+}
+
+function queryFirstInvalidElement(root: ParentNode): HTMLElement | null {
+  const invalid = root.querySelector<HTMLElement>('[aria-invalid="true"]');
+  if (invalid) return invalid;
+
+  const fieldError = root.querySelector<HTMLElement>(
+    '[id$="-error"][role="alert"]',
+  );
+  if (fieldError) return fieldError;
+
+  const alert = root.querySelector<HTMLElement>('[role="alert"]');
+  if (alert) return alert;
+
+  return null;
+}
+
+export function scrollToFormField(
+  fieldPath: string | null | undefined,
+  options?: ScrollToFormFieldOptions,
+): boolean {
+  if (typeof window === "undefined") return false;
+
+  const behavior = options?.behavior ?? "smooth";
+  const root = options?.form ?? document;
+
+  if (fieldPath) {
+    const target = queryFieldElement(fieldPath, root);
+    if (target) {
+      focusScrollTarget(target, behavior);
+      return true;
+    }
+  }
+
+  const fallback = queryFirstInvalidElement(root);
+  if (fallback) {
+    focusScrollTarget(fallback, behavior);
+    return true;
+  }
+
+  return false;
+}
+
+export function scheduleScrollToFormField(
+  fieldPath: string | null | undefined,
+  options?: ScrollToFormFieldOptions,
+): void {
+  if (typeof window === "undefined") return;
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      scrollToFormField(fieldPath, options);
+    });
+  });
+}
+
+export function scrollToFormTop(
+  form?: HTMLElement | null,
+  options?: Pick<ScrollToFormFieldOptions, "behavior">,
+): void {
+  if (typeof window === "undefined") return;
+
+  const behavior = options?.behavior ?? "smooth";
+  if (form) {
+    form.scrollIntoView({ behavior, block: "start" });
+    return;
+  }
+
+  window.scrollTo({ top: 0, behavior });
+}
+
+export function scheduleScrollToFormTop(
+  form?: HTMLElement | null,
+  options?: Pick<ScrollToFormFieldOptions, "behavior">,
+): void {
+  if (typeof window === "undefined") return;
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      scrollToFormTop(form, options);
+    });
+  });
+}
+
+export function getAppointmentStepForField(field: string): 0 | 1 | 2 | 3 {
+  if (field === "appointmentType") {
+    return 0;
+  }
+
+  if (
+    field === "preferredDate" ||
+    field === "preferredTime" ||
+    field === "meetingMode"
+  ) {
+    return 1;
+  }
+
+  if (
+    field === "name" ||
+    field === "company" ||
+    field === "email" ||
+    field === "phone" ||
+    field === "notes"
+  ) {
+    return 2;
+  }
+
+  return 3;
+}
+
 export function getQuoteWizardStepForField(field: string): 0 | 1 | 2 | 3 {
   if (
     field === "cargoReadyDate" ||
