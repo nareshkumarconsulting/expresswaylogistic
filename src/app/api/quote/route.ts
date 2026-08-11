@@ -6,6 +6,11 @@ import {
 } from "@/features/quote/schemas";
 import { notifyLead } from "@/lib/lead-notify";
 import { logger } from "@/lib/logger";
+import { createQuoteReferenceId } from "@/lib/reference-id";
+import {
+  insertQuoteRequest,
+  mapQuoteWizardToQuoteInsert,
+} from "@/services/leads-repository";
 
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 6;
@@ -54,8 +59,10 @@ export async function POST(request: Request) {
       );
     }
 
-    const referenceId = `QW-${Date.now().toString(36).toUpperCase()}`;
+    const referenceId = createQuoteReferenceId();
     const addOns = formatQuoteAddOns(parsed.data);
+
+    await insertQuoteRequest(mapQuoteWizardToQuoteInsert(parsed.data, referenceId));
 
     logger.info("quote.wizard.received", {
       company: parsed.data.company,

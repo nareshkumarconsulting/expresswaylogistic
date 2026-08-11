@@ -9,6 +9,11 @@ import {
 } from "@/features/voice-agent/schemas";
 import { notifyLead } from "@/lib/lead-notify";
 import { logger } from "@/lib/logger";
+import { createAppointmentReferenceId } from "@/lib/reference-id";
+import {
+  insertAppointment,
+  mapAppointmentToInsert,
+} from "@/services/leads-repository";
 
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 30;
@@ -87,7 +92,13 @@ async function bookAppointment(
     };
   }
 
-  const referenceId = `AP-${Date.now().toString(36).toUpperCase()}`;
+  const referenceId = createAppointmentReferenceId();
+
+  await insertAppointment(
+    mapAppointmentToInsert(parsed.data, referenceId, "voice_agent", {
+      source: "voice_agent",
+    }),
+  );
 
   logger.info("voice-agent.appointment.booked", {
     company: parsed.data.company,

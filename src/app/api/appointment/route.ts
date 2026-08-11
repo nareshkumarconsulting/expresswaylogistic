@@ -7,6 +7,11 @@ import {
 } from "@/features/appointment/schemas";
 import { notifyLead } from "@/lib/lead-notify";
 import { logger } from "@/lib/logger";
+import { createAppointmentReferenceId } from "@/lib/reference-id";
+import {
+  insertAppointment,
+  mapAppointmentToInsert,
+} from "@/services/leads-repository";
 
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 8;
@@ -55,7 +60,10 @@ export async function POST(request: Request) {
       );
     }
 
-    const referenceId = `AP-${Date.now().toString(36).toUpperCase()}`;
+    const referenceId = createAppointmentReferenceId();
+
+    await insertAppointment(mapAppointmentToInsert(parsed.data, referenceId));
+
     const typeLabel =
       APPOINTMENT_TYPE_LABELS[parsed.data.appointmentType] ??
       parsed.data.appointmentType;

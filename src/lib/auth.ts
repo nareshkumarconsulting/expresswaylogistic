@@ -1,15 +1,22 @@
-/** Shared auth constants — safe for Edge middleware and Node route handlers. */
+/** Shared auth helpers — safe for Edge middleware and Node route handlers. */
 
+import { isSupabaseAuthConfigured } from "@/lib/supabase/config";
+
+/** Legacy demo session cookie (used only when Supabase Auth is not configured). */
 export const AUTH_COOKIE_NAME = "ew_cc_session";
 
-/** Demo credentials — override with AUTH_EMAIL / AUTH_PASSWORD. */
+const SESSION_TOKEN =
+  process.env.AUTH_SESSION_SECRET ?? "ew-command-center-demo-session";
+
+/** Demo credentials — fallback when Supabase Auth env vars are missing. */
 export const DEMO_AUTH = {
   email: process.env.AUTH_EMAIL ?? "ops@expresswaylogistic.com",
   password: process.env.AUTH_PASSWORD ?? "expressway",
 } as const;
 
-const SESSION_TOKEN =
-  process.env.AUTH_SESSION_SECRET ?? "ew-command-center-demo-session";
+export function usesSupabaseAuth(): boolean {
+  return isSupabaseAuthConfigured();
+}
 
 export function getSessionToken(): string {
   return SESSION_TOKEN;

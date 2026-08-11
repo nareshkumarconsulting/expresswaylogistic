@@ -4,7 +4,13 @@ import {
   AUTH_COOKIE_NAME,
   isProtectedPath,
   isValidSessionToken,
+  usesSupabaseAuth,
 } from "@/lib/auth";
+import {
+  copySupabaseCookies,
+  createSupabaseMiddlewareClient,
+} from "@/lib/supabase/middleware-client";
+import { isStaffSession } from "@/lib/supabase/staff";
 
 function withSecurityHeaders(response: NextResponse) {
   response.headers.set("X-Frame-Options", "DENY");
@@ -36,10 +42,43 @@ function withSecurityHeaders(response: NextResponse) {
   return response;
 }
 
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+async function resolveStaffAccess(request: NextRequest): Promise<{
+  isAuthed: boolean;
+  supabaseResponse: NextResponse | null;
+}> {
+  const { supabase, getResponse } = createSupabaseMiddlewareClient(request);
+  const isAuthed = await isStaffSession(supabase);
+  return { isAuthed, supabaseResponse: getResponse() };
+}
+
+function resolveDemoAccess(request: NextRequest): boolean {
   const session = request.cookies.get(AUTH_COOKIE_NAME)?.value;
-  const isAuthed = isValidSessionToken(session);
+  return isValidSessionToken(session);
+}
+
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const needsAuthCheck =
+    isProtectedPath(pathname) || pathname === "/login";
+
+  if (!needsAuthCheck) {
+    const response = NextResponse.next();
+    if (pathname.startsWith("/api/")) {
+      response.headers.set("Cache-Control", "no-store");
+    }
+    return withSecurityHeaders(response);
+  }
+
+  let isAuthed = false;
+  let supabaseResponse: NextResponse | null = null;
+
+  if (usesSupabaseAuth()) {
+    const staffAccess = await resolveStaffAccess(request);
+    isAuthed = staffAccess.isAuthed;
+    supabaseResponse = staffAccess.supabaseResponse;
+  } else {
+    isAuthed = resolveDemoAccess(request);
+  }
 
   if (isProtectedPath(pathname) && !isAuthed) {
     if (pathname.startsWith("/api/")) {
@@ -53,16 +92,24 @@ export function middleware(request: NextRequest) {
 
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("next", pathname);
-    return withSecurityHeaders(NextResponse.redirect(loginUrl));
+    const redirect = NextResponse.redirect(loginUrl);
+    if (supabaseResponse) {
+      copySupabaseCookies(supabaseResponse, redirect);
+    }
+    return withSecurityHeaders(redirect);
   }
 
   if (pathname === "/login" && isAuthed) {
-    return withSecurityHeaders(
-      NextResponse.redirect(new URL("/command-center", request.url)),
+    const redirect = NextResponse.redirect(
+      new URL("/command-center", request.url),
     );
+    if (supabaseResponse) {
+      copySupabaseCookies(supabaseResponse, redirect);
+    }
+    return withSecurityHeaders(redirect);
   }
 
-  const response = NextResponse.next();
+  const response = supabaseResponse ?? NextResponse.next();
 
   if (pathname.startsWith("/api/")) {
     response.headers.set("Cache-Control", "no-store");

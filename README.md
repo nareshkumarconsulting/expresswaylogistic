@@ -46,12 +46,12 @@ Open [http://localhost:3000](http://localhost:3000).
 | `/` | Marketing homepage |
 | `/services` | Service catalogue |
 | `/track` | Public shipment tracking (`EW-10847`) |
-| `/login` | Command Center sign-in (demo auth) |
+| `/login` | Command Center sign-in (Supabase Auth) |
 | `/command-center` | AI Logistics Command Center (auth required) |
 | `/command-center/ai` | Natural-language copilot |
 | `/api/health` | Health check |
 
-Demo login: `ops@expresswaylogistic.com` / `expressway` (override with `AUTH_EMAIL` / `AUTH_PASSWORD`).
+Staff sign-in uses **Supabase Auth** when `NEXT_PUBLIC_SUPABASE_ANON_KEY` is set ([setup guide](docs/SUPABASE.md)). Demo fallback: `AUTH_EMAIL` / `AUTH_PASSWORD`.
 
 ## Scripts
 
@@ -74,8 +74,9 @@ See `.env.example`:
 - `RESEND_API_KEY` — optional; emails leads when webhook is missing or fails
 - `LEAD_NOTIFY_EMAIL` — inbox for lead emails (default `sales@expresswaylogistics.com`)
 - `LEAD_NOTIFY_FROM` — Resend from address (verify domain in production)
-- `AUTH_EMAIL` / `AUTH_PASSWORD` — Command Center demo credentials (defaults above)
-- `AUTH_SESSION_SECRET` — optional session cookie value
+- `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` — Postgres + Command Center staff login ([setup guide](docs/SUPABASE.md))
+- `AUTH_EMAIL` / `AUTH_PASSWORD` — credentials used by `scripts/bootstrap-staff.mjs` and demo auth fallback
+- `AUTH_SESSION_SECRET` — optional demo session cookie value
 - `OPENAI_API_KEY` — optional; enables natural Ava TTS (recommended)
 - `OPENAI_TTS_VOICE` — `nova` (default), `shimmer`, `coral`, etc.
 - Observability hooks for GA4, GTM, Clarity, Sentry
@@ -93,7 +94,7 @@ Optimized for **Vercel**. Set `NEXT_PUBLIC_APP_URL=https://expresswaylogistic.co
 ## Security
 
 - Secure headers via middleware (CSP, HSTS, XFO, nosniff, Permissions-Policy)
-- `/command-center` and related APIs gated by session cookie (static demo credentials for now)
+- `/command-center` and related APIs gated by Supabase staff session (demo auth fallback when unconfigured)
 - Zod validation on all form/API inputs
 - Rate limiting on quote API
 - No secrets in client bundles
@@ -107,6 +108,7 @@ Optimized for **Vercel**. Set `NEXT_PUBLIC_APP_URL=https://expresswaylogistic.co
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md)
+- [Supabase setup](docs/SUPABASE.md)
 - [API](docs/API.md)
 - [Components](docs/COMPONENTS.md)
 - [Deployment](docs/DEPLOYMENT.md)

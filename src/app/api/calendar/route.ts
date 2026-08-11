@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
-import { MOCK_CALENDAR_EVENTS } from "@/services/logistics-data";
+import { listAppointments } from "@/services/leads-repository";
 
 export async function GET() {
-  const events = [...MOCK_CALENDAR_EVENTS].sort((a, b) => {
+  const persisted = await listAppointments();
+  const events = (persisted ?? []).sort((a, b) => {
     const byDate = a.date.localeCompare(b.date);
     if (byDate !== 0) return byDate;
     return (a.startTime ?? "").localeCompare(b.startTime ?? "");

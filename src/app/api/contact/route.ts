@@ -2,6 +2,11 @@ import { NextResponse } from "next/server";
 import { quoteFormSchema } from "@/features/contact/schemas";
 import { notifyLead } from "@/lib/lead-notify";
 import { logger } from "@/lib/logger";
+import { createQuoteReferenceId } from "@/lib/reference-id";
+import {
+  insertQuoteRequest,
+  mapContactFormToQuoteInsert,
+} from "@/services/leads-repository";
 
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 8;
@@ -50,7 +55,9 @@ export async function POST(request: Request) {
       );
     }
 
-    const referenceId = `QW-${Date.now().toString(36).toUpperCase()}`;
+    const referenceId = createQuoteReferenceId();
+
+    await insertQuoteRequest(mapContactFormToQuoteInsert(parsed.data, referenceId));
 
     logger.info("quote.request.received", {
       company: parsed.data.company,
