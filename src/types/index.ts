@@ -176,3 +176,68 @@ export interface ApiResponse<T> {
   error?: string;
   message?: string;
 }
+
+export type EmailCategory = "shipment" | "quotation" | "alert" | "general";
+
+export type EmailUrgency = "low" | "medium" | "high" | "critical";
+
+export type EmailIntelligenceStatus = "new" | "read" | "actioned" | "archived";
+
+export interface ShipmentExtract {
+  awb?: string;
+  trackingNo?: string;
+  pickup?: string;
+  destination?: string;
+  status?: string;
+  eta?: string;
+}
+
+export interface QuotationExtract {
+  quoteNo?: string;
+  origin?: string;
+  destination?: string;
+  carrier?: string;
+  price?: string;
+  validity?: string;
+}
+
+export interface AlertExtract {
+  alertType?: string;
+  urgency?: EmailUrgency;
+  requiredAction?: string;
+  deadline?: string;
+}
+
+export interface GeneralExtract {
+  sender?: string;
+  subject?: string;
+  date?: string;
+  summary?: string;
+}
+
+export type EmailExtractedData =
+  | ShipmentExtract
+  | QuotationExtract
+  | AlertExtract
+  | GeneralExtract;
+
+export interface EmailIntelligence {
+  id: string;
+  sourceAccount: string;
+  externalMessageId?: string;
+  senderEmail: string;
+  senderName?: string;
+  subject: string;
+  receivedAt: string;
+  category: EmailCategory;
+  confidence?: number;
+  summary?: string;
+  extractedData: EmailExtractedData;
+  status: EmailIntelligenceStatus;
+  urgency?: EmailUrgency;
+  hasAttachments: boolean;
+  attachmentNames: string[];
+  processedAt: string;
+  createdAt: string;
+  updatedAt: string;
+}

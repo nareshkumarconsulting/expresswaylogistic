@@ -49,9 +49,11 @@ export const PROTECTED_API_PREFIXES = [
   "/api/quotes",
   "/api/calendar",
   "/api/ai",
+  "/api/email-intelligence",
 ] as const;
 
 export function isProtectedPath(pathname: string): boolean {
+  if (pathname === "/api/email-intelligence/ingest") return false;
   if (pathname.startsWith("/command-center")) return true;
   return PROTECTED_API_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 }

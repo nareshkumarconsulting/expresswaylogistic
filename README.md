@@ -48,6 +48,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | `/track` | Public shipment tracking (`EW-10847`) |
 | `/login` | Command Center sign-in (Supabase Auth) |
 | `/command-center` | AI Logistics Command Center (auth required) |
+| `/command-center/emails` | AI Email Intelligence board (auth required) |
 | `/command-center/ai` | Natural-language copilot |
 | `/api/health` | Health check |
 
@@ -63,6 +64,8 @@ npm run typecheck    # TypeScript
 npm run lint         # ESLint
 npm run test         # Vitest unit/component tests
 npm run test:e2e     # Playwright
+npm run n8n          # Start local n8n (email pipeline dev)
+npm run verify:email-intelligence  # Test ingest API (local or production)
 ```
 
 ## Environment
@@ -79,7 +82,20 @@ See `.env.example`:
 - `AUTH_SESSION_SECRET` — optional demo session cookie value
 - `OPENAI_API_KEY` — optional; enables natural Ava TTS (recommended)
 - `OPENAI_TTS_VOICE` — `nova` (default), `shimmer`, `coral`, etc.
+- `EMAIL_INGEST_SECRET` — n8n → `/api/email-intelligence/ingest` webhook auth
 - Observability hooks for GA4, GTM, Clarity, Sentry
+
+## Email intelligence (production)
+
+AI-classified client emails (shipment, quotes, alerts) via n8n → Supabase → Command Center.
+
+| Doc | Purpose |
+| --- | --- |
+| [Production setup (step-by-step)](docs/PRODUCTION_SETUP.md) | Vercel + Supabase + n8n VPS go-live |
+| [Local n8n setup](docs/N8N_SETUP.md) | Dev environment |
+| [Architecture & API](docs/EMAIL_INTELLIGENCE.md) | Workflow design |
+
+Import workflow: `n8n/expressway-email-intelligence.workflow.json`
 
 ## Docker
 
@@ -89,7 +105,7 @@ docker compose up --build
 
 ## Deployment
 
-Optimized for **Vercel**. Set `NEXT_PUBLIC_APP_URL=https://expresswaylogistic.com` and optional webhook/observability secrets.
+Optimized for **Vercel** (app) + **VPS or n8n Cloud** (email pipeline). See **[Production setup](docs/PRODUCTION_SETUP.md)** for the full step-by-step guide.
 
 ## Security
 
@@ -112,6 +128,9 @@ Optimized for **Vercel**. Set `NEXT_PUBLIC_APP_URL=https://expresswaylogistic.co
 - [API](docs/API.md)
 - [Components](docs/COMPONENTS.md)
 - [Deployment](docs/DEPLOYMENT.md)
+- [Production setup](docs/PRODUCTION_SETUP.md)
+- [Email intelligence](docs/EMAIL_INTELLIGENCE.md)
+- [n8n local setup](docs/N8N_SETUP.md)
 
 ## Reference
 

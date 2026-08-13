@@ -1,0 +1,36 @@
+# Production n8n — run on VPS (24/7 email pipeline)
+# Usage on server:
+#   cp .env.n8n.production.example .env.n8n   # fill values
+#   docker compose -f docker-compose.n8n.prod.yml up -d
+
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    restart: always
+    ports:
+      - "127.0.0.1:5678:5678"
+    env_file:
+      - .env.n8n
+    environment:
+      N8N_HOST: ${N8N_HOST}
+      N8N_PORT: ${N8N_PORT:-5678}
+      N8N_PROTOCOL: ${N8N_PROTOCOL:-https}
+      WEBHOOK_URL: ${WEBHOOK_URL}
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY}
+      GENERIC_TIMEZONE: ${GENERIC_TIMEZONE:-Asia/Kolkata}
+      TZ: ${TZ:-Asia/Kolkata}
+      N8N_BLOCK_ENV_ACCESS_IN_NODE: ${N8N_BLOCK_ENV_ACCESS_IN_NODE:-false}
+      EXPRESSWAY_APP_URL: ${EXPRESSWAY_APP_URL}
+      EMAIL_INGEST_SECRET: ${EMAIL_INGEST_SECRET}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    volumes:
+      - n8n_data:/home/node/.n8n
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:5678/healthz || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  n8n_data:

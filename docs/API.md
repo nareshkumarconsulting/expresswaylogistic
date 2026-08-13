@@ -54,6 +54,22 @@ Command Center shipment board data.
 
 Current AI insight feed.
 
+## Email Intelligence
+
+See [EMAIL_INTELLIGENCE.md](./EMAIL_INTELLIGENCE.md) for the full n8n workflow setup.
+
+### `POST /api/email-intelligence/ingest`
+
+n8n webhook — stores classified email data. Auth: `Authorization: Bearer <EMAIL_INGEST_SECRET>`.
+
+### `GET /api/email-intelligence`
+
+Command Center email board. Query: `?category=shipment&status=new`.
+
+### `PATCH /api/email-intelligence/:id`
+
+Update email status: `{ "status": "read" | "actioned" | "archived" }`.
+
 ## `POST /api/ai/insights`
 
 Natural-language operations query.

@@ -8,3 +8,29 @@ services:
     environment:
       NEXT_PUBLIC_APP_URL: http://localhost:3000
     restart: unless-stopped
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    ports:
+      - "5678:5678"
+    env_file:
+      - .env.local
+    environment:
+      N8N_HOST: localhost
+      N8N_PORT: 5678
+      N8N_PROTOCOL: http
+      WEBHOOK_URL: http://localhost:5678/
+      GENERIC_TIMEZONE: Asia/Kolkata
+      TZ: Asia/Kolkata
+      # Allow workflow expressions like {{ $env.EMAIL_INGEST_SECRET }}
+      N8N_BLOCK_ENV_ACCESS_IN_NODE: "false"
+      # n8n runs in Docker — reach Next.js on the host machine
+      EXPRESSWAY_APP_URL: http://host.docker.internal:3000
+    volumes:
+      - n8n_data:/home/node/.n8n
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+
+volumes:
+  n8n_data:

@@ -28,6 +28,10 @@ export type AppointmentStatus =
 
 export type StaffRole = "admin" | "ops" | "viewer";
 
+export type EmailCategory = "shipment" | "quotation" | "alert" | "general";
+export type EmailUrgency = "low" | "medium" | "high" | "critical";
+export type EmailIntelligenceStatus = "new" | "read" | "actioned" | "archived";
+
 export interface Database {
   public: {
     Tables: {
@@ -143,6 +147,50 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["appointments"]["Insert"]>;
         Relationships: [];
       };
+      email_intelligence: {
+        Row: {
+          id: string;
+          source_account: string;
+          external_message_id: string | null;
+          sender_email: string;
+          sender_name: string | null;
+          subject: string;
+          received_at: string;
+          category: EmailCategory;
+          confidence: number | null;
+          summary: string | null;
+          extracted_data: Json;
+          status: EmailIntelligenceStatus;
+          urgency: EmailUrgency | null;
+          has_attachments: boolean;
+          attachment_names: string[];
+          processed_at: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          source_account: string;
+          external_message_id?: string | null;
+          sender_email: string;
+          sender_name?: string | null;
+          subject: string;
+          received_at: string;
+          category: EmailCategory;
+          confidence?: number | null;
+          summary?: string | null;
+          extracted_data?: Json;
+          status?: EmailIntelligenceStatus;
+          urgency?: EmailUrgency | null;
+          has_attachments?: boolean;
+          attachment_names?: string[];
+          processed_at?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["email_intelligence"]["Insert"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -157,6 +205,9 @@ export interface Database {
       appointment_source: AppointmentSource;
       appointment_status: AppointmentStatus;
       staff_role: StaffRole;
+      email_category: EmailCategory;
+      email_urgency: EmailUrgency;
+      email_intelligence_status: EmailIntelligenceStatus;
     };
     CompositeTypes: Record<string, never>;
   };
