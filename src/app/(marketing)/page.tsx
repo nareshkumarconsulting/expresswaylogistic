@@ -1,14 +1,6 @@
-import Script from "next/script";
+import dynamic from "next/dynamic";
+import { preload } from "react-dom";
 import { HeroSection } from "@/components/organisms/hero-section";
-import { AboutSection } from "@/components/organisms/about-section";
-import { ServicesSection } from "@/components/organisms/services-section";
-import { IndustriesSection } from "@/components/organisms/industries-section";
-import { WhyChooseUsSection } from "@/components/organisms/why-choose-us-section";
-import { ProcessSection } from "@/components/organisms/process-section";
-import { GlobalReachSection } from "@/components/organisms/global-reach-section";
-import { StatisticsSection } from "@/components/organisms/statistics-section";
-import { TestimonialsSection } from "@/components/organisms/testimonials-section";
-import { FaqSection } from "@/components/organisms/faq-section";
 import { siteConfig } from "@/config/site";
 import { FAQ_ITEMS } from "@/constants/content";
 import { SERVICES } from "@/constants/services";
@@ -81,23 +73,19 @@ function JsonLd() {
 
   return (
     <>
-      <Script
-        id="ld-organization"
+      <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organization) }}
       />
-      <Script
-        id="ld-services"
+      <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(services) }}
       />
-      <Script
-        id="ld-faq"
+      <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faq) }}
       />
-      <Script
-        id="ld-website"
+      <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(website) }}
       />
@@ -105,7 +93,58 @@ function JsonLd() {
   );
 }
 
+const AboutSection = dynamic(() =>
+  import("@/components/organisms/about-section").then((mod) => mod.AboutSection),
+);
+const ServicesSection = dynamic(() =>
+  import("@/components/organisms/services-section").then(
+    (mod) => mod.ServicesSection,
+  ),
+);
+const IndustriesSection = dynamic(() =>
+  import("@/components/organisms/industries-section").then(
+    (mod) => mod.IndustriesSection,
+  ),
+);
+const WhyChooseUsSection = dynamic(() =>
+  import("@/components/organisms/why-choose-us-section").then(
+    (mod) => mod.WhyChooseUsSection,
+  ),
+);
+const ProcessSection = dynamic(() =>
+  import("@/components/organisms/process-section").then(
+    (mod) => mod.ProcessSection,
+  ),
+);
+const GlobalReachSection = dynamic(() =>
+  import("@/components/organisms/global-reach-section").then(
+    (mod) => mod.GlobalReachSection,
+  ),
+);
+const StatisticsSection = dynamic(() =>
+  import("@/components/organisms/statistics-section").then(
+    (mod) => mod.StatisticsSection,
+  ),
+);
+const TestimonialsSection = dynamic(() =>
+  import("@/components/organisms/testimonials-section").then(
+    (mod) => mod.TestimonialsSection,
+  ),
+);
+const FaqSection = dynamic(() =>
+  import("@/components/organisms/faq-section").then((mod) => mod.FaqSection),
+);
+
 export default function HomePage() {
+  preload("/images/hero-port-750.webp", {
+    as: "image",
+    type: "image/webp",
+    fetchPriority: "high",
+    imageSrcSet:
+      "/images/hero-port-750.webp 750w, /images/hero-port-1280.webp 1280w",
+    imageSizes: "100vw",
+  });
+
   return (
     <>
       <JsonLd />

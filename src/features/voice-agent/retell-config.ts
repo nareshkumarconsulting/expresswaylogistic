@@ -39,3 +39,7 @@ export function isRetellRateLimited(
   entry.count += 1;
   return entry.count > max;
 }
+
+export function buildTypedCallContext(message: string) {
+  return `The visitor typed this exact message. Treat it as what they said and prefer it over any misheard speech: ${message}`;
+}

@@ -7,7 +7,8 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: ["192.168.1.145"],
   images: {
     formats: ["image/avif", "image/webp"],
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    minimumCacheTTL: 60 * 60 * 24 * 30,
   },
   experimental: {
     optimizePackageImports: ["lucide-react", "recharts", "framer-motion"],

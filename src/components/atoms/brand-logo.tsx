@@ -1,8 +1,6 @@
-"use client";
-
 import type { ReactNode } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
@@ -19,10 +17,9 @@ interface BrandLogoProps {
   priority?: boolean;
 }
 
-/** Copied from docs/logo.png — used as-is, no processing. */
-const LOGO_SRC = "/images/expressway-logo.png";
-const LOGO_WIDTH = 1536;
-const LOGO_HEIGHT = 1024;
+const LOGO_SRC = "/images/expressway-logo.webp";
+const LOGO_WIDTH = 480;
+const LOGO_HEIGHT = 320;
 
 const lockupHeight: Record<LogoSize, string> = {
   sm: "h-12",
@@ -44,7 +41,6 @@ export function BrandLogo({
   className,
   priority = false,
 }: BrandLogoProps) {
-  const reduceMotion = useReducedMotion();
   const useBrandPlaque = tone === "light" || variant === "badge";
 
   const heightClass =
@@ -55,20 +51,20 @@ export function BrandLogo({
         : lockupHeight[size];
 
   const inner: ReactNode = (
-    // eslint-disable-next-line @next/next/no-img-element -- serve exact PNG from docs/logo.png
-    <img
+    <Image
       src={LOGO_SRC}
       alt={variant === "mark" ? "" : siteConfig.name}
       width={LOGO_WIDTH}
       height={LOGO_HEIGHT}
-      decoding="async"
-      fetchPriority={priority ? "high" : "auto"}
+      priority={priority}
+      loading={priority ? undefined : "eager"}
+      sizes="192px"
       className={cn("block w-auto object-contain", heightClass)}
     />
   );
 
   const body = (
-    <motion.span
+    <span
       className={cn(
         "group relative inline-flex items-center",
         useBrandPlaque &&
@@ -76,17 +72,9 @@ export function BrandLogo({
         variant === "badge" && size === "lg" && "p-3",
         className,
       )}
-      initial={reduceMotion ? false : { opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      whileHover={
-        reduceMotion || variant === "badge"
-          ? undefined
-          : { scale: 1.02, transition: { type: "spring", stiffness: 260 } }
-      }
     >
       {inner}
-    </motion.span>
+    </span>
   );
 
   if (href === null) {

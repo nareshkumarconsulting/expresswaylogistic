@@ -179,7 +179,7 @@ export function SiteHeader() {
         <div className="size-10 lg:hidden" aria-hidden />
 
         <div className="flex justify-center lg:justify-start">
-          <BrandLogo tone="dark" size="lg" priority />
+          <BrandLogo tone="dark" size="lg" />
         </div>
 
         <nav className="hidden items-center gap-8 lg:flex" aria-label="Primary">

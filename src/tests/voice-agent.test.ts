@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { runReceptionistTurn } from "@/features/voice-agent/receptionist";
+import { buildTypedCallContext } from "@/features/voice-agent/retell-config";
 import {
   parseRetellToolCall,
   runRetellTool,
@@ -190,6 +191,12 @@ describe("Retell web tools", () => {
     expect(normalized.meetingMode).toBe("in-person");
     expect(normalized.phone).toBe("98736 93160");
     expect(normalized.email).toBe("naresh@example.com");
+  });
+
+  it("marks typed messages as the accurate user wording", () => {
+    expect(buildTypedCallContext("naresh@gmail.com")).toMatch(
+      /prefer it over any misheard speech: naresh@gmail.com/,
+    );
   });
 
   it("looks up tracking without inventing a status", async () => {

@@ -1,6 +1,6 @@
+import { HelpLauncher } from "@/components/organisms/help-launcher";
 import { SiteFooter } from "@/components/organisms/site-footer";
 import { SiteHeader } from "@/components/organisms/site-header";
-import { HelpLauncher } from "@/components/organisms/help-launcher";
 
 export default function MarketingLayout({
   children,

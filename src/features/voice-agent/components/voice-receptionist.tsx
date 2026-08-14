@@ -2,9 +2,13 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { Mic, MicOff, X } from "lucide-react";
+import { Mic, MicOff, Send } from "lucide-react";
 import { Button } from "@/components/atoms/button";
+import {
+  ChatBubble,
+  ChatPromptChips,
+  ChatWidgetFrame,
+} from "@/features/voice-agent/components/chat-widget-frame";
 import { useSpeechReceptionist } from "@/features/voice-agent/hooks/use-speech-receptionist";
 import type {
   BookingDraft,
@@ -60,7 +64,6 @@ export function VoiceReceptionistPanel({ open, onClose }: VoiceReceptionistPanel
     interim,
     error,
     setError,
-    neuralVoice,
     startListening,
     stopListening,
     speak,
@@ -272,176 +275,143 @@ export function VoiceReceptionistPanel({ open, onClose }: VoiceReceptionistPanel
     }, 0);
   };
 
+  const subtitle = !supported
+    ? "Type below · voice needs Chrome or Edge"
+    : handsFree
+      ? speaking
+        ? "Speaking — you can interrupt"
+        : listening
+          ? "Listening…"
+          : busy
+            ? "Thinking…"
+            : "Online · speak or type"
+      : "Mic muted · tap to unmute";
+
+  const showPrompts = messages.length === 1 && messages[0]?.id === "welcome";
+
   return (
-    <AnimatePresence>
-      {open ? (
-        <motion.div
-          key="panel"
-          initial={{ opacity: 0, y: 16, scale: 0.96 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 12, scale: 0.96 }}
-          transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-          className="w-[min(100vw-2rem,22rem)] overflow-hidden rounded-xl border border-border/80 bg-background/95 shadow-[var(--ds-shadow-lg)] backdrop-blur-md"
-          role="dialog"
-          aria-label="ExpressWay voice receptionist"
-        >
-            <div className="flex items-center justify-between gap-3 border-b border-border/70 bg-primary px-4 py-3 text-primary-foreground">
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold">
-                  Ava · Receptionist
-                  {neuralVoice ? (
-                    <span className="ml-2 align-middle text-[10px] font-medium tracking-wide text-primary-foreground/75">
-                      NATURAL VOICE
-                    </span>
-                  ) : null}
-                </p>
-                <p className="truncate text-xs text-primary-foreground/80">
-                  {handsFree
-                    ? speaking
-                      ? "Live call · you can interrupt"
-                      : listening
-                        ? "Live call · listening"
-                        : busy
-                          ? "Live call · thinking"
-                          : "Live call · mic on"
-                    : "Mic muted · tap to unmute"}
-                </p>
-              </div>
-              <button
-                type="button"
+    <ChatWidgetFrame
+      open={open}
+      subtitle={subtitle}
+      live={handsFree && supported}
+      speaking={speaking}
+      onClose={handleClose}
+      bodyRef={scrollerRef}
+      banner={
+        <>
+          {action.type === "navigate" ? (
+            <div className="border-t border-border/60 bg-background px-3 py-2">
+              <Link
+                href={action.href}
+                className="text-sm font-medium text-accent underline-offset-4 hover:underline"
                 onClick={handleClose}
-                className="rounded-md p-1.5 text-primary-foreground/90 transition hover:bg-primary-foreground/10"
-                aria-label="Close receptionist"
               >
-                <X className="size-4" />
-              </button>
+                {action.label} →
+              </Link>
             </div>
-
-            <div
-              ref={scrollerRef}
-              className="flex max-h-72 flex-col gap-3 overflow-y-auto px-3 py-3"
-            >
-              {messages.map((m) => (
-                <div
-                  key={m.id}
-                  className={cn(
-                    "max-w-[90%] rounded-lg px-3 py-2 text-sm leading-relaxed",
-                    m.role === "assistant"
-                      ? "self-start bg-muted text-foreground"
-                      : "self-end bg-accent text-accent-foreground",
-                  )}
-                >
-                  {m.content}
-                </div>
-              ))}
-              {interim ? (
-                <div className="self-end max-w-[90%] rounded-lg bg-accent/70 px-3 py-2 text-sm text-accent-foreground/90">
-                  {interim}
-                </div>
-              ) : null}
+          ) : null}
+          {action.type === "appointment_booked" ? (
+            <div className="border-t border-border/60 bg-background px-3 py-2 text-sm text-foreground">
+              Booked · ref {action.referenceId}
             </div>
-
-            {action.type === "navigate" ? (
-              <div className="border-t border-border/60 px-3 py-2">
-                <Link
-                  href={action.href}
-                  className="text-sm font-medium text-accent underline-offset-4 hover:underline"
-                  onClick={handleClose}
-                >
-                  {action.label} →
-                </Link>
-              </div>
-            ) : null}
-
-            {action.type === "appointment_booked" ? (
-              <div className="border-t border-border/60 px-3 py-2 text-sm text-foreground">
-                Booked · ref {action.referenceId}
-              </div>
-            ) : null}
-
-            {action.type === "quote_submitted" ? (
-              <div className="border-t border-border/60 px-3 py-2 text-sm text-foreground">
-                Quote sent · ref {action.referenceId}
-              </div>
-            ) : null}
-
-            {action.type === "tracking_result" ? (
-              <div className="border-t border-border/60 px-3 py-2">
-                <Link
-                  href={action.href}
-                  className="text-sm font-medium text-accent underline-offset-4 hover:underline"
-                  onClick={handleClose}
-                >
-                  {action.found
-                    ? `Open ${action.trackingId} →`
-                    : "Open Track Shipment →"}
-                </Link>
-              </div>
-            ) : null}
-
-            {error ? (
-              <p className="px-3 pb-1 text-xs text-destructive">{error}</p>
-            ) : null}
-
-            {!supported ? (
-              <p className="px-3 pb-2 text-xs text-muted-foreground">
-                Voice needs Chrome or Edge. You can still type below.
-              </p>
-            ) : neuralVoice ? (
-              <p className="px-3 pb-1 text-xs text-muted-foreground">
-                Natural neural voice on. Mic stays live — speak anytime.
-              </p>
-            ) : (
-              <p className="px-3 pb-1 text-xs text-muted-foreground">
-                Using browser voice. Add GROQ_API_KEY for a more natural
-                receptionist voice.
-              </p>
-            )}
-
-            <form
-              className="flex items-center gap-2 border-t border-border/70 p-3"
-              onSubmit={(e) => {
-                e.preventDefault();
-                const value = typed;
-                setTyped("");
-                void sendMessage(value);
-              }}
-            >
-              <button
-                type="button"
-                onClick={toggleMic}
-                disabled={!supported}
-                aria-pressed={listening}
-                aria-label={
-                  listening || handsFree ? "Mute microphone" : "Unmute microphone"
-                }
-                className={cn(
-                  "flex size-10 shrink-0 items-center justify-center rounded-full transition",
-                  listening || handsFree
-                    ? "bg-destructive text-destructive-foreground"
-                    : "bg-primary text-primary-foreground hover:bg-primary/90",
-                  !supported && "opacity-50",
-                )}
+          ) : null}
+          {action.type === "quote_submitted" ? (
+            <div className="border-t border-border/60 bg-background px-3 py-2 text-sm text-foreground">
+              Quote sent · ref {action.referenceId}
+            </div>
+          ) : null}
+          {action.type === "tracking_result" ? (
+            <div className="border-t border-border/60 bg-background px-3 py-2">
+              <Link
+                href={action.href}
+                className="text-sm font-medium text-accent underline-offset-4 hover:underline"
+                onClick={handleClose}
               >
-                {listening || handsFree ? (
-                  <Mic className="size-4" />
-                ) : (
-                  <MicOff className="size-4" />
-                )}
-              </button>
-              <input
-                value={typed}
-                onChange={(e) => setTyped(e.target.value)}
-                placeholder="Or type if needed…"
-                className="h-10 min-w-0 flex-1 rounded-md border border-border bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                disabled={busy}
-              />
-              <Button type="submit" size="sm" disabled={busy || !typed.trim()}>
-                Send
-              </Button>
-            </form>
-          </motion.div>
-        ) : null}
-    </AnimatePresence>
+                {action.found
+                  ? `Open ${action.trackingId} →`
+                  : "Open Track Shipment →"}
+              </Link>
+            </div>
+          ) : null}
+          {error ? (
+            <p className="border-t border-border/60 bg-background px-3 py-2 text-xs text-destructive">
+              {error}
+            </p>
+          ) : null}
+        </>
+      }
+      composer={
+        <div className="border-t border-border/70 bg-background p-3">
+          <form
+            className="flex items-center gap-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const value = typed;
+              setTyped("");
+              void sendMessage(value);
+            }}
+          >
+            <button
+              type="button"
+              onClick={toggleMic}
+              disabled={!supported}
+              aria-pressed={listening}
+              aria-label={
+                listening || handsFree ? "Mute microphone" : "Unmute microphone"
+              }
+              className={cn(
+                "flex size-10 shrink-0 items-center justify-center rounded-full transition",
+                listening || handsFree
+                  ? "bg-destructive text-destructive-foreground"
+                  : "bg-primary text-primary-foreground hover:bg-primary/90",
+                !supported && "opacity-50",
+              )}
+            >
+              {listening || handsFree ? (
+                <Mic className="size-4" />
+              ) : (
+                <MicOff className="size-4" />
+              )}
+            </button>
+            <input
+              value={typed}
+              onChange={(e) => setTyped(e.target.value)}
+              placeholder="Ask about a quote, tracking, or booking…"
+              aria-label="Type a message to Ava"
+              className="h-10 min-w-0 flex-1 rounded-full border border-border bg-surface px-4 text-sm outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
+              disabled={busy}
+            />
+            <Button
+              type="submit"
+              size="icon"
+              rounded="full"
+              disabled={busy || !typed.trim()}
+              aria-label="Send message"
+            >
+              <Send className="size-4" />
+            </Button>
+          </form>
+        </div>
+      }
+    >
+      {messages.map((m) => (
+        <ChatBubble
+          key={m.id}
+          role={m.role === "assistant" ? "agent" : "user"}
+        >
+          {m.content}
+        </ChatBubble>
+      ))}
+      {showPrompts ? (
+        <ChatPromptChips
+          onSelect={(message) => {
+            void sendMessage(message);
+          }}
+        />
+      ) : null}
+      {interim ? (
+        <ChatBubble role="user">{interim}</ChatBubble>
+      ) : null}
+    </ChatWidgetFrame>
   );
 }
