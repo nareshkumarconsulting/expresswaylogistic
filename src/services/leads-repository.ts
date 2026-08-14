@@ -165,6 +165,36 @@ export function mapQuoteWizardToQuoteInsert(
   };
 }
 
+export function mapVoiceQuoteToInsert(
+  data: {
+    name: string;
+    company: string;
+    email: string;
+    phone: string;
+    origin: string;
+    destination: string;
+    serviceType: QuoteServiceType;
+    cargo: string;
+    approxWeight?: string;
+  },
+  referenceId: string,
+): QuoteRequestInsert {
+  return {
+    id: referenceId,
+    source: "voice_agent",
+    name: data.name,
+    company: data.company,
+    email: data.email,
+    phone: data.phone,
+    origin: data.origin,
+    destination: data.destination,
+    service_type: data.serviceType,
+    approx_weight: data.approxWeight ?? null,
+    message: data.cargo,
+    payload: { ...data, source: "voice_agent" },
+  };
+}
+
 export function mapAppointmentToInsert(
   data: AppointmentFormValues,
   referenceId: string,

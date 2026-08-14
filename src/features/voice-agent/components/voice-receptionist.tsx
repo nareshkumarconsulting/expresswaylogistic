@@ -8,6 +8,8 @@ import { Button } from "@/components/atoms/button";
 import { useSpeechReceptionist } from "@/features/voice-agent/hooks/use-speech-receptionist";
 import type {
   BookingDraft,
+  QuoteDraft,
+  TrackingDraft,
   VoiceAgentAction,
 } from "@/features/voice-agent/schemas";
 import { cn } from "@/lib/utils";
@@ -19,7 +21,7 @@ type ChatMessage = {
 };
 
 const WELCOME =
-  "Hello! I'm Ava, the ExpressWay receptionist. Ask me about services, tracking, or book an appointment — I'll listen after I finish speaking.";
+  "Hello! I'm Ava, the ExpressWay receptionist. We're on a live call — speak anytime for a quote, tracking, or an appointment.";
 
 export interface VoiceReceptionistPanelProps {
   open: boolean;
@@ -32,6 +34,8 @@ export function VoiceReceptionistPanel({ open, onClose }: VoiceReceptionistPanel
     { id: "welcome", role: "assistant", content: WELCOME },
   ]);
   const [bookingDraft, setBookingDraft] = useState<BookingDraft>({});
+  const [quoteDraft, setQuoteDraft] = useState<QuoteDraft>({});
+  const [trackingDraft, setTrackingDraft] = useState<TrackingDraft>({});
   const [action, setAction] = useState<VoiceAgentAction>({ type: "none" });
   const [typed, setTyped] = useState("");
   const [handsFree, setHandsFree] = useState(true);
@@ -41,9 +45,12 @@ export function VoiceReceptionistPanel({ open, onClose }: VoiceReceptionistPanel
   const busyRef = useRef(false);
   const handsFreeRef = useRef(true);
   const bookingDraftRef = useRef<BookingDraft>({});
+  const quoteDraftRef = useRef<QuoteDraft>({});
+  const trackingDraftRef = useRef<TrackingDraft>({});
   const messagesRef = useRef<ChatMessage[]>([
     { id: "welcome", role: "assistant", content: WELCOME },
   ]);
+  const pendingRef = useRef<string[]>([]);
   const sendMessageRef = useRef<(raw: string) => Promise<void>>(async () => {});
 
   const {
@@ -77,6 +84,14 @@ export function VoiceReceptionistPanel({ open, onClose }: VoiceReceptionistPanel
   }, [bookingDraft]);
 
   useEffect(() => {
+    quoteDraftRef.current = quoteDraft;
+  }, [quoteDraft]);
+
+  useEffect(() => {
+    trackingDraftRef.current = trackingDraft;
+  }, [trackingDraft]);
+
+  useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
 
@@ -88,29 +103,28 @@ export function VoiceReceptionistPanel({ open, onClose }: VoiceReceptionistPanel
   }, [messages, interim, open]);
 
   const resumeListening = useCallback(() => {
-    if (
-      !supported ||
-      !openRef.current ||
-      !handsFreeRef.current ||
-      busyRef.current
-    ) {
+    if (!supported || !openRef.current || !handsFreeRef.current) {
       return;
     }
 
-    // Short pause so Chrome doesn't pick up Ava's last words.
     startListening((transcript) => {
       void sendMessageRef.current(transcript);
-    }, 450);
+    }, 0);
   }, [startListening, supported]);
 
   const sendMessage = useCallback(
     async (raw: string) => {
       const message = raw.trim();
-      if (!message || busyRef.current) return;
+      if (!message) return;
 
-      stopListening();
+      if (busyRef.current) {
+        pendingRef.current = [message];
+        return;
+      }
+
       setBusy(true);
       busyRef.current = true;
+      pendingRef.current = [];
       setError(null);
       setAction({ type: "none" });
 
@@ -138,7 +152,10 @@ export function VoiceReceptionistPanel({ open, onClose }: VoiceReceptionistPanel
             message,
             history,
             bookingDraft: bookingDraftRef.current,
+            quoteDraft: quoteDraftRef.current,
+            trackingDraft: trackingDraftRef.current,
           }),
+          signal: AbortSignal.timeout(12_000),
         });
 
         const json = (await res.json()) as {
@@ -147,6 +164,8 @@ export function VoiceReceptionistPanel({ open, onClose }: VoiceReceptionistPanel
           data?: {
             reply: string;
             bookingDraft: BookingDraft;
+            quoteDraft: QuoteDraft;
+            trackingDraft: TrackingDraft;
             action: VoiceAgentAction;
           };
         };
@@ -157,6 +176,10 @@ export function VoiceReceptionistPanel({ open, onClose }: VoiceReceptionistPanel
 
         setBookingDraft(json.data.bookingDraft);
         bookingDraftRef.current = json.data.bookingDraft;
+        setQuoteDraft(json.data.quoteDraft ?? {});
+        quoteDraftRef.current = json.data.quoteDraft ?? {};
+        setTrackingDraft(json.data.trackingDraft ?? {});
+        trackingDraftRef.current = json.data.trackingDraft ?? {};
         setAction(json.data.action);
         setMessages((prev) => {
           const next: ChatMessage[] = [
@@ -193,9 +216,13 @@ export function VoiceReceptionistPanel({ open, onClose }: VoiceReceptionistPanel
         setBusy(false);
         busyRef.current = false;
         resumeListening();
+        const queued = pendingRef.current.shift();
+        if (queued) {
+          void sendMessageRef.current(queued);
+        }
       }
     },
-    [resumeListening, setError, speak, stopListening],
+    [resumeListening, setError, speak],
   );
 
   useEffect(() => {
@@ -206,13 +233,11 @@ export function VoiceReceptionistPanel({ open, onClose }: VoiceReceptionistPanel
     openRef.current = true;
     setHandsFree(true);
     handsFreeRef.current = true;
+    resumeListening();
 
     if (!greetedRef.current) {
       greetedRef.current = true;
       await speak(WELCOME);
-      resumeListening();
-    } else {
-      resumeListening();
     }
   }, [resumeListening, speak]);
 
@@ -234,13 +259,12 @@ export function VoiceReceptionistPanel({ open, onClose }: VoiceReceptionistPanel
   };
 
   const toggleMic = () => {
-    if (listening) {
+    if (listening || handsFreeRef.current) {
       setHandsFree(false);
       handsFreeRef.current = false;
       stopListening();
       return;
     }
-    if (busy || speaking) return;
     setHandsFree(true);
     handsFreeRef.current = true;
     startListening((transcript) => {
@@ -272,15 +296,15 @@ export function VoiceReceptionistPanel({ open, onClose }: VoiceReceptionistPanel
                   ) : null}
                 </p>
                 <p className="truncate text-xs text-primary-foreground/80">
-                  {speaking
-                    ? "Speaking… then I'll listen"
-                    : listening
-                      ? "Listening — go ahead"
-                      : busy
-                        ? "Thinking…"
-                        : handsFree
-                          ? "Hands-free on · tap mic to pause"
-                          : "Mic paused · tap mic to talk"}
+                  {handsFree
+                    ? speaking
+                      ? "Live call · you can interrupt"
+                      : listening
+                        ? "Live call · listening"
+                        : busy
+                          ? "Live call · thinking"
+                          : "Live call · mic on"
+                    : "Mic muted · tap to unmute"}
                 </p>
               </div>
               <button
@@ -335,6 +359,26 @@ export function VoiceReceptionistPanel({ open, onClose }: VoiceReceptionistPanel
               </div>
             ) : null}
 
+            {action.type === "quote_submitted" ? (
+              <div className="border-t border-border/60 px-3 py-2 text-sm text-foreground">
+                Quote sent · ref {action.referenceId}
+              </div>
+            ) : null}
+
+            {action.type === "tracking_result" ? (
+              <div className="border-t border-border/60 px-3 py-2">
+                <Link
+                  href={action.href}
+                  className="text-sm font-medium text-accent underline-offset-4 hover:underline"
+                  onClick={handleClose}
+                >
+                  {action.found
+                    ? `Open ${action.trackingId} →`
+                    : "Open Track Shipment →"}
+                </Link>
+              </div>
+            ) : null}
+
             {error ? (
               <p className="px-3 pb-1 text-xs text-destructive">{error}</p>
             ) : null}
@@ -345,11 +389,11 @@ export function VoiceReceptionistPanel({ open, onClose }: VoiceReceptionistPanel
               </p>
             ) : neuralVoice ? (
               <p className="px-3 pb-1 text-xs text-muted-foreground">
-                Natural neural voice on. After Ava speaks, answer out loud.
+                Natural neural voice on. Mic stays live — speak anytime.
               </p>
             ) : (
               <p className="px-3 pb-1 text-xs text-muted-foreground">
-                Using browser voice. Add OPENAI_API_KEY for a more natural
+                Using browser voice. Add GROQ_API_KEY for a more natural
                 receptionist voice.
               </p>
             )}
@@ -366,21 +410,23 @@ export function VoiceReceptionistPanel({ open, onClose }: VoiceReceptionistPanel
               <button
                 type="button"
                 onClick={toggleMic}
-                disabled={!supported || busy || speaking}
+                disabled={!supported}
                 aria-pressed={listening}
-                aria-label={listening ? "Pause listening" : "Start listening"}
+                aria-label={
+                  listening || handsFree ? "Mute microphone" : "Unmute microphone"
+                }
                 className={cn(
                   "flex size-10 shrink-0 items-center justify-center rounded-full transition",
-                  listening
+                  listening || handsFree
                     ? "bg-destructive text-destructive-foreground"
                     : "bg-primary text-primary-foreground hover:bg-primary/90",
-                  (!supported || busy || speaking) && "opacity-50",
+                  !supported && "opacity-50",
                 )}
               >
-                {listening ? (
-                  <MicOff className="size-4" />
-                ) : (
+                {listening || handsFree ? (
                   <Mic className="size-4" />
+                ) : (
+                  <MicOff className="size-4" />
                 )}
               </button>
               <input

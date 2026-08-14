@@ -2,7 +2,7 @@ import {
   buildSiteKnowledge,
   RECEPTIONIST_PERSONA,
 } from "@/features/voice-agent/knowledge";
-import type { BookingDraft } from "@/features/voice-agent/schemas";
+import type { BookingDraft, QuoteDraft } from "@/features/voice-agent/schemas";
 
 type LlmTurn = {
   reply: string;
@@ -16,6 +16,7 @@ export async function polishReplyWithLlm(input: {
   message: string;
   draftReply: string;
   bookingDraft: BookingDraft;
+  quoteDraft?: QuoteDraft;
   history?: { role: "user" | "assistant"; content: string }[];
 }): Promise<LlmTurn | null> {
   const groqKey = process.env.GROQ_API_KEY;
@@ -29,9 +30,11 @@ Site knowledge:
 ${buildSiteKnowledge()}
 
 Current booking draft (JSON): ${JSON.stringify(input.bookingDraft)}
+Current quote draft (JSON): ${JSON.stringify(input.quoteDraft ?? {})}
 
 Rewrite the draft reply so it sounds natural when spoken aloud.
-Keep the same facts and intent. Do not add new promises.
+Keep the same facts, the same task, and the same question.
+Do not add new offers, quotes, or extra questions.
 Reply with only the spoken text — no markdown, no quotes.`;
 
   const messages = [
@@ -62,6 +65,7 @@ Reply with only the spoken text — no markdown, no quotes.`;
             temperature: 0.4,
             max_tokens: 220,
           }),
+          signal: AbortSignal.timeout(1800),
         },
       );
       if (!res.ok) return null;
@@ -84,6 +88,7 @@ Reply with only the spoken text — no markdown, no quotes.`;
         temperature: 0.4,
         max_tokens: 220,
       }),
+      signal: AbortSignal.timeout(1800),
     });
     if (!res.ok) return null;
     const data = (await res.json()) as {

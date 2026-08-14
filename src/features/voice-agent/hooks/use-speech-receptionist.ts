@@ -35,23 +35,22 @@ function getSpeechRecognition(): SpeechRecognitionConstructor | null {
   return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
 }
 
-function prepareForSpeech(
-  shouldListenRef: { current: boolean },
-  clearRestartTimer: () => void,
-  recognitionRef: { current: SpeechRecognitionLike | null },
-  setListening: (v: boolean) => void,
-  setInterim: (v: string) => void,
-) {
-  shouldListenRef.current = false;
-  clearRestartTimer();
-  try {
-    recognitionRef.current?.abort();
-  } catch {
-    /* ignore */
+function normalizeHeard(text: string): string {
+  return text.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+}
+
+function isLikelyEcho(transcript: string, lastSpoken: string): boolean {
+  const heard = normalizeHeard(transcript);
+  const spoken = normalizeHeard(lastSpoken);
+  if (!heard || !spoken) return false;
+  if (spoken.includes(heard) || heard.includes(spoken.slice(0, 48))) return true;
+  const heardWords = new Set(heard.split(" ").filter((w) => w.length > 3));
+  if (heardWords.size === 0) return false;
+  let overlap = 0;
+  for (const word of heardWords) {
+    if (spoken.includes(word)) overlap += 1;
   }
-  recognitionRef.current = null;
-  setListening(false);
-  setInterim("");
+  return overlap / heardWords.size >= 0.6;
 }
 
 export function useSpeechReceptionist(options?: { lang?: string }) {
@@ -71,6 +70,9 @@ export function useSpeechReceptionist(options?: { lang?: string }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioUrlRef = useRef<string | null>(null);
   const neuralVoiceRef = useRef(false);
+  const speakingRef = useRef(false);
+  const lastSpokenRef = useRef("");
+  const ignoreUntilRef = useRef(0);
 
   useEffect(() => {
     setSupported(
@@ -140,7 +142,14 @@ export function useSpeechReceptionist(options?: { lang?: string }) {
       URL.revokeObjectURL(audioUrlRef.current);
       audioUrlRef.current = null;
     }
+    speakingRef.current = false;
     setSpeaking(false);
+  }, []);
+
+  const finishSpeaking = useCallback(() => {
+    speakingRef.current = false;
+    setSpeaking(false);
+    ignoreUntilRef.current = Date.now() + 450;
   }, []);
 
   const speakBrowser = useCallback(
@@ -179,13 +188,16 @@ export function useSpeechReceptionist(options?: { lang?: string }) {
 
           if (preferred) utterance.voice = preferred;
 
-          utterance.onstart = () => setSpeaking(true);
+          utterance.onstart = () => {
+            speakingRef.current = true;
+            setSpeaking(true);
+          };
           utterance.onend = () => {
-            setSpeaking(false);
+            finishSpeaking();
             resolve();
           };
           utterance.onerror = () => {
-            setSpeaking(false);
+            finishSpeaking();
             resolve();
           };
 
@@ -199,63 +211,64 @@ export function useSpeechReceptionist(options?: { lang?: string }) {
           run();
         }
       }),
-    [lang],
+    [finishSpeaking, lang],
   );
 
-  const speakNeural = useCallback(async (text: string): Promise<boolean> => {
-    try {
-      const res = await fetch("/api/voice-agent/speak", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
-      });
+  const speakNeural = useCallback(
+    async (text: string): Promise<boolean> => {
+      try {
+        const res = await fetch("/api/voice-agent/speak", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text }),
+        });
 
-      if (!res.ok) return false;
-      const contentType = res.headers.get("content-type") ?? "";
-      if (!contentType.includes("audio")) return false;
+        if (!res.ok) return false;
+        const contentType = res.headers.get("content-type") ?? "";
+        if (!contentType.includes("audio")) return false;
 
-      const blob = await res.blob();
-      if (audioUrlRef.current) URL.revokeObjectURL(audioUrlRef.current);
-      const url = URL.createObjectURL(blob);
-      audioUrlRef.current = url;
+        const blob = await res.blob();
+        if (audioUrlRef.current) URL.revokeObjectURL(audioUrlRef.current);
+        const url = URL.createObjectURL(blob);
+        audioUrlRef.current = url;
 
-      await new Promise<void>((resolve, reject) => {
-        const audio = new Audio(url);
-        audioRef.current = audio;
-        setSpeaking(true);
-        audio.onended = () => {
-          setSpeaking(false);
-          audioRef.current = null;
-          if (audioUrlRef.current) {
-            URL.revokeObjectURL(audioUrlRef.current);
-            audioUrlRef.current = null;
-          }
-          resolve();
-        };
-        audio.onerror = () => {
-          setSpeaking(false);
-          reject(new Error("audio playback failed"));
-        };
-        void audio.play().catch(reject);
-      });
+        await new Promise<void>((resolve) => {
+          const audio = new Audio(url);
+          audioRef.current = audio;
+          speakingRef.current = true;
+          setSpeaking(true);
+          let settled = false;
+          const settle = () => {
+            if (settled) return;
+            settled = true;
+            window.clearTimeout(watchdog);
+            audioRef.current = null;
+            if (audioUrlRef.current) {
+              URL.revokeObjectURL(audioUrlRef.current);
+              audioUrlRef.current = null;
+            }
+            finishSpeaking();
+            resolve();
+          };
+          const watchdog = window.setTimeout(settle, 20_000);
+          audio.onended = settle;
+          audio.onerror = settle;
+          void audio.play().catch(settle);
+        });
 
-      return true;
-    } catch {
-      return false;
-    }
-  }, []);
+        return true;
+      } catch {
+        finishSpeaking();
+        return false;
+      }
+    },
+    [finishSpeaking],
+  );
 
   const speak = useCallback(
     async (text: string) => {
       if (typeof window === "undefined") return;
-
-      prepareForSpeech(
-        shouldListenRef,
-        clearRestartTimer,
-        recognitionRef,
-        setListening,
-        setInterim,
-      );
+      lastSpokenRef.current = text;
       stopSpeaking();
 
       if (neuralVoiceRef.current) {
@@ -265,8 +278,24 @@ export function useSpeechReceptionist(options?: { lang?: string }) {
 
       await speakBrowser(text);
     },
-    [clearRestartTimer, speakBrowser, speakNeural, stopSpeaking],
+    [speakBrowser, speakNeural, stopSpeaking],
   );
+
+  const deliverTranscript = useCallback((transcript: string) => {
+    const heard = transcript.trim();
+    if (!heard) return;
+
+    const echoing = isLikelyEcho(heard, lastSpokenRef.current);
+    if (echoing) return;
+    if (speakingRef.current && heard.length < 3) return;
+
+    if (speakingRef.current) {
+      stopSpeaking();
+    }
+
+    setInterim("");
+    onFinalRef.current?.(heard);
+  }, [stopSpeaking]);
 
   const beginRecognition = useCallback(() => {
     const Recognition = getSpeechRecognition();
@@ -284,7 +313,7 @@ export function useSpeechReceptionist(options?: { lang?: string }) {
     }
 
     const recognition = new Recognition();
-    recognition.continuous = false;
+    recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = lang;
     recognitionRef.current = recognition;
@@ -298,12 +327,13 @@ export function useSpeechReceptionist(options?: { lang?: string }) {
         if (result.isFinal) finalText += result[0].transcript;
         else interimText += result[0].transcript;
       }
-      setInterim(interimText);
-      if (finalText.trim()) {
-        shouldListenRef.current = false;
-        clearRestartTimer();
-        onFinalRef.current?.(finalText.trim());
+      if (
+        !speakingRef.current &&
+        Date.now() >= ignoreUntilRef.current
+      ) {
+        setInterim(interimText);
       }
+      if (finalText.trim()) deliverTranscript(finalText);
     };
 
     recognition.onerror = (event) => {
@@ -313,12 +343,6 @@ export function useSpeechReceptionist(options?: { lang?: string }) {
       if (code === "aborted") return;
 
       if (code === "no-speech") {
-        if (shouldListenRef.current) {
-          clearRestartTimer();
-          restartTimerRef.current = setTimeout(() => {
-            if (shouldListenRef.current) beginRecognition();
-          }, 300);
-        }
         return;
       }
 
@@ -333,23 +357,21 @@ export function useSpeechReceptionist(options?: { lang?: string }) {
 
       if (code === "network") {
         setError("Speech recognition needs an internet connection in Chrome.");
-      } else {
-        setError(`Voice input failed (${code}). Tap the mic to retry.`);
       }
-      shouldListenRef.current = false;
-      setListening(false);
     };
 
     recognition.onend = () => {
       startingRef.current = false;
-      setListening(false);
-      setInterim("");
+      recognitionRef.current = null;
 
       if (shouldListenRef.current) {
         clearRestartTimer();
         restartTimerRef.current = setTimeout(() => {
           if (shouldListenRef.current) beginRecognition();
-        }, 250);
+        }, 120);
+      } else {
+        setListening(false);
+        setInterim("");
       }
     };
 
@@ -359,15 +381,14 @@ export function useSpeechReceptionist(options?: { lang?: string }) {
       startingRef.current = false;
     } catch {
       startingRef.current = false;
-      setListening(false);
       if (shouldListenRef.current) {
         clearRestartTimer();
         restartTimerRef.current = setTimeout(() => {
           if (shouldListenRef.current) beginRecognition();
-        }, 400);
+        }, 300);
       }
     }
-  }, [clearRestartTimer, lang]);
+  }, [clearRestartTimer, deliverTranscript, lang]);
 
   const startListening = useCallback(
     (onFinal: (transcript: string) => void, delayMs = 0) => {
@@ -377,8 +398,12 @@ export function useSpeechReceptionist(options?: { lang?: string }) {
         return;
       }
 
-      stopSpeaking();
       onFinalRef.current = onFinal;
+      if (shouldListenRef.current && recognitionRef.current) {
+        setListening(true);
+        return;
+      }
+
       shouldListenRef.current = true;
       clearRestartTimer();
 
@@ -386,7 +411,7 @@ export function useSpeechReceptionist(options?: { lang?: string }) {
         if (shouldListenRef.current) beginRecognition();
       }, delayMs);
     },
-    [beginRecognition, clearRestartTimer, stopSpeaking],
+    [beginRecognition, clearRestartTimer],
   );
 
   return {

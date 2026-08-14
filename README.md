@@ -80,10 +80,29 @@ See `.env.example`:
 - `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` — Postgres + Command Center staff login ([setup guide](docs/SUPABASE.md))
 - `AUTH_EMAIL` / `AUTH_PASSWORD` — credentials used by `scripts/bootstrap-staff.mjs` and demo auth fallback
 - `AUTH_SESSION_SECRET` — optional demo session cookie value
-- `OPENAI_API_KEY` — optional; enables natural Ava TTS (recommended)
+- `GROQ_API_KEY` — optional; email AI + natural Ava TTS (recommended, free tier)
+- `GROQ_TTS_VOICE` — `hannah` (default), `autumn`, `diana`, `austin`, `daniel`, `troy`
+- `OPENAI_API_KEY` — optional fallback for Ava TTS if Groq is unset
 - `OPENAI_TTS_VOICE` — `nova` (default), `shimmer`, `coral`, etc.
+- `RETELL_API_KEY` / `RETELL_AGENT_ID` / `RETELL_TOOL_SECRET` — optional Retell **web call** (browser only, no phone number). When set, Talk to Ava uses Retell; otherwise the built-in browser receptionist stays on.
 - `EMAIL_INGEST_SECRET` — n8n → `/api/email-intelligence/ingest` webhook auth
 - Observability hooks for GA4, GTM, Clarity, Sentry
+
+## Ava voice (web only)
+
+Talk to Ava in the help menu is a **browser call**. There is no inbound phone number and no Twilio/SIP setup.
+
+1. Create a Retell agent (Web Call). Do **not** buy or attach a phone number.
+2. Paste the prompt from `buildRetellAgentPrompt()` in `src/features/voice-agent/knowledge.ts`.
+3. Add custom functions pointing at `https://your-domain/api/voice-agent/retell/tools` (or `...?name=book_appointment` if Payload: args only is on):
+   - `get_site_info`
+   - `book_appointment`
+   - `submit_quote`
+   - `track_shipment`
+4. Header: `Authorization: Bearer <RETELL_TOOL_SECRET>`
+5. Set `RETELL_API_KEY`, `RETELL_AGENT_ID`, and `RETELL_TOOL_SECRET` in `.env.local` / Vercel.
+
+If those env vars are missing, Ava falls back to the on-site speech receptionist.
 
 ## Email intelligence (production)
 

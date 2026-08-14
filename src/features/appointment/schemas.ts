@@ -10,11 +10,37 @@ import {
 } from "lucide-react";
 import { z } from "zod";
 
-const todayStart = () => {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  return d;
-};
+export function startOfTodayIst(): Date {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+  const year = Number(parts.find((part) => part.type === "year")?.value);
+  const month = Number(parts.find((part) => part.type === "month")?.value);
+  const day = Number(parts.find((part) => part.type === "day")?.value);
+  return new Date(Date.UTC(year, month - 1, day));
+}
+
+export function isWeekdayIsoDate(value: string): boolean {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return false;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  if (
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() !== month - 1 ||
+    date.getUTCDate() !== day
+  ) {
+    return false;
+  }
+  const weekday = date.getUTCDay();
+  if (weekday === 0 || weekday === 6) return false;
+  return date >= startOfTodayIst();
+}
 
 export const APPOINTMENT_TYPES = [
   "freight-planning",
@@ -54,12 +80,10 @@ export const appointmentFormSchema = z.object({
   preferredDate: z
     .string()
     .min(1, "Select a preferred date")
-    .refine((value) => {
-      const date = new Date(`${value}T00:00:00`);
-      if (Number.isNaN(date.getTime()) || date < todayStart()) return false;
-      const day = date.getDay();
-      return day !== 0 && day !== 6;
-    }, "Choose a weekday (Mon–Fri)"),
+    .refine(
+      (value) => isWeekdayIsoDate(value),
+      "Choose a weekday (Mon–Fri)",
+    ),
   preferredTime: z.enum(TIME_SLOTS),
   meetingMode: z.enum(MEETING_MODES),
   notes: z.string().max(1000, "Notes must be under 1000 characters").optional(),

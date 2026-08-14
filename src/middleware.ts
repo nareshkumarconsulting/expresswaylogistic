@@ -33,7 +33,7 @@ function withSecurityHeaders(response: NextResponse) {
       "img-src 'self' data: blob: https:",
       "media-src 'self' blob:",
       "font-src 'self' data:",
-      "connect-src 'self' https:",
+      "connect-src 'self' https: wss: stun: turn:",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",

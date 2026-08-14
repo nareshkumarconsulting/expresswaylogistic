@@ -11,6 +11,7 @@ import {
   X,
 } from "lucide-react";
 import { siteConfig } from "@/config/site";
+import { RetellVoicePanel } from "@/features/voice-agent/components/retell-voice-panel";
 import { VoiceReceptionistPanel } from "@/features/voice-agent/components/voice-receptionist";
 import { cn } from "@/lib/utils";
 
@@ -49,6 +50,22 @@ const menuItems = [
 export function HelpLauncher() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [voiceOpen, setVoiceOpen] = useState(false);
+  const [retellWeb, setRetellWeb] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetch("/api/voice-agent/retell/web-call")
+      .then((res) => res.json())
+      .then((json: { data?: { enabled?: boolean } }) => {
+        if (!cancelled && json.data?.enabled) setRetellWeb(true);
+      })
+      .catch(() => {
+        /* keep browser Ava fallback */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const closeAll = useCallback(() => {
     setMenuOpen(false);
@@ -88,7 +105,14 @@ export function HelpLauncher() {
       className="fixed right-5 bottom-5 z-40 flex flex-col items-end gap-3"
       aria-live="polite"
     >
-      <VoiceReceptionistPanel open={voiceOpen} onClose={() => setVoiceOpen(false)} />
+      {retellWeb ? (
+        <RetellVoicePanel open={voiceOpen} onClose={() => setVoiceOpen(false)} />
+      ) : (
+        <VoiceReceptionistPanel
+          open={voiceOpen}
+          onClose={() => setVoiceOpen(false)}
+        />
+      )}
 
       <AnimatePresence>
         {menuOpen && !voiceOpen ? (

@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
-import { appointmentFormSchema } from "@/features/appointment/schemas";
+import {
+  bookAppointment,
+  lookupTracking,
+  submitVoiceQuote,
+} from "@/features/voice-agent/actions";
 import { polishReplyWithLlm } from "@/features/voice-agent/llm";
 import { runReceptionistTurn } from "@/features/voice-agent/receptionist";
 import {
@@ -7,13 +11,7 @@ import {
   type VoiceAgentAction,
   type VoiceAgentResponse,
 } from "@/features/voice-agent/schemas";
-import { notifyLead } from "@/lib/lead-notify";
 import { logger } from "@/lib/logger";
-import { createAppointmentReferenceId } from "@/lib/reference-id";
-import {
-  insertAppointment,
-  mapAppointmentToInsert,
-} from "@/services/leads-repository";
 
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 30;
@@ -38,29 +36,6 @@ function isRateLimited(ip: string): boolean {
   return entry.count > RATE_LIMIT_MAX;
 }
 
-async function notifyAppointmentLead(input: {
-  payload: Record<string, unknown>;
-  referenceId: string;
-}) {
-  await notifyLead({
-    type: "appointment_request",
-    subject: `[Voice Appointment] ${String(input.payload.company ?? "Lead")} · ${input.referenceId}`,
-    summaryLines: [
-      `Source: voice agent`,
-      `Contact: ${String(input.payload.name ?? "—")} <${String(input.payload.email ?? "—")}>`,
-      `Phone: ${String(input.payload.phone ?? "—")}`,
-      `Type: ${String(input.payload.appointmentType ?? "—")}`,
-      `When: ${String(input.payload.preferredDate ?? "—")} ${String(input.payload.preferredTime ?? "")}`,
-      `Mode: ${String(input.payload.meetingMode ?? "—")}`,
-    ],
-    payload: {
-      source: "voice_agent",
-      ...input.payload,
-    },
-    referenceId: input.referenceId,
-  });
-}
-
 async function forwardVoiceTurnWebhook(payload: Record<string, unknown>) {
   const webhook =
     process.env.VOICE_AGENT_WEBHOOK_URL?.trim() ||
@@ -72,49 +47,13 @@ async function forwardVoiceTurnWebhook(payload: Record<string, unknown>) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(2000),
     });
   } catch (error) {
     logger.warn("voice-agent.webhook.failed", {
       error: error instanceof Error ? error.message : "unknown",
     });
   }
-}
-
-async function bookAppointment(
-  draft: Record<string, unknown>,
-): Promise<{ referenceId: string } | { error: string }> {
-  const { inProgress: _inProgress, ...payload } = draft;
-  const parsed = appointmentFormSchema.safeParse(payload);
-  if (!parsed.success) {
-    return {
-      error:
-        "I still need a few valid booking details before I can confirm. Please check the date is a weekday and the time is one of our slots.",
-    };
-  }
-
-  const referenceId = createAppointmentReferenceId();
-
-  await insertAppointment(
-    mapAppointmentToInsert(parsed.data, referenceId, "voice_agent", {
-      source: "voice_agent",
-    }),
-  );
-
-  logger.info("voice-agent.appointment.booked", {
-    company: parsed.data.company,
-    appointmentType: parsed.data.appointmentType,
-    preferredDate: parsed.data.preferredDate,
-    preferredTime: parsed.data.preferredTime,
-    meetingMode: parsed.data.meetingMode,
-    referenceId,
-  });
-
-  await notifyAppointmentLead({
-    payload: parsed.data as unknown as Record<string, unknown>,
-    referenceId,
-  });
-
-  return { referenceId };
 }
 
 export async function POST(request: Request) {
@@ -139,13 +78,19 @@ export async function POST(request: Request) {
     const turn = runReceptionistTurn({
       message: parsed.data.message,
       bookingDraft: parsed.data.bookingDraft,
+      quoteDraft: parsed.data.quoteDraft,
+      trackingDraft: parsed.data.trackingDraft,
     });
 
     let reply = turn.reply;
     let action: VoiceAgentAction = turn.action;
     let bookingDraft = turn.bookingDraft;
+    let quoteDraft = turn.quoteDraft;
+    let trackingDraft = turn.trackingDraft;
+    let skipPolish = false;
 
     if (turn.readyToBook) {
+      skipPolish = true;
       const booked = await bookAppointment(bookingDraft);
       if ("referenceId" in booked) {
         reply = `You're all set. Your appointment reference is ${booked.referenceId}. You'll receive confirmation details shortly. Anything else I can help with?`;
@@ -157,29 +102,72 @@ export async function POST(request: Request) {
       } else {
         reply = booked.error;
       }
-    } else {
+    } else if (turn.readyToQuote) {
+      skipPolish = true;
+      const quoted = await submitVoiceQuote(quoteDraft);
+      if ("referenceId" in quoted) {
+        reply = `You're all set. Your quote reference is ${quoted.referenceId}. Our team typically responds within two business hours. Anything else I can help with?`;
+        action = {
+          type: "quote_submitted",
+          referenceId: quoted.referenceId,
+        };
+        quoteDraft = {};
+      } else {
+        reply = quoted.error;
+      }
+    } else if (turn.lookupTrackingId) {
+      skipPolish = true;
+      const tracked = lookupTracking(turn.lookupTrackingId);
+      const href = tracked.found
+        ? `/track?id=${encodeURIComponent(tracked.trackingId)}`
+        : "/track";
+      reply = tracked.spoken;
+      action = {
+        type: "tracking_result",
+        trackingId: tracked.trackingId,
+        found: tracked.found,
+        href,
+      };
+      if (tracked.found) trackingDraft = {};
+    }
+
+    const spokenHindi = /\b(kya|aap|hai|hain|chahie|chahiye|naam|mein)\b/i.test(
+      parsed.data.message,
+    );
+
+    if (
+      !skipPolish &&
+      spokenHindi &&
+      !bookingDraft.inProgress &&
+      !quoteDraft.inProgress
+    ) {
       const polished = await polishReplyWithLlm({
         message: parsed.data.message,
         draftReply: reply,
         bookingDraft,
+        quoteDraft,
         history: parsed.data.history,
       });
       if (polished?.reply) reply = polished.reply;
-
-      await forwardVoiceTurnWebhook({
-        type: "voice_agent_turn",
-        intent: turn.intent,
-        message: parsed.data.message,
-        reply,
-        bookingDraft,
-        receivedAt: new Date().toISOString(),
-      });
     }
+
+    void forwardVoiceTurnWebhook({
+      type: "voice_agent_turn",
+      intent: turn.intent,
+      message: parsed.data.message,
+      reply,
+      bookingDraft,
+      quoteDraft,
+      trackingDraft,
+      receivedAt: new Date().toISOString(),
+    });
 
     logger.info("voice-agent.turn", {
       intent: turn.intent,
       action: action.type,
       readyToBook: turn.readyToBook,
+      readyToQuote: turn.readyToQuote,
+      lookupTrackingId: turn.lookupTrackingId,
     });
 
     const response: VoiceAgentResponse = {
@@ -188,6 +176,8 @@ export async function POST(request: Request) {
         reply,
         intent: turn.intent,
         bookingDraft,
+        quoteDraft,
+        trackingDraft,
         action,
       },
     };
