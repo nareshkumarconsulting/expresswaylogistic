@@ -1,18 +1,19 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Mail, Search } from "lucide-react";
-import { Badge } from "@/components/atoms/badge";
+import {
+  Inbox,
+  Mail,
+  Paperclip,
+  Search,
+} from "lucide-react";
 import { Input } from "@/components/atoms/input";
 import { Spinner } from "@/components/atoms/spinner";
 import { StateAlert } from "@/components/molecules/state-alert";
-import { EmailDetailSheet } from "@/features/command-center/components/email-detail-sheet";
-import {
-  EMAIL_CATEGORIES,
-  EMAIL_CATEGORY_ICONS,
-  EMAIL_CATEGORY_LABELS,
-} from "@/features/email-intelligence/schemas";
+import { EmailDetailView } from "@/features/command-center/components/email-detail-view";
+import { CATEGORY_UI } from "@/features/command-center/email-category-ui";
+import { EMAIL_CATEGORIES } from "@/features/email-intelligence/schemas";
 import { cn } from "@/lib/utils";
 import type {
   EmailCategory,
@@ -24,16 +25,8 @@ import type {
 type CategoryFilter = "all" | EmailCategory;
 type StatusFilter = "all" | EmailIntelligenceStatus;
 
-const CATEGORY_FILTERS: { id: CategoryFilter; label: string }[] = [
-  { id: "all", label: "All" },
-  ...EMAIL_CATEGORIES.map((c) => ({
-    id: c as CategoryFilter,
-    label: `${EMAIL_CATEGORY_ICONS[c]} ${EMAIL_CATEGORY_LABELS[c]}`,
-  })),
-];
-
 const STATUS_FILTERS: { id: StatusFilter; label: string }[] = [
-  { id: "all", label: "All statuses" },
+  { id: "all", label: "All" },
   { id: "new", label: "New" },
   { id: "read", label: "Read" },
   { id: "actioned", label: "Actioned" },
@@ -50,60 +43,35 @@ async function fetchEmails(): Promise<EmailIntelligence[]> {
   return json.data;
 }
 
-function formatReceivedAt(iso: string): string {
-  return new Date(iso).toLocaleString("en-IN", {
-    day: "numeric",
-    month: "short",
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
-
-function statusBadgeVariant(
-  status: EmailIntelligenceStatus,
-): "secondary" | "warning" | "success" | "muted" {
-  switch (status) {
-    case "new":
-      return "secondary";
-    case "read":
-      return "warning";
-    case "actioned":
-      return "success";
-    case "archived":
-      return "muted";
-    default:
-      return "muted";
+function formatListTime(iso: string): string {
+  const date = new Date(iso);
+  const now = new Date();
+  if (date.toDateString() === now.toDateString()) {
+    return date.toLocaleTimeString("en-IN", {
+      hour: "numeric",
+      minute: "2-digit",
+    });
   }
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  if (date.toDateString() === yesterday.toDateString()) return "Yesterday";
+  return date.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
 }
 
-function urgencyDot(urgency?: EmailUrgency): string {
+function accountLabel(account: string): string {
+  return account.split("@")[0] ?? account;
+}
+
+function urgencyBar(urgency?: EmailUrgency): string {
   switch (urgency) {
     case "critical":
-      return "bg-red-500";
+      return "bg-destructive";
     case "high":
-      return "bg-orange-500";
+      return "bg-warning";
     case "medium":
-      return "bg-yellow-500";
+      return "bg-accent";
     default:
-      return "bg-gray-300";
-  }
-}
-
-function getPreviewText(email: EmailIntelligence): string {
-  const data = email.extractedData as Record<string, string | undefined>;
-  switch (email.category) {
-    case "shipment":
-      return [data.trackingNo, data.destination, data.eta]
-        .filter(Boolean)
-        .join(" · ");
-    case "quotation":
-      return [data.quoteNo, data.price, data.validity]
-        .filter(Boolean)
-        .join(" · ");
-    case "alert":
-      return [data.alertType, data.requiredAction].filter(Boolean).join(" · ");
-    default:
-      return email.summary ?? data.summary ?? "";
+      return "bg-transparent";
   }
 }
 
@@ -112,8 +80,9 @@ export function EmailIntelligencePanel() {
   const [query, setQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("all");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [accountFilter, setAccountFilter] = useState("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [sheetOpen, setSheetOpen] = useState(false);
+  const autoReadIds = useRef(new Set<string>());
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["email-intelligence"],
@@ -126,8 +95,20 @@ export function EmailIntelligencePanel() {
     [data, selectedId],
   );
 
+  const accounts = useMemo(() => {
+    if (!data) return [];
+    return [...new Set(data.map((e) => e.sourceAccount))].sort();
+  }, [data]);
+
   const counts = useMemo(() => {
-    const base = { all: 0, shipment: 0, quotation: 0, alert: 0, general: 0 };
+    const base = {
+      all: 0,
+      shipment: 0,
+      quotation: 0,
+      alert: 0,
+      general: 0,
+      new: 0,
+    };
     if (!data) return base;
     return {
       all: data.length,
@@ -135,6 +116,7 @@ export function EmailIntelligencePanel() {
       quotation: data.filter((e) => e.category === "quotation").length,
       alert: data.filter((e) => e.category === "alert").length,
       general: data.filter((e) => e.category === "general").length,
+      new: data.filter((e) => e.status === "new").length,
     };
   }, [data]);
 
@@ -148,6 +130,9 @@ export function EmailIntelligencePanel() {
       if (statusFilter !== "all" && email.status !== statusFilter) {
         return false;
       }
+      if (accountFilter !== "all" && email.sourceAccount !== accountFilter) {
+        return false;
+      }
       if (!q) return true;
       return (
         email.subject.toLowerCase().includes(q) ||
@@ -157,12 +142,14 @@ export function EmailIntelligencePanel() {
         (email.summary?.toLowerCase().includes(q) ?? false)
       );
     });
-  }, [data, query, categoryFilter, statusFilter]);
+  }, [data, query, categoryFilter, statusFilter, accountFilter]);
 
-  const handleOpen = (id: string) => {
-    setSelectedId(id);
-    setSheetOpen(true);
-  };
+  useEffect(() => {
+    if (!selectedId || !data) return;
+    if (!data.some((email) => email.id === selectedId)) {
+      setSelectedId(null);
+    }
+  }, [data, selectedId]);
 
   const handleStatusChange = async (
     id: string,
@@ -176,6 +163,18 @@ export function EmailIntelligencePanel() {
     if (res.ok) {
       await queryClient.invalidateQueries({ queryKey: ["email-intelligence"] });
     }
+  };
+
+  useEffect(() => {
+    if (!selectedEmail || selectedEmail.status !== "new") return;
+    if (autoReadIds.current.has(selectedEmail.id)) return;
+    autoReadIds.current.add(selectedEmail.id);
+    void handleStatusChange(selectedEmail.id, "read");
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- mark-read once per open
+  }, [selectedEmail?.id]);
+
+  const handleOpen = (id: string) => {
+    setSelectedId(id);
   };
 
   if (isLoading) {
@@ -197,145 +196,299 @@ export function EmailIntelligencePanel() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex h-[calc(100dvh-7rem)] min-h-0 flex-col gap-3">
+      <div className="flex shrink-0 items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">
-            Email Intelligence
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            AI-classified emails from client accounts — shipments, quotes, alerts
-            & more.
+          <h2 className="font-display text-xl font-bold">Email Intelligence</h2>
+          <p className="text-sm text-muted-foreground">
+            <span className="font-semibold text-foreground">{counts.new}</span>{" "}
+            new · {counts.all} total
           </p>
         </div>
-        <div className="relative w-full sm:w-72">
-          <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search subject, sender, account…"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="pl-9"
-          />
-        </div>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        {CATEGORY_FILTERS.map((filter) => (
-          <button
-            key={filter.id}
-            type="button"
-            onClick={() => setCategoryFilter(filter.id)}
-            className={cn(
-              "rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
-              categoryFilter === filter.id
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:bg-muted/80",
-            )}
+      <div className="grid shrink-0 grid-cols-2 gap-2 lg:grid-cols-4">
+        <button
+          type="button"
+          onClick={() => {
+            setCategoryFilter("all");
+            setStatusFilter("new");
+          }}
+          className={cn(
+            "flex items-center gap-2 rounded-lg border bg-card px-3 py-2 text-left shadow-sm transition-colors hover:border-primary/40",
+            statusFilter === "new" && categoryFilter === "all"
+              ? "border-primary ring-1 ring-primary/20"
+              : "border-border",
+          )}
+        >
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-accent/15 text-accent">
+            <Mail className="size-4" aria-hidden />
+          </span>
+          <span className="min-w-0">
+            <span className="block text-xs text-muted-foreground">Needs review</span>
+            <span className="text-lg font-bold tabular-nums leading-tight">
+              {counts.new}
+            </span>
+          </span>
+        </button>
+        {EMAIL_CATEGORIES.filter((c) => c !== "general").map((category) => {
+          const meta = CATEGORY_UI[category];
+          const Icon = meta.icon;
+          const active = categoryFilter === category;
+          return (
+            <button
+              key={category}
+              type="button"
+              onClick={() => {
+                setCategoryFilter(active ? "all" : category);
+                setStatusFilter("all");
+              }}
+              className={cn(
+                "flex items-center gap-2 rounded-lg border bg-card px-3 py-2 text-left shadow-sm transition-colors hover:border-primary/40",
+                active
+                  ? "border-primary ring-1 ring-primary/20"
+                  : "border-border",
+              )}
+            >
+              <span
+                className={cn(
+                  "flex size-8 shrink-0 items-center justify-center rounded-md",
+                  meta.wrap,
+                )}
+              >
+                <Icon className="size-4" aria-hidden />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-xs text-muted-foreground">
+                  {meta.label}
+                </span>
+                <span className="text-lg font-bold tabular-nums leading-tight">
+                  {counts[category]}
+                </span>
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border bg-card shadow-sm">
+        <div className="flex flex-col gap-3 border-b p-3 md:flex-row md:items-center md:justify-between md:px-4">
+          <div
+            className="inline-flex flex-wrap rounded-lg border border-border bg-muted/40 p-1"
+            role="tablist"
+            aria-label="Filter emails by status"
           >
-            {filter.label}
-            <span className="ml-1.5 opacity-70">({counts[filter.id]})</span>
-          </button>
-        ))}
-      </div>
-
-      <div className="flex flex-wrap gap-2">
-        {STATUS_FILTERS.map((filter) => (
-          <button
-            key={filter.id}
-            type="button"
-            onClick={() => setStatusFilter(filter.id)}
-            className={cn(
-              "rounded-md border px-2.5 py-1 text-xs font-medium transition-colors",
-              statusFilter === filter.id
-                ? "border-primary bg-primary/5 text-primary"
-                : "border-transparent text-muted-foreground hover:border-border",
-            )}
-          >
-            {filter.label}
-          </button>
-        ))}
-      </div>
-
-      {filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed py-16 text-center">
-          <Mail className="mb-3 size-10 text-muted-foreground/50" />
-          <p className="font-medium">No emails match your filters</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Emails will appear here once n8n processes incoming mail.
-          </p>
-        </div>
-      ) : (
-        <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[720px] text-sm">
-              <thead>
-                <tr className="border-b bg-muted/40 text-left text-xs font-medium text-muted-foreground">
-                  <th className="px-4 py-3">Category</th>
-                  <th className="px-4 py-3">Subject</th>
-                  <th className="px-4 py-3">Sender</th>
-                  <th className="px-4 py-3">Account</th>
-                  <th className="px-4 py-3">Received</th>
-                  <th className="px-4 py-3">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((email) => (
-                  <tr
-                    key={email.id}
-                    onClick={() => handleOpen(email.id)}
-                    className="cursor-pointer border-b transition-colors last:border-0 hover:bg-muted/30"
-                  >
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        {email.urgency ? (
-                          <span
-                            className={cn(
-                              "size-2 shrink-0 rounded-full",
-                              urgencyDot(email.urgency),
-                            )}
-                            title={email.urgency}
-                          />
-                        ) : null}
-                        <span>{EMAIL_CATEGORY_ICONS[email.category]}</span>
-                      </div>
-                    </td>
-                    <td className="max-w-xs px-4 py-3">
-                      <p className="truncate font-medium">{email.subject}</p>
-                      <p className="truncate text-xs text-muted-foreground">
-                        {getPreviewText(email)}
-                      </p>
-                    </td>
-                    <td className="px-4 py-3">
-                      <p className="truncate">{email.senderName ?? "—"}</p>
-                      <p className="truncate text-xs text-muted-foreground">
-                        {email.senderEmail}
-                      </p>
-                    </td>
-                    <td className="px-4 py-3 text-xs text-muted-foreground">
-                      {email.sourceAccount}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-muted-foreground">
-                      {formatReceivedAt(email.receivedAt)}
-                    </td>
-                    <td className="px-4 py-3">
-                      <Badge variant={statusBadgeVariant(email.status)}>
-                        {email.status}
-                      </Badge>
-                    </td>
-                  </tr>
+            {STATUS_FILTERS.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                role="tab"
+                aria-selected={statusFilter === item.id}
+                onClick={() => setStatusFilter(item.id)}
+                className={cn(
+                  "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                  statusFilter === item.id
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+          <div className="flex flex-1 flex-col gap-2 sm:flex-row md:max-w-xl md:justify-end">
+            {accounts.length > 1 ? (
+              <select
+                value={accountFilter}
+                onChange={(e) => setAccountFilter(e.target.value)}
+                aria-label="Filter by inbox"
+                className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+              >
+                <option value="all">All inboxes</option>
+                {accounts.map((account) => (
+                  <option key={account} value={account}>
+                    {accountLabel(account)}
+                  </option>
                 ))}
-              </tbody>
-            </table>
+              </select>
+            ) : null}
+            <div className="relative min-w-0 flex-1">
+              <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Search subject, sender, account…"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="pl-9"
+                aria-label="Search emails"
+              />
+            </div>
           </div>
         </div>
-      )}
 
-      <EmailDetailSheet
-        email={selectedEmail}
-        open={sheetOpen}
-        onOpenChange={setSheetOpen}
-        onStatusChange={handleStatusChange}
-      />
+        <div className="grid min-h-0 flex-1 overflow-hidden lg:grid-cols-[minmax(20rem,26rem)_1fr]">
+          <div
+            className={cn(
+              "flex min-h-0 flex-col border-b lg:border-r lg:border-b-0",
+              selectedId && "hidden lg:flex",
+            )}
+          >
+            <div
+              className="flex gap-1 overflow-x-auto border-b p-2"
+              role="tablist"
+              aria-label="Filter by category"
+            >
+              <button
+                type="button"
+                role="tab"
+                aria-selected={categoryFilter === "all"}
+                onClick={() => setCategoryFilter("all")}
+                className={cn(
+                  "shrink-0 rounded-md px-2.5 py-1.5 text-xs font-medium",
+                  categoryFilter === "all"
+                    ? "bg-muted text-foreground"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                All
+              </button>
+              {EMAIL_CATEGORIES.map((category) => {
+                const meta = CATEGORY_UI[category];
+                const Icon = meta.icon;
+                return (
+                  <button
+                    key={category}
+                    type="button"
+                    role="tab"
+                    aria-selected={categoryFilter === category}
+                    onClick={() => setCategoryFilter(category)}
+                    className={cn(
+                      "inline-flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium",
+                      categoryFilter === category
+                        ? "bg-muted text-foreground"
+                        : "text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    <Icon className={cn("size-3.5", meta.tint)} aria-hidden />
+                    {meta.short}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="min-h-0 flex-1 overflow-y-auto">
+              {filtered.length === 0 ? (
+                <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
+                  <Mail className="mb-3 size-10 text-muted-foreground/50" />
+                  <p className="font-medium">No emails match your filters</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Incoming mail will appear here after n8n classifies it.
+                  </p>
+                </div>
+              ) : (
+                <ul>
+                  {filtered.map((email) => {
+                    const meta = CATEGORY_UI[email.category];
+                    const Icon = meta.icon;
+                    const isSelected = email.id === selectedId;
+                    const isNew = email.status === "new";
+                    return (
+                      <li key={email.id}>
+                        <button
+                          type="button"
+                          onClick={() => handleOpen(email.id)}
+                          className={cn(
+                            "relative flex w-full gap-2.5 border-b px-3 py-2 text-left transition-colors hover:bg-muted/40",
+                            isSelected && "bg-muted/60",
+                            isNew && "bg-primary/[0.03]",
+                          )}
+                        >
+                          <span
+                            className={cn(
+                              "absolute inset-y-0 left-0 w-0.5",
+                              urgencyBar(email.urgency),
+                            )}
+                            aria-hidden
+                          />
+                          <span
+                            className={cn(
+                              "mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-md",
+                              meta.wrap,
+                            )}
+                          >
+                            <Icon className="size-3.5" aria-hidden />
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="flex items-center justify-between gap-2">
+                              <span
+                                className={cn(
+                                  "truncate text-sm",
+                                  isNew
+                                    ? "font-semibold text-foreground"
+                                    : "font-medium text-foreground/90",
+                                )}
+                              >
+                                {email.senderName ?? email.senderEmail}
+                              </span>
+                              <span className="flex shrink-0 items-center gap-1.5 text-[11px] text-muted-foreground">
+                                {email.hasAttachments ? (
+                                  <Paperclip
+                                    className="size-3"
+                                    aria-label="Has attachments"
+                                  />
+                                ) : null}
+                                {formatListTime(email.receivedAt)}
+                              </span>
+                            </span>
+                            <span className="mt-0.5 flex items-center gap-2">
+                              <span
+                                className={cn(
+                                  "min-w-0 flex-1 truncate text-xs",
+                                  isNew
+                                    ? "font-medium text-foreground"
+                                    : "text-muted-foreground",
+                                )}
+                              >
+                                {email.subject}
+                              </span>
+                              {isNew ? (
+                                <span className="size-1.5 shrink-0 rounded-full bg-accent" />
+                              ) : null}
+                            </span>
+                          </span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+          </div>
+
+          <div
+            className={cn(
+              "flex min-h-0 flex-col overflow-hidden bg-background",
+              !selectedEmail && "hidden lg:flex",
+            )}
+          >
+            {selectedEmail ? (
+              <EmailDetailView
+                email={selectedEmail}
+                onBack={() => setSelectedId(null)}
+                onStatusChange={handleStatusChange}
+              />
+            ) : (
+              <div className="flex h-full flex-col items-center justify-center px-8 text-center">
+                <Inbox className="mb-3 size-10 text-muted-foreground/40" />
+                <p className="font-medium">Select an email</p>
+                <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+                  Choose a message from the inbox to see the AI summary and
+                  extracted fields.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
