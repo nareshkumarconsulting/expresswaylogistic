@@ -9,7 +9,7 @@ export function HeroSection() {
     <section className="relative isolate overflow-hidden bg-brand">
       <div className="relative min-h-[32rem] md:min-h-[38rem] lg:min-h-[42rem]">
         <div
-          className="pointer-events-none absolute inset-y-0 right-0 w-[78%] sm:w-[70%] md:w-[62%] lg:w-[58%]"
+          className="pointer-events-none absolute inset-y-0 -right-10 w-[78%] sm:w-[70%] md:-right-[30px] md:w-[62%] lg:w-[58%]"
           aria-hidden
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -22,12 +22,16 @@ export function HeroSection() {
             height={682}
             fetchPriority="high"
             decoding="async"
-            className="absolute inset-x-0 top-24 bottom-[-18%] w-full object-cover object-[72%_0%] saturate-[1.12] contrast-[1.06] brightness-[1.04] sm:top-28 md:top-32 [mask-image:linear-gradient(to_right,transparent_0%,black_20%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_20%)]"
+            className="absolute inset-x-0 top-32 bottom-[-18%] w-full object-cover object-[72%_0%] saturate-[1.12] contrast-[1.06] brightness-[1.04] md:top-36 [mask-image:linear-gradient(to_right,transparent_0%,black_20%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_20%)]"
           />
         </div>
 
         <div
           className="pointer-events-none absolute inset-0 bg-gradient-to-r from-brand from-0% via-brand via-[36%] to-transparent to-[58%]"
+          aria-hidden
+        />
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-brand to-transparent md:hidden"
           aria-hidden
         />
 
@@ -40,7 +44,11 @@ export function HeroSection() {
 
             <h1 className="text-display mb-6 text-white">
               Move Freight.
-              <span className="mt-1 block text-[#00A3FF]">
+              <span className="mt-1 block text-[#00A3FF] md:hidden">
+                Move Business
+                <span className="block">Forward.</span>
+              </span>
+              <span className="mt-1 hidden text-[#00A3FF] md:block">
                 Move Business Forward.
               </span>
             </h1>

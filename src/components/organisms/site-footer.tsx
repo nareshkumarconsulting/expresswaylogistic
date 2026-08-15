@@ -22,7 +22,7 @@ export function SiteFooter() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="bg-brand pt-20 pb-10 text-brand-foreground">
+    <footer className="bg-brand pt-20 pb-24 text-brand-foreground md:pb-10">
       <div className="container-page">
         <div className="mb-16 grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4">
           <div>

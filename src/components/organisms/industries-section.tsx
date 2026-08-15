@@ -9,7 +9,7 @@ export function IndustriesSection() {
   return (
     <section
       id="industries"
-      className="relative flex min-h-dvh flex-col justify-center overflow-hidden bg-brand py-8 text-white md:py-10"
+      className="relative flex flex-col justify-center overflow-hidden bg-brand py-10 text-white md:py-10 lg:min-h-dvh lg:py-8"
     >
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.12]"
