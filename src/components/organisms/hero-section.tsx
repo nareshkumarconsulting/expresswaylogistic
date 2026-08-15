@@ -9,7 +9,7 @@ export function HeroSection() {
     <section className="relative isolate overflow-hidden bg-brand">
       <div className="relative min-h-[32rem] md:min-h-[38rem] lg:min-h-[42rem]">
         <div
-          className="pointer-events-none absolute inset-y-0 -right-10 w-[78%] sm:w-[70%] md:-right-[30px] md:w-[62%] lg:w-[58%]"
+          className="pointer-events-none absolute inset-y-0 -right-10 w-[78%] sm:w-[70%] md:right-0 md:w-[62%] lg:w-[58%]"
           aria-hidden
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -22,7 +22,7 @@ export function HeroSection() {
             height={682}
             fetchPriority="high"
             decoding="async"
-            className="absolute inset-x-0 top-32 bottom-[-18%] w-full object-cover object-[72%_0%] saturate-[1.12] contrast-[1.06] brightness-[1.04] md:top-36 [mask-image:linear-gradient(to_right,transparent_0%,black_20%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_20%)]"
+            className="absolute inset-x-0 top-32 bottom-[-18%] w-full object-cover object-[72%_0%] saturate-[1.12] contrast-[1.06] brightness-[1.04] sm:top-28 md:top-32 [mask-image:linear-gradient(to_right,transparent_0%,black_20%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_20%)]"
           />
         </div>
 
