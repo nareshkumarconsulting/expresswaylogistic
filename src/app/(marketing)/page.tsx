@@ -1,6 +1,7 @@
 import dynamic from "next/dynamic";
 import { preload } from "react-dom";
 import { HeroSection } from "@/components/organisms/hero-section";
+import { ConsultingCtaSection } from "@/components/organisms/consulting-cta-section";
 import { siteConfig } from "@/config/site";
 import { FAQ_ITEMS } from "@/constants/content";
 import { SERVICES } from "@/constants/services";
@@ -136,13 +137,13 @@ const FaqSection = dynamic(() =>
 );
 
 export default function HomePage() {
-  preload("/images/hero-port-750.webp", {
+  preload("/images/hero-banner-750.webp", {
     as: "image",
     type: "image/webp",
     fetchPriority: "high",
     imageSrcSet:
-      "/images/hero-port-750.webp 750w, /images/hero-port-1280.webp 1280w",
-    imageSizes: "100vw",
+      "/images/hero-banner-750.webp 750w, /images/hero-banner-1280.webp 1280w",
+    imageSizes: "(min-width: 768px) 62vw, 78vw",
   });
 
   return (
@@ -157,6 +158,7 @@ export default function HomePage() {
       <GlobalReachSection />
       <StatisticsSection />
       <TestimonialsSection />
+      <ConsultingCtaSection />
       <FaqSection />
     </>
   );

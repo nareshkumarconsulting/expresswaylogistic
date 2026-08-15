@@ -54,6 +54,9 @@
   --shadow-accent-glow: var(--ds-shadow-accent-glow);
 
   --animate-marquee: marquee 40s linear infinite;
+  --animate-consult-orbit: consult-orbit 28s linear infinite;
+  --animate-consult-dash: consult-dash 8s linear infinite;
+  --animate-consult-pulse: consult-pulse 2.4s ease-in-out infinite;
 }
 
 @layer base {
@@ -97,6 +100,33 @@
   }
 }
 
+@keyframes consult-orbit {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes consult-dash {
+  to {
+    stroke-dashoffset: -240;
+  }
+}
+
+@keyframes consult-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -108,6 +138,12 @@
   }
 
   .animate-marquee {
+    animation: none !important;
+  }
+
+  .animate-\[consult-orbit_28s_linear_infinite\],
+  .animate-\[consult-dash_8s_linear_infinite\],
+  .animate-\[consult-pulse_2\.4s_ease-in-out_infinite\] {
     animation: none !important;
   }
 }

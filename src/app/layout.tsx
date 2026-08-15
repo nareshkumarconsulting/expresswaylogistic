@@ -48,9 +48,9 @@ export const metadata: Metadata = {
     description: siteConfig.description,
     images: [
       {
-        url: absoluteUrl("/images/hero-port.jpg"),
-        width: 1200,
-        height: 630,
+        url: absoluteUrl("/images/hero-banner.png"),
+        width: 1024,
+        height: 682,
         alt: "ExpressWay Logistic global shipping operations",
       },
     ],
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: siteConfig.name,
     description: siteConfig.description,
-    images: [absoluteUrl("/images/hero-port.jpg")],
+    images: [absoluteUrl("/images/hero-banner.png")],
   },
   robots: {
     index: true,

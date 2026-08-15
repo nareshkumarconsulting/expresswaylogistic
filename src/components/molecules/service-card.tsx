@@ -1,5 +1,5 @@
-import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
+import type { LucideIcon } from "lucide-react";
 import { Typography } from "@/components/atoms/typography";
 import { cn } from "@/lib/utils";
 
@@ -21,13 +21,13 @@ export function ServiceCard({
   const content = (
     <article
       className={cn(
-        "group relative h-full overflow-hidden border border-border bg-card p-6 shadow-sm transition-shadow hover:shadow-lg",
+        "group relative h-full overflow-hidden rounded-md border border-border bg-card p-6 shadow-sm transition-shadow hover:shadow-lg",
         className,
       )}
     >
       <div className="absolute inset-y-0 left-0 w-1 origin-bottom scale-y-0 bg-accent transition-transform duration-300 group-hover:scale-y-100" />
-      <div className="mb-4 flex size-14 items-center justify-center bg-muted transition-colors group-hover:bg-primary/5">
-        <Icon className="size-7 text-primary transition-colors group-hover:text-accent" />
+      <div className="mb-4 flex size-12 items-center justify-center rounded-sm border border-sky-400/30 bg-sky-400/10 transition-colors group-hover:border-accent/40 group-hover:bg-accent/10">
+        <Icon className="size-6 text-primary transition-colors group-hover:text-accent" />
       </div>
       <Typography as="h3" variant="h4" className="mb-2 text-foreground">
         {title}

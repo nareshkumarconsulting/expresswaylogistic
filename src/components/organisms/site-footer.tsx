@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { BrandLogo } from "@/components/atoms/brand-logo";
@@ -155,11 +156,44 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <div className="flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 text-sm text-white/50 md:flex-row">
-          <p>
+        <div className="grid items-center gap-6 border-t border-white/10 pt-8 text-sm text-white/50 md:grid-cols-3">
+          <p className="text-center md:text-left">
             Copyright © {year} {siteConfig.name}. All rights reserved.
           </p>
-          <div className="flex gap-6">
+
+          <a
+            href="https://www.nareshkumarconsulting.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-3 text-left transition-opacity hover:opacity-90"
+            aria-label="Powered by Naresh Kumar Consulting"
+          >
+            <Image
+              src="/images/nk-mark.png"
+              alt=""
+              width={574}
+              height={481}
+              className="h-8 w-auto brightness-0 invert"
+            />
+            <span className="h-8 w-px shrink-0 bg-white/25" aria-hidden />
+            <span>
+              <span className="block text-sm">
+                <span className="text-white">Powered by </span>
+                <span className="font-semibold text-accent">
+                  Naresh Kumar Consulting
+                </span>
+              </span>
+              <span className="mt-1 block text-xs tracking-wide text-white/55">
+                AI Solutions
+                <span className="mx-1.5 text-accent">●</span>
+                Automation
+                <span className="mx-1.5 text-accent">●</span>
+                Digital Strategy
+              </span>
+            </span>
+          </a>
+
+          <div className="flex justify-center gap-6 md:justify-end">
             <Link href="/privacy" className="hover:text-white">
               Privacy Policy
             </Link>
