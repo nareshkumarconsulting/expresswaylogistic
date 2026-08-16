@@ -70,6 +70,42 @@ Command Center email board. Query: `?category=shipment&status=new`.
 
 Update email status: `{ "status": "read" | "actioned" | "archived" }`.
 
+## Quote management
+
+Staff-only (`/api/quotes`, `/api/forwarders`).
+
+### `GET /api/quotes`
+
+List quote requests with repeat-customer flags.
+
+### `GET /api/quotes/:id`
+
+Quote detail including previous quotes, forwarder requests, and activity.
+
+### `PATCH /api/quotes/:id`
+
+Save status, amounts, notes, validity, margin.
+
+### `POST /api/quotes/:id/send`
+
+Save and email the customer quotation. Status becomes `Quoted` only when Resend succeeds; otherwise `Quote Ready / Email Failed`.
+
+### `POST /api/quotes/:id/forwarders`
+
+Body: `{ "forwarderIds": ["uuid"] }`. Emails RFQs and tracks each forwarder.
+
+### `POST /api/quotes/:id/forwarder-quotes`
+
+Record a forwarder response.
+
+### `POST /api/quotes/:id/select-forwarder`
+
+Select a preferred forwarder quote and apply margin.
+
+### `GET|POST /api/forwarders` and `PATCH /api/forwarders/:id`
+
+Forwarder directory.
+
 ## `POST /api/ai/insights`
 
 Natural-language operations query.

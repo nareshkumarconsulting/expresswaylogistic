@@ -47,6 +47,7 @@ export function sessionCookieOptions(maxAgeSeconds = 60 * 60 * 24 * 7) {
 export const PROTECTED_API_PREFIXES = [
   "/api/shipments",
   "/api/quotes",
+  "/api/forwarders",
   "/api/calendar",
   "/api/ai",
   "/api/email-intelligence",

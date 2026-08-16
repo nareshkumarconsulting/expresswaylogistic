@@ -57,6 +57,7 @@ Verify in n8n: **Settings → Variables** — you should see `EMAIL_INGEST_SECRE
 2. Choose one:
    - `n8n/expressway-email-intelligence.workflow.json` — **4 Gmail inboxes**
    - `n8n/expressway-email-intelligence-imap.workflow.json` — **single IMAP inbox** (easier to test first)
+   - `n8n/expressway-email-intelligence-rediffmail.workflow.json` — **Rediffmail Pro** (`webmail.rediffmailpro.com`)
 3. Open the imported workflow
 
 ## 4. Connect credentials
@@ -86,6 +87,17 @@ Then restart n8n: `docker compose restart n8n`
    - Port: `993`, SSL: on
    - User / password or app password
 3. Edit **Set Source Account** → set `sourceAccount` to your inbox address
+
+**Option A2 — Rediffmail Pro / Enterprise**
+
+1. Import `n8n/expressway-email-intelligence-rediffmail.workflow.json` (keep existing Gmail/IMAP workflows running)
+2. On **IMAP Email Trigger** → create a **new IMAP** credential (do not reuse Gmail creds):
+   - User: full email address
+   - Password: mailbox password (enter only in n8n)
+   - Host: `imap.rediffmailpro.com`
+   - Port: `993`, SSL/TLS: on
+3. Edit **Set Source Account** → set `sourceAccount` to that same address
+4. If login fails: try port `143` with SSL off, and confirm IMAP is enabled in Rediff admin (Complete Mail Sync / IMAP SYNC FROM date) — [Rediff IMAP settings](https://support.rediffmailpro.com/article/imap-configuration-for-ms-outlook-365/)
 
 **Option B — Gmail OAuth (4-account workflow)**
 
@@ -141,6 +153,7 @@ curl -X POST http://localhost:3000/api/email-intelligence/ingest \
 | Ingest returns 503 | Add `EMAIL_INGEST_SECRET` to `.env.local` and restart Next.js |
 | OpenAI node fails | Connect OpenAI credential; check API key and billing |
 | Gmail trigger not firing | Enable Gmail API; use App Password if 2FA; check OAuth scopes |
+| Rediffmail IMAP login fails | Use full email as username; port 993+SSL (or 143 without SSL); enable IMAP in Rediff admin |
 | No data on dashboard | Run Supabase migration `004_email_intelligence.sql` |
 
 ## Useful commands

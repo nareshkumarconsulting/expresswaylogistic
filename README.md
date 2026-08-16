@@ -74,9 +74,10 @@ See `.env.example`:
 
 - `NEXT_PUBLIC_APP_URL` — canonical site URL
 - `CONTACT_WEBHOOK_URL` — optional CRM / n8n webhook for quote, appointment, and contact submissions
-- `RESEND_API_KEY` — optional; emails leads when webhook is missing or fails
+- `RESEND_API_KEY` — outbound email (lead alerts + customer/forwarder quotes)
 - `LEAD_NOTIFY_EMAIL` — inbox for lead emails (default `sales@expresswaylogistics.com`)
-- `LEAD_NOTIFY_FROM` — Resend from address (verify domain in production)
+- `LEAD_NOTIFY_FROM` / `QUOTE_EMAIL_FROM` — Resend from address (verify domain in production)
+- `QUOTE_EMAIL_REPLY_TO` — reply-to for customer and forwarder quote emails
 - `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` — Postgres + Command Center staff login ([setup guide](docs/SUPABASE.md))
 - `AUTH_EMAIL` / `AUTH_PASSWORD` — credentials used by `scripts/bootstrap-staff.mjs` and demo auth fallback
 - `AUTH_SESSION_SECRET` — optional demo session cookie value

@@ -38,6 +38,7 @@ supabase/migrations/001_phase1_leads.sql
 supabase/migrations/002_api_grants.sql
 supabase/migrations/003_staff_auth.sql
 supabase/migrations/004_email_intelligence.sql   ← required for email dashboard
+supabase/migrations/005_quote_management.sql     ← quote workflow + forwarders
 ```
 
 ### Step 1.3 — Create staff user for Command Center
@@ -109,9 +110,11 @@ Save these in a password manager. Label them:
 | `NEXT_PUBLIC_SUPABASE_URL` | Same as `SUPABASE_URL` | For staff login |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | From Supabase → Settings → API | For staff login |
 | `EMAIL_INGEST_SECRET` | *(from Phase 2)* | Same value as n8n server |
-| `RESEND_API_KEY` | *(optional)* | Lead email notifications |
+| `RESEND_API_KEY` | *(optional)* | Lead + quote emails |
 | `LEAD_NOTIFY_EMAIL` | `sales@expresswaylogistics.com` | |
 | `LEAD_NOTIFY_FROM` | `ExpressWay Logistic <noreply@...>` | |
+| `QUOTE_EMAIL_FROM` | `ExpressWay Logistic <quotes@...>` | Verified domain required |
+| `QUOTE_EMAIL_REPLY_TO` | `sales@expresswaylogistics.com` | |
 | `CONTACT_WEBHOOK_URL` | *(optional)* | Other n8n webhooks for leads |
 
 ### Step 3.3 — Deploy
@@ -271,8 +274,10 @@ docker compose -f docker-compose.n8n.prod.yml up -d --force-recreate
 
 1. Open n8n UI (https://n8n.expresswaylogistic.com or n8n Cloud)
 2. **Workflows → Import from File**
-3. Choose: `n8n/expressway-email-intelligence.workflow.json` (4 Gmail accounts)
-   - Or `n8n/expressway-email-intelligence-imap.workflow.json` for a single IMAP inbox first
+3. Choose one:
+   - `n8n/expressway-email-intelligence.workflow.json` (4 Gmail accounts)
+   - `n8n/expressway-email-intelligence-imap.workflow.json` (single IMAP inbox)
+   - `n8n/expressway-email-intelligence-rediffmail.workflow.json` (Rediffmail Pro)
 
 ### Step 5.2 — Connect OpenAI
 

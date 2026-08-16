@@ -255,6 +255,23 @@ export function mapQuoteRowToQuoteRequest(row: QuoteRequestRow): QuoteRequest {
     internalNotes: row.internal_notes ?? undefined,
     quotedAmount: row.quoted_amount ?? undefined,
     updatedAt: row.updated_at,
+    pickupLocation: row.pickup_location ?? undefined,
+    deliveryLocation: row.delivery_location ?? undefined,
+    requiredDeliveryDate: row.required_delivery_date ?? undefined,
+    additionalRequirements: row.additional_requirements ?? undefined,
+    currency: row.currency ?? "INR",
+    additionalCharges:
+      row.additional_charges != null ? Number(row.additional_charges) : undefined,
+    discount: row.discount != null ? Number(row.discount) : undefined,
+    quoteValidity: row.quote_validity ?? undefined,
+    quoteSentAt: row.quote_sent_at ?? undefined,
+    quoteSentTo: row.quote_sent_to ?? undefined,
+    quoteSentBy: row.quote_sent_by ?? undefined,
+    assignedTo: row.assigned_to ?? undefined,
+    forwarderCost:
+      row.forwarder_cost != null ? Number(row.forwarder_cost) : undefined,
+    margin: row.margin != null ? Number(row.margin) : undefined,
+    selectedForwarderId: row.selected_forwarder_id ?? undefined,
   };
 }
 
@@ -275,6 +292,14 @@ export async function insertQuoteRequest(
   }
 
   logger.info("supabase.quote.inserted", { referenceId: row.id });
+
+  const { logQuoteActivity } = await import("@/services/quotes-repository");
+  await logQuoteActivity(
+    row.id,
+    "quote_received",
+    "Quote request received",
+    "system",
+  );
 }
 
 export async function insertAppointment(

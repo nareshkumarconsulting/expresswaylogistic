@@ -8,10 +8,26 @@ export type Json =
 
 export type QuoteRequestStatus =
   | "New"
-  | "In Review"
+  | "Under Review"
+  | "Sent to Forwarders"
+  | "Awaiting Forwarder Quotes"
+  | "Quote Received"
   | "Quoted"
-  | "Won"
-  | "Closed";
+  | "Quote Ready / Email Failed"
+  | "Accepted"
+  | "Rejected"
+  | "Expired";
+
+export type ForwarderStatus = "Active" | "Inactive";
+
+export type QuoteForwarderRequestStatus =
+  | "Pending"
+  | "Sent"
+  | "Delivered"
+  | "Awaiting Response"
+  | "Quote Received"
+  | "No Response"
+  | "Declined";
 
 export type QuoteRequestSource =
   | "contact_form"
@@ -80,6 +96,21 @@ export interface Database {
           quoted_amount: string | null;
           submitted_at: string;
           updated_at: string;
+          pickup_location: string | null;
+          delivery_location: string | null;
+          required_delivery_date: string | null;
+          additional_requirements: string | null;
+          currency: string;
+          additional_charges: number | null;
+          discount: number | null;
+          quote_validity: string | null;
+          quote_sent_at: string | null;
+          quote_sent_to: string | null;
+          quote_sent_by: string | null;
+          assigned_to: string | null;
+          forwarder_cost: number | null;
+          margin: number | null;
+          selected_forwarder_id: string | null;
         };
         Insert: {
           id: string;
@@ -105,8 +136,129 @@ export interface Database {
           quoted_amount?: string | null;
           submitted_at?: string;
           updated_at?: string;
+          pickup_location?: string | null;
+          delivery_location?: string | null;
+          required_delivery_date?: string | null;
+          additional_requirements?: string | null;
+          currency?: string;
+          additional_charges?: number | null;
+          discount?: number | null;
+          quote_validity?: string | null;
+          quote_sent_at?: string | null;
+          quote_sent_to?: string | null;
+          quote_sent_by?: string | null;
+          assigned_to?: string | null;
+          forwarder_cost?: number | null;
+          margin?: number | null;
+          selected_forwarder_id?: string | null;
         };
         Update: Partial<Database["public"]["Tables"]["quote_requests"]["Insert"]>;
+        Relationships: [];
+      };
+      forwarders: {
+        Row: {
+          id: string;
+          company_name: string;
+          contact_person: string | null;
+          email: string;
+          phone: string | null;
+          address: string | null;
+          country: string | null;
+          service_types: string[];
+          origin_locations: string[];
+          destination_locations: string[];
+          preferred_routes: string | null;
+          notes: string | null;
+          status: ForwarderStatus;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          company_name: string;
+          contact_person?: string | null;
+          email: string;
+          phone?: string | null;
+          address?: string | null;
+          country?: string | null;
+          service_types?: string[];
+          origin_locations?: string[];
+          destination_locations?: string[];
+          preferred_routes?: string | null;
+          notes?: string | null;
+          status?: ForwarderStatus;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["forwarders"]["Insert"]>;
+        Relationships: [];
+      };
+      quote_forwarder_requests: {
+        Row: {
+          id: string;
+          quote_request_id: string;
+          forwarder_id: string;
+          status: QuoteForwarderRequestStatus;
+          sent_at: string | null;
+          response_at: string | null;
+          response_deadline: string | null;
+          quotation_amount: number | null;
+          currency: string;
+          shipping_charges: number | null;
+          additional_charges: number | null;
+          transit_time: string | null;
+          validity: string | null;
+          carrier: string | null;
+          notes: string | null;
+          attachments: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          quote_request_id: string;
+          forwarder_id: string;
+          status?: QuoteForwarderRequestStatus;
+          sent_at?: string | null;
+          response_at?: string | null;
+          response_deadline?: string | null;
+          quotation_amount?: number | null;
+          currency?: string;
+          shipping_charges?: number | null;
+          additional_charges?: number | null;
+          transit_time?: string | null;
+          validity?: string | null;
+          carrier?: string | null;
+          notes?: string | null;
+          attachments?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["quote_forwarder_requests"]["Insert"]
+        >;
+        Relationships: [];
+      };
+      quote_activity: {
+        Row: {
+          id: string;
+          quote_request_id: string;
+          action: string;
+          message: string;
+          actor: string | null;
+          metadata: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          quote_request_id: string;
+          action: string;
+          message: string;
+          actor?: string | null;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["quote_activity"]["Insert"]>;
         Relationships: [];
       };
       appointments: {
@@ -201,6 +353,8 @@ export interface Database {
     };
     Enums: {
       quote_request_status: QuoteRequestStatus;
+      forwarder_status: ForwarderStatus;
+      quote_forwarder_request_status: QuoteForwarderRequestStatus;
       quote_request_source: QuoteRequestSource;
       appointment_source: AppointmentSource;
       appointment_status: AppointmentStatus;

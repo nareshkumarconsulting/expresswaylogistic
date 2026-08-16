@@ -71,12 +71,35 @@ export interface ContactQuotePayload {
   message: string;
 }
 
-export type QuoteRequestStatus =
-  | "New"
-  | "In Review"
-  | "Quoted"
-  | "Won"
-  | "Closed";
+export const QUOTE_REQUEST_STATUSES = [
+  "New",
+  "Under Review",
+  "Sent to Forwarders",
+  "Awaiting Forwarder Quotes",
+  "Quote Received",
+  "Quoted",
+  "Quote Ready / Email Failed",
+  "Accepted",
+  "Rejected",
+  "Expired",
+] as const;
+
+export type QuoteRequestStatus = (typeof QUOTE_REQUEST_STATUSES)[number];
+
+export type ForwarderStatus = "Active" | "Inactive";
+
+export const QUOTE_FORWARDER_REQUEST_STATUSES = [
+  "Pending",
+  "Sent",
+  "Delivered",
+  "Awaiting Response",
+  "Quote Received",
+  "No Response",
+  "Declined",
+] as const;
+
+export type QuoteForwarderRequestStatus =
+  (typeof QUOTE_FORWARDER_REQUEST_STATUSES)[number];
 
 export type QuoteServiceType =
   | "air"
@@ -90,6 +113,61 @@ export type QuoteServiceType =
   | "cargo-insurance"
   | "exim-advisory"
   | "packing";
+
+export interface PreviousQuoteSummary {
+  id: string;
+  quotedAmount?: string;
+  submittedAt: string;
+  status: QuoteRequestStatus;
+}
+
+export interface QuoteActivityEntry {
+  id: string;
+  quoteRequestId: string;
+  action: string;
+  message: string;
+  actor?: string;
+  metadata?: Record<string, unknown>;
+  createdAt: string;
+}
+
+export interface QuoteForwarderRequest {
+  id: string;
+  quoteRequestId: string;
+  forwarderId: string;
+  forwarderName: string;
+  forwarderEmail: string;
+  status: QuoteForwarderRequestStatus;
+  sentAt?: string;
+  responseAt?: string;
+  responseDeadline?: string;
+  quotationAmount?: number;
+  currency: string;
+  shippingCharges?: number;
+  additionalCharges?: number;
+  transitTime?: string;
+  validity?: string;
+  carrier?: string;
+  notes?: string;
+}
+
+export interface Forwarder {
+  id: string;
+  companyName: string;
+  contactPerson?: string;
+  email: string;
+  phone?: string;
+  address?: string;
+  country?: string;
+  serviceTypes: string[];
+  originLocations: string[];
+  destinationLocations: string[];
+  preferredRoutes?: string;
+  notes?: string;
+  status: ForwarderStatus;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export interface QuoteRequest {
   id: string;
@@ -113,6 +191,26 @@ export interface QuoteRequest {
   internalNotes?: string;
   quotedAmount?: string;
   updatedAt?: string;
+  pickupLocation?: string;
+  deliveryLocation?: string;
+  requiredDeliveryDate?: string;
+  additionalRequirements?: string;
+  currency?: string;
+  additionalCharges?: number;
+  discount?: number;
+  quoteValidity?: string;
+  quoteSentAt?: string;
+  quoteSentTo?: string;
+  quoteSentBy?: string;
+  assignedTo?: string;
+  forwarderCost?: number;
+  margin?: number;
+  selectedForwarderId?: string;
+  selectedForwarderName?: string;
+  isRepeatCustomer?: boolean;
+  previousQuotes?: PreviousQuoteSummary[];
+  activity?: QuoteActivityEntry[];
+  forwarderRequests?: QuoteForwarderRequest[];
 }
 
 export interface AppointmentPayload {

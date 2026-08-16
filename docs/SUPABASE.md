@@ -18,6 +18,8 @@ Open **SQL Editor** in Supabase and run, in order:
 supabase/migrations/001_phase1_leads.sql
 supabase/migrations/002_api_grants.sql
 supabase/migrations/003_staff_auth.sql
+supabase/migrations/004_email_intelligence.sql
+supabase/migrations/005_quote_management.sql
 ```
 
 Or with the Supabase CLI:
@@ -32,6 +34,8 @@ supabase db push
 | `001_phase1_leads` | `quote_requests`, `appointments` |
 | `002_api_grants` | API role grants for service role writes |
 | `003_staff_auth` | `staff_profiles`, staff RLS policies |
+| `004_email_intelligence` | inbound classified emails |
+| `005_quote_management` | quote statuses, forwarders, forwarder requests, quote activity |
 
 ## 3. Configure environment
 

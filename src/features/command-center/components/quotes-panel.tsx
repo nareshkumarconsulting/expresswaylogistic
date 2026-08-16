@@ -6,37 +6,20 @@ import { Badge } from "@/components/atoms/badge";
 import { Input } from "@/components/atoms/input";
 import { Spinner } from "@/components/atoms/spinner";
 import { StateAlert } from "@/components/molecules/state-alert";
+import { QuoteDetailSheet } from "@/features/command-center/components/quote-detail-sheet";
 import {
-  QuoteDetailSheet,
-  type QuoteUpdatePayload,
-} from "@/features/command-center/components/quote-detail-sheet";
+  QuoteStatusFilters,
+  type StatusFilter,
+} from "@/features/command-center/components/quote-status-filters";
+import {
+  formatDateTime,
+  SERVICE_TYPE_LABELS,
+  STATUS_FILTER_LABELS,
+  statusBadgeVariant,
+} from "@/features/quotes/labels";
 import { cn } from "@/lib/utils";
-import type { QuoteRequest, QuoteRequestStatus } from "@/types";
-
-const SERVICE_TYPE_LABELS: Record<QuoteRequest["serviceType"], string> = {
-  air: "Air Freight",
-  "ocean-fcl": "Ocean FCL",
-  "ocean-lcl": "Ocean LCL",
-  consolidation: "Consolidation",
-  customs: "Customs",
-  warehousing: "Warehousing",
-  "door-to-door": "Door-to-Door",
-  "project-cargo": "Project Cargo",
-  "cargo-insurance": "Cargo Insurance",
-  "exim-advisory": "EXIM Advisory",
-  packing: "Packing & Handling",
-};
-
-type StatusFilter = "all" | QuoteRequestStatus;
-
-const STATUS_FILTERS: { id: StatusFilter; label: string }[] = [
-  { id: "all", label: "All" },
-  { id: "New", label: "New" },
-  { id: "In Review", label: "In Review" },
-  { id: "Quoted", label: "Quoted" },
-  { id: "Won", label: "Won" },
-  { id: "Closed", label: "Closed" },
-];
+import type { Forwarder, QuoteRequest } from "@/types";
+import { QUOTE_REQUEST_STATUSES } from "@/types";
 
 async function fetchQuotes(): Promise<QuoteRequest[]> {
   const res = await fetch("/api/quotes");
@@ -48,39 +31,28 @@ async function fetchQuotes(): Promise<QuoteRequest[]> {
   return json.data;
 }
 
-function statusBadgeVariant(
-  status: QuoteRequestStatus,
-): "secondary" | "warning" | "success" | "accent" | "muted" {
-  switch (status) {
-    case "New":
-      return "secondary";
-    case "In Review":
-      return "warning";
-    case "Quoted":
-      return "accent";
-    case "Won":
-      return "success";
-    case "Closed":
-      return "muted";
-    default:
-      return "muted";
-  }
+async function fetchForwarders(): Promise<Forwarder[]> {
+  const res = await fetch("/api/forwarders");
+  const json = (await res.json()) as { success: boolean; data: Forwarder[] };
+  if (!res.ok || !json.success) return [];
+  return json.data;
 }
 
-function formatSubmittedAt(iso: string): string {
-  return new Date(iso).toLocaleString("en-IN", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
+async function fetchQuote(id: string): Promise<QuoteRequest> {
+  const res = await fetch(`/api/quotes/${id}`);
+  const json = (await res.json()) as { success: boolean; data: QuoteRequest };
+  if (!res.ok || !json.success) throw new Error("Failed to load quote");
+  return json.data;
 }
 
 export function QuotesPanel() {
   const queryClient = useQueryClient();
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [originFilter, setOriginFilter] = useState("");
+  const [destinationFilter, setDestinationFilter] = useState("");
+  const [serviceFilter, setServiceFilter] = useState("all");
+  const [dateFilter, setDateFilter] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
 
@@ -89,30 +61,25 @@ export function QuotesPanel() {
     queryFn: fetchQuotes,
   });
 
-  const selectedQuote = useMemo(
-    () => data?.find((q) => q.id === selectedId) ?? null,
-    [data, selectedId],
-  );
+  const { data: forwarders = [] } = useQuery({
+    queryKey: ["forwarders"],
+    queryFn: fetchForwarders,
+  });
+
+  const { data: selectedQuote } = useQuery({
+    queryKey: ["quotes", selectedId],
+    queryFn: () => fetchQuote(selectedId as string),
+    enabled: Boolean(selectedId && sheetOpen),
+  });
 
   const counts = useMemo(() => {
-    if (!data) {
-      return {
-        all: 0,
-        New: 0,
-        "In Review": 0,
-        Quoted: 0,
-        Won: 0,
-        Closed: 0,
-      };
+    const base = {
+      all: data?.length ?? 0,
+    } as Record<StatusFilter, number>;
+    for (const status of QUOTE_REQUEST_STATUSES) {
+      base[status] = data?.filter((item) => item.status === status).length ?? 0;
     }
-    return {
-      all: data.length,
-      New: data.filter((q) => q.status === "New").length,
-      "In Review": data.filter((q) => q.status === "In Review").length,
-      Quoted: data.filter((q) => q.status === "Quoted").length,
-      Won: data.filter((q) => q.status === "Won").length,
-      Closed: data.filter((q) => q.status === "Closed").length,
-    };
+    return base;
   }, [data]);
 
   const filtered = useMemo(() => {
@@ -120,6 +87,21 @@ export function QuotesPanel() {
     const q = query.toLowerCase();
     return data.filter((item) => {
       if (statusFilter !== "all" && item.status !== statusFilter) return false;
+      if (serviceFilter !== "all" && item.serviceType !== serviceFilter)
+        return false;
+      if (
+        originFilter &&
+        !item.origin.toLowerCase().includes(originFilter.toLowerCase())
+      )
+        return false;
+      if (
+        destinationFilter &&
+        !item.destination
+          .toLowerCase()
+          .includes(destinationFilter.toLowerCase())
+      )
+        return false;
+      if (dateFilter && !item.submittedAt.startsWith(dateFilter)) return false;
       if (!q) return true;
       return (
         item.id.toLowerCase().includes(q) ||
@@ -132,28 +114,27 @@ export function QuotesPanel() {
         item.message.toLowerCase().includes(q)
       );
     });
-  }, [data, query, statusFilter]);
+  }, [
+    data,
+    dateFilter,
+    destinationFilter,
+    originFilter,
+    query,
+    serviceFilter,
+    statusFilter,
+  ]);
 
   const openQuote = (id: string) => {
     setSelectedId(id);
     setSheetOpen(true);
   };
 
-  const handleSave = (id: string, update: QuoteUpdatePayload) => {
+  const handleChanged = (quote: QuoteRequest) => {
     queryClient.setQueryData<QuoteRequest[]>(["quotes"], (current) => {
       if (!current) return current;
-      return current.map((quote) =>
-        quote.id === id
-          ? {
-              ...quote,
-              status: update.status,
-              internalNotes: update.internalNotes || undefined,
-              quotedAmount: update.quotedAmount || undefined,
-              updatedAt: new Date().toISOString(),
-            }
-          : quote,
-      );
+      return current.map((item) => (item.id === quote.id ? { ...item, ...quote } : item));
     });
+    queryClient.setQueryData(["quotes", quote.id], quote);
   };
 
   if (isLoading) {
@@ -180,44 +161,57 @@ export function QuotesPanel() {
         <div>
           <h2 className="font-display text-2xl font-bold">Quote Requests</h2>
           <p className="text-sm text-muted-foreground">
-            Click a row to update status, amount, and internal notes
+            Repeat customers can be quoted directly. New requests go to forwarders.
           </p>
         </div>
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Filter by ID, company, lane, cargo…"
+          placeholder="Search ID, customer, lane…"
           className="sm:max-w-sm"
-          aria-label="Filter quote requests"
+          aria-label="Search quote requests"
         />
       </div>
 
-      <div
-        className="inline-flex flex-wrap rounded-lg border border-border bg-card p-1"
-        role="tablist"
-        aria-label="Filter quotes by status"
-      >
-        {STATUS_FILTERS.map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            role="tab"
-            aria-selected={statusFilter === item.id}
-            onClick={() => setStatusFilter(item.id)}
-            className={cn(
-              "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-              statusFilter === item.id
-                ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            {item.label}
-            <span className="ml-1.5 tabular-nums opacity-70">
-              {counts[item.id]}
-            </span>
-          </button>
-        ))}
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <Input
+          value={originFilter}
+          onChange={(e) => setOriginFilter(e.target.value)}
+          placeholder="Origin"
+          aria-label="Filter by origin"
+        />
+        <Input
+          value={destinationFilter}
+          onChange={(e) => setDestinationFilter(e.target.value)}
+          placeholder="Destination"
+          aria-label="Filter by destination"
+        />
+        <select
+          className="h-11 rounded-md border border-input bg-background px-3 text-sm"
+          value={serviceFilter}
+          onChange={(e) => setServiceFilter(e.target.value)}
+          aria-label="Filter by service type"
+        >
+          <option value="all">All services</option>
+          {Object.entries(SERVICE_TYPE_LABELS).map(([id, label]) => (
+            <option key={id} value={id}>
+              {label}
+            </option>
+          ))}
+        </select>
+        <Input
+          type="date"
+          value={dateFilter}
+          onChange={(e) => setDateFilter(e.target.value)}
+          aria-label="Filter by request date"
+        />
       </div>
+
+      <QuoteStatusFilters
+        value={statusFilter}
+        counts={counts}
+        onChange={setStatusFilter}
+      />
 
       {filtered.length === 0 ? (
         <StateAlert
@@ -227,16 +221,20 @@ export function QuotesPanel() {
         />
       ) : (
         <div className="overflow-x-auto rounded-lg border border-border bg-card shadow-sm">
-          <table className="w-full min-w-[960px] text-left text-sm">
+          <table className="w-full min-w-[1100px] text-left text-sm">
             <thead className="border-b bg-muted/50 text-muted-foreground">
               <tr>
-                <th className="px-4 py-3 font-medium">Reference</th>
-                <th className="px-4 py-3 font-medium">Company</th>
-                <th className="px-4 py-3 font-medium">Lane</th>
+                <th className="px-4 py-3 font-medium">Request ID</th>
+                <th className="px-4 py-3 font-medium">Customer</th>
+                <th className="px-4 py-3 font-medium">Request date</th>
+                <th className="px-4 py-3 font-medium">Origin</th>
+                <th className="px-4 py-3 font-medium">Destination</th>
                 <th className="px-4 py-3 font-medium">Service</th>
-                <th className="px-4 py-3 font-medium">Contact</th>
-                <th className="px-4 py-3 font-medium">Submitted</th>
+                <th className="px-4 py-3 font-medium">Shipment</th>
                 <th className="px-4 py-3 font-medium">Status</th>
+                <th className="px-4 py-3 font-medium">Quotation</th>
+                <th className="px-4 py-3 font-medium">Updated</th>
+                <th className="px-4 py-3 font-medium">Assigned</th>
               </tr>
             </thead>
             <tbody>
@@ -258,43 +256,38 @@ export function QuotesPanel() {
                   role="button"
                   aria-label={`Open quote ${quote.id}`}
                 >
+                  <td className="px-4 py-3 font-semibold">{quote.id}</td>
                   <td className="px-4 py-3">
-                    <p className="font-semibold">{quote.id}</p>
-                    <p className="mt-1 max-w-[220px] text-xs text-muted-foreground line-clamp-2">
-                      {quote.message}
+                    <p className="font-medium">{quote.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {quote.company}
+                      {quote.isRepeatCustomer ? " · Repeat" : ""}
                     </p>
                   </td>
-                  <td className="px-4 py-3">
-                    <p className="font-medium">{quote.company}</p>
-                    <p className="text-xs text-muted-foreground">{quote.name}</p>
+                  <td className="px-4 py-3 whitespace-nowrap text-muted-foreground">
+                    {formatDateTime(quote.submittedAt)}
                   </td>
-                  <td className="px-4 py-3">
-                    {quote.origin} → {quote.destination}
-                  </td>
+                  <td className="px-4 py-3">{quote.origin}</td>
+                  <td className="px-4 py-3">{quote.destination}</td>
                   <td className="px-4 py-3">
                     {SERVICE_TYPE_LABELS[quote.serviceType]}
                   </td>
-                  <td className="px-4 py-3">
-                    <p>{quote.email}</p>
-                    {quote.phone ? (
-                      <p className="text-xs text-muted-foreground">
-                        {quote.phone}
-                      </p>
-                    ) : null}
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-muted-foreground">
-                    {formatSubmittedAt(quote.submittedAt)}
+                  <td className="px-4 py-3 text-xs text-muted-foreground">
+                    {quote.approxWeight ?? "—"}
+                    {quote.totalPackages != null
+                      ? ` · ${quote.totalPackages} pkgs`
+                      : ""}
                   </td>
                   <td className="px-4 py-3">
                     <Badge variant={statusBadgeVariant(quote.status)}>
-                      {quote.status}
+                      {STATUS_FILTER_LABELS[quote.status]}
                     </Badge>
-                    {quote.quotedAmount ? (
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        {quote.quotedAmount}
-                      </p>
-                    ) : null}
                   </td>
+                  <td className="px-4 py-3">{quote.quotedAmount ?? "—"}</td>
+                  <td className="px-4 py-3 whitespace-nowrap text-muted-foreground">
+                    {formatDateTime(quote.updatedAt ?? quote.submittedAt)}
+                  </td>
+                  <td className="px-4 py-3">{quote.assignedTo ?? "—"}</td>
                 </tr>
               ))}
             </tbody>
@@ -303,14 +296,14 @@ export function QuotesPanel() {
       )}
 
       <QuoteDetailSheet
-        quote={selectedQuote}
+        quote={selectedQuote ?? data.find((q) => q.id === selectedId) ?? null}
+        forwarders={forwarders}
         open={sheetOpen}
         onOpenChange={(open) => {
           setSheetOpen(open);
           if (!open) setSelectedId(null);
         }}
-        onSave={handleSave}
-        statusBadgeVariant={statusBadgeVariant}
+        onChanged={handleChanged}
       />
     </div>
   );

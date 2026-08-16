@@ -11,6 +11,7 @@ import {
   LogOut,
   Sparkles,
   Mail,
+  Users,
   X,
 } from "lucide-react";
 import { BrandLogo } from "@/components/atoms/brand-logo";
@@ -21,6 +22,7 @@ const navItems = [
   { name: "Overview", href: "/command-center", icon: LayoutDashboard },
   { name: "Shipments", href: "/command-center/shipments", icon: Package },
   { name: "Quote Requests", href: "/command-center/quotes", icon: FileText },
+  { name: "Forwarders", href: "/command-center/forwarders", icon: Users },
   { name: "Email Intelligence", href: "/command-center/emails", icon: Mail },
   { name: "Calendar", href: "/command-center/calendar", icon: CalendarDays },
   { name: "Analytics", href: "/command-center/analytics", icon: BarChart3 },
