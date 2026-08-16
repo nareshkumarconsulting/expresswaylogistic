@@ -44,7 +44,7 @@ export const LEADERS = [
     imageClass: "object-cover object-[50%_28%]",
   },
   {
-    name: "Joginder Singh",
+    name: "Jugendra",
     title: "General Manager & Business Development Officer",
     image: "/images/team/joginder-singh.jpg",
     bio: "Leading business development and client relationships with a focus on trust and results.",
