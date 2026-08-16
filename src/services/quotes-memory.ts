@@ -106,6 +106,13 @@ export function memorySaveForwarder(row: Forwarder): Forwarder {
   return { ...row };
 }
 
+export function memoryDeleteForwarder(id: string): boolean {
+  const exists = forwarders.some((row) => row.id === id);
+  if (!exists) return false;
+  forwarders = forwarders.filter((row) => row.id !== id);
+  return true;
+}
+
 export function memoryListForwarderRequests(
   quoteId: string,
 ): QuoteForwarderRequest[] {

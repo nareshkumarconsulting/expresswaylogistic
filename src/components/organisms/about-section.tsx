@@ -24,7 +24,7 @@ export function AboutSection() {
 
             <div className="absolute bottom-5 left-5 rounded-md bg-brand px-6 py-5 text-white shadow-lg">
               <p className="text-4xl font-bold leading-none tracking-tight text-[#00A3FF]">
-                32+
+                39+
               </p>
               <p className="mt-2 text-sm font-medium leading-snug text-white/80">
                 Years of
@@ -46,7 +46,7 @@ export function AboutSection() {
             </h2>
 
             <p className="text-lead mb-8 text-slate-600">
-              {siteConfig.legalName} is promoted by professionals with 32 years
+              {siteConfig.legalName} is promoted by professionals with 39 years
               in international cargo movement. As a neutral NVOCC, we combine
               professionalism and practical innovation to clear and deliver
               worldwide — with complete logistics, customs, warehousing,

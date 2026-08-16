@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Trash2 } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { Button } from "@/components/atoms/button";
 import { Input } from "@/components/atoms/input";
@@ -9,6 +10,12 @@ import { Label } from "@/components/atoms/label";
 import { Textarea } from "@/components/atoms/textarea";
 import { Spinner } from "@/components/atoms/spinner";
 import { StateAlert } from "@/components/molecules/state-alert";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import type { Forwarder } from "@/types";
 
@@ -44,7 +51,10 @@ export function ForwardersPanel() {
   const [editing, setEditing] = useState<Forwarder | null>(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<Forwarder | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["forwarders"],
@@ -133,6 +143,23 @@ export function ForwardersPanel() {
     setOpen(false);
   };
 
+  const remove = async () => {
+    if (!pendingDelete) return;
+    setDeleting(true);
+    setDeleteError(null);
+    const res = await fetch(`/api/forwarders/${pendingDelete.id}`, {
+      method: "DELETE",
+    });
+    const json = (await res.json()) as { success: boolean; error?: string };
+    setDeleting(false);
+    if (!res.ok || !json.success) {
+      setDeleteError(json.error ?? "Could not delete forwarder");
+      return;
+    }
+    await queryClient.invalidateQueries({ queryKey: ["forwarders"] });
+    setPendingDelete(null);
+  };
+
   if (isLoading) {
     return (
       <div className="flex min-h-[30vh] items-center justify-center">
@@ -203,6 +230,9 @@ export function ForwardersPanel() {
                 <th className="px-4 py-3 font-medium">Services</th>
                 <th className="px-4 py-3 font-medium">Routes</th>
                 <th className="px-4 py-3 font-medium">Status</th>
+                <th className="px-4 py-3 font-medium">
+                  <span className="sr-only">Actions</span>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -228,6 +258,23 @@ export function ForwardersPanel() {
                     >
                       {row.status}
                     </Badge>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      rounded="md"
+                      className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                      aria-label={`Delete ${row.companyName}`}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setDeleteError(null);
+                        setPendingDelete(row);
+                      }}
+                    >
+                      <Trash2 />
+                    </Button>
                   </td>
                 </tr>
               ))}
@@ -423,6 +470,51 @@ export function ForwardersPanel() {
           </div>
         </SheetContent>
       </Sheet>
+
+      <Dialog
+        open={pendingDelete != null}
+        onOpenChange={(nextOpen) => {
+          if (!nextOpen && !deleting) {
+            setPendingDelete(null);
+            setDeleteError(null);
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogTitle>Delete forwarder</DialogTitle>
+          <DialogDescription>
+            Delete {pendingDelete?.companyName}? This cannot be undone.
+          </DialogDescription>
+          {deleteError ? (
+            <p className="mt-3 text-sm text-destructive">{deleteError}</p>
+          ) : null}
+          <div className="mt-5 flex justify-end gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              rounded="none"
+              size="sm"
+              disabled={deleting}
+              onClick={() => {
+                setPendingDelete(null);
+                setDeleteError(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              rounded="none"
+              size="sm"
+              loading={deleting}
+              onClick={() => void remove()}
+            >
+              Delete
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

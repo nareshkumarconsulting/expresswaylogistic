@@ -52,7 +52,7 @@ export function ConsultingCtaSection() {
                 Live advisory
               </p>
               <p className="mt-1 text-xs font-medium text-white">
-                32 years in global cargo
+                39 years in global cargo
               </p>
             </div>
           </div>
@@ -89,7 +89,7 @@ export function ConsultingCtaSection() {
                 Live advisory
               </p>
               <p className="mt-1 text-sm font-medium text-white">
-                32 years in global cargo
+                39 years in global cargo
               </p>
             </div>
           </div>

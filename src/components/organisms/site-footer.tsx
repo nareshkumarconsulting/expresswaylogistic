@@ -29,7 +29,7 @@ export function SiteFooter() {
             <BrandLogo variant="badge" size="lg" tone="light" className="mb-6" />
             <p className="text-muted-body mb-6">
               Neutral NVOCC freight forwarding with customs, warehousing,
-              consolidation, and door-to-door delivery — 32 years of
+              consolidation, and door-to-door delivery — 39 years of
               international cargo experience.
             </p>
             <div className="flex gap-3">

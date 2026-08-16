@@ -18,7 +18,7 @@ export function WhyChooseUsSection() {
             <span className="text-primary">Advantage</span>
           </h2>
           <p className="mt-4 max-w-xl text-sm leading-relaxed text-slate-600">
-            32 years in international cargo — rates, documentation, and
+            39 years in international cargo — rates, documentation, and
             clearance handled as one NVOCC partner.
           </p>
         </div>

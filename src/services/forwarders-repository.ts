@@ -3,8 +3,9 @@ import { isSupabaseConfigured } from "@/lib/supabase/config";
 import type { Database } from "@/lib/supabase/database.types";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { logger } from "@/lib/logger";
-import { isMissingRelationError } from "@/lib/supabase/errors";
+import { isForeignKeyError, isMissingRelationError } from "@/lib/supabase/errors";
 import {
+  memoryDeleteForwarder,
   memoryGetForwarder,
   memoryListForwarders,
   memorySaveForwarder,
@@ -200,4 +201,42 @@ export async function updateForwarder(
     throw new Error("Failed to update forwarder");
   }
   return mapForwarderRow(data);
+}
+
+export class ForwarderInUseError extends Error {
+  constructor() {
+    super(
+      "This forwarder is used on existing quotes. Mark it inactive instead of deleting.",
+    );
+    this.name = "ForwarderInUseError";
+  }
+}
+
+export async function deleteForwarder(
+  id: string,
+): Promise<"deleted" | "not_found"> {
+  const current = await getForwarder(id);
+  if (!current) return "not_found";
+
+  if (!isSupabaseConfigured()) {
+    memoryDeleteForwarder(id);
+    return "deleted";
+  }
+
+  const supabase = createSupabaseAdmin();
+  const { error } = await supabase.from("forwarders").delete().eq("id", id);
+
+  if (error) {
+    if (isMissingRelationError(error)) {
+      memoryDeleteForwarder(id);
+      return "deleted";
+    }
+    if (isForeignKeyError(error)) {
+      throw new ForwarderInUseError();
+    }
+    logger.error("forwarders.delete.failed", { error: error.message, id });
+    throw new Error("Failed to delete forwarder");
+  }
+
+  return "deleted";
 }

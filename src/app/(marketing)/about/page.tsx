@@ -16,13 +16,14 @@ import { Typography } from "@/components/atoms/typography";
 import { Button } from "@/components/atoms/button";
 import { ServiceCard } from "@/components/molecules/service-card";
 import { AboutHero } from "@/features/about/components/about-hero";
+import { AboutLeadership } from "@/features/about/components/about-leadership";
 import { siteConfig } from "@/config/site";
 import { ABOUT_HIGHLIGHTS, INDUSTRIES } from "@/constants/content";
 import { SERVICES } from "@/constants/services";
 
 export const metadata: Metadata = {
   title: "About Us",
-  description: `${siteConfig.legalName} is a neutral NVOCC with 32 years in international cargo movement — customs, warehousing, consolidation, and door-to-door EXIM logistics from Noida.`,
+  description: `${siteConfig.legalName} is a neutral NVOCC with 39 years in international cargo movement — customs, warehousing, consolidation, and door-to-door EXIM logistics from Noida.`,
   alternates: { canonical: "/about" },
 };
 
@@ -82,7 +83,7 @@ export default function AboutPage() {
                 <div className="absolute inset-0 bg-primary/10 mix-blend-multiply" />
               </div>
               <div className="absolute right-0 bottom-0 bg-primary px-6 py-5 text-white md:-right-4 md:-bottom-4">
-                <p className="text-stat text-accent">32+</p>
+                <p className="text-stat text-accent">39+</p>
                 <p className="text-sm font-medium leading-tight">
                   Years in international
                   <br />
@@ -103,7 +104,7 @@ export default function AboutPage() {
                 <p>
                   {siteConfig.legalName} has been promoted by professionals with
                   vast experience in international cargo movement for the last
-                  32 years.
+                  39 years.
                 </p>
                 <p>
                   As a neutral NVOCC company backed by professionalism and
@@ -136,6 +137,8 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+
+      <AboutLeadership />
 
       <section className="relative bg-primary py-section text-primary-foreground">
         <div

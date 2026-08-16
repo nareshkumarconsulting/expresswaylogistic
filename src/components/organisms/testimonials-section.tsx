@@ -7,34 +7,51 @@ import { cn } from "@/lib/utils";
 
 export function TestimonialsSection() {
   const scrollerRef = useRef<HTMLUListElement>(null);
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [page, setPage] = useState(0);
+  const [pageCount, setPageCount] = useState(1);
 
-  const syncSelected = useCallback(() => {
+  const measure = useCallback(() => {
     const scroller = scrollerRef.current;
     if (!scroller) return;
     const cards = [...scroller.children] as HTMLElement[];
-    const left = scroller.scrollLeft;
-    let closest = 0;
-    let min = Number.POSITIVE_INFINITY;
-    cards.forEach((card, index) => {
-      const dist = Math.abs(card.offsetLeft - left);
-      if (dist < min) {
-        min = dist;
-        closest = index;
-      }
-    });
-    setSelectedIndex(closest);
+    if (cards.length === 0) return;
+
+    const stride =
+      cards.length > 1
+        ? cards[1].offsetLeft - cards[0].offsetLeft
+        : cards[0].offsetWidth;
+    if (stride <= 0) return;
+
+    const visible = Math.max(
+      1,
+      Math.round(scroller.clientWidth / stride),
+    );
+    const pages = Math.max(1, cards.length - visible + 1);
+    setPageCount(pages);
+
+    const closest = cards.reduce((best, card, index) => {
+      const dist = Math.abs(card.offsetLeft - scroller.scrollLeft);
+      const bestDist = Math.abs(cards[best].offsetLeft - scroller.scrollLeft);
+      return dist < bestDist ? index : best;
+    }, 0);
+    setPage(Math.min(closest, pages - 1));
   }, []);
 
   useEffect(() => {
     const scroller = scrollerRef.current;
     if (!scroller) return;
-    syncSelected();
-    scroller.addEventListener("scroll", syncSelected, { passive: true });
-    return () => scroller.removeEventListener("scroll", syncSelected);
-  }, [syncSelected]);
 
-  const scrollToCard = (index: number) => {
+    measure();
+    scroller.addEventListener("scroll", measure, { passive: true });
+    const observer = new ResizeObserver(() => measure());
+    observer.observe(scroller);
+    return () => {
+      scroller.removeEventListener("scroll", measure);
+      observer.disconnect();
+    };
+  }, [measure]);
+
+  const scrollToPage = (index: number) => {
     const scroller = scrollerRef.current;
     const card = scroller?.children[index] as HTMLElement | undefined;
     if (!scroller || !card) return;
@@ -116,28 +133,30 @@ export function TestimonialsSection() {
           })}
         </ul>
 
-        <div
-          className="mt-6 flex justify-center gap-2"
-          role="tablist"
-          aria-label="Testimonial cards"
-        >
-          {TESTIMONIALS.map((testimonial, index) => (
-            <button
-              key={testimonial.author}
-              type="button"
-              role="tab"
-              aria-selected={selectedIndex === index}
-              aria-label={`Show testimonial ${index + 1} of ${TESTIMONIALS.length}`}
-              onClick={() => scrollToCard(index)}
-              className={cn(
-                "size-2.5 rounded-full border-2 transition-colors",
-                selectedIndex === index
-                  ? "border-accent bg-accent"
-                  : "border-slate-300 bg-transparent hover:border-accent",
-              )}
-            />
-          ))}
-        </div>
+        {pageCount > 1 ? (
+          <div
+            className="mt-6 flex justify-center gap-2"
+            role="tablist"
+            aria-label="Testimonial pages"
+          >
+            {Array.from({ length: pageCount }, (_, index) => (
+              <button
+                key={index}
+                type="button"
+                role="tab"
+                aria-selected={page === index}
+                aria-label={`Show testimonials page ${index + 1} of ${pageCount}`}
+                onClick={() => scrollToPage(index)}
+                className={cn(
+                  "size-2.5 rounded-full border-2 transition-colors",
+                  page === index
+                    ? "border-accent bg-accent"
+                    : "border-slate-300 bg-transparent hover:border-accent",
+                )}
+              />
+            ))}
+          </div>
+        ) : null}
       </div>
     </section>
   );

@@ -4,7 +4,7 @@ export const siteConfig = {
   shortName: "ExpressWay",
   tagline: "Neutral NVOCC · Complete EXIM Logistics",
   description:
-    "Neutral NVOCC freight forwarding with customs clearance, warehousing, consolidation, project cargo, and door-to-door delivery — backed by 32 years of international cargo experience.",
+    "Neutral NVOCC freight forwarding with customs clearance, warehousing, consolidation, project cargo, and door-to-door delivery — backed by 39 years of international cargo experience.",
   url: "https://expresswaylogistic.com",
   locale: "en_IN",
   contact: {

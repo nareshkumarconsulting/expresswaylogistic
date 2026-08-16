@@ -70,7 +70,7 @@ export function AboutHero() {
               {...fade(0.18)}
               className="text-lead mb-8 max-w-2xl text-white/80"
             >
-              {siteConfig.legalName} — 32 years of international cargo
+              {siteConfig.legalName} — 39 years of international cargo
               experience, complete EXIM logistics, and a customer-first way of
               clearing and delivering worldwide.
             </motion.p>

@@ -33,9 +33,28 @@ import {
   Headphones,
 } from "lucide-react";
 
+export const YEARS_EXPERIENCE = 39;
+
+export const LEADERS = [
+  {
+    name: "Sunil Kumar",
+    title: "CEO & Managing Director",
+    image: "/images/consulting-portrait.jpg",
+    bio: "Driving vision and growth with 39 years of expertise in global logistics and operations.",
+    imageClass: "object-cover object-[50%_28%]",
+  },
+  {
+    name: "Joginder Singh",
+    title: "General Manager & Business Development Officer",
+    image: "/images/team/joginder-singh.jpg",
+    bio: "Leading business development and client relationships with a focus on trust and results.",
+    imageClass: "object-cover object-[50%_18%]",
+  },
+] as const;
+
 export const HERO_HIGHLIGHTS = [
   {
-    title: "32+ Years of Experience",
+    title: "39+ Years of Experience",
     description: "Trusted international cargo expertise.",
     icon: Award,
   },
@@ -75,7 +94,7 @@ export const HERO_FEATURES = [
 ] as const;
 
 export const ABOUT_HIGHLIGHTS = [
-  "32+ Years Experience",
+  "39+ Years Experience",
   "Neutral NVOCC Company",
   "24×7 Shipment & Docs Support",
   "Customs & Port Clearance",
@@ -282,7 +301,7 @@ export const GLOBAL_REACH_STATS = [
 
 /** Profile-backed figures only — avoid unverified shipment / on-time claims. */
 export const STATS = [
-  { label: "Years Experience", value: 32, suffix: "+" },
+  { label: "Years Experience", value: YEARS_EXPERIENCE, suffix: "+" },
   { label: "Core Service Lines", value: 11, suffix: "" },
   { label: "Customer Support", value: 24, suffix: "×7" },
 ] as const;
@@ -307,16 +326,6 @@ export const TESTIMONIALS = [
     text: "Leather shipments used to stall on paperwork. ExpressWay keeps the docs and sailing dates aligned so our buyers get cargo on schedule.",
     author: "Priya Sharma",
     company: "Leather Exporter",
-  },
-  {
-    text: "Temperature-aware handling and customs-ready files for our pharma lanes. One desk for air and ocean instead of chasing multiple agents.",
-    author: "Vikram Singh",
-    company: "Pharma Exporter",
-  },
-  {
-    text: "Fragile handicrafts packed, booked, and delivered without damage claims. Clear status updates from pickup through door delivery.",
-    author: "Meera Iyer",
-    company: "Handicrafts Exporter",
   },
 ] as const;
 

@@ -102,9 +102,9 @@ Record a forwarder response.
 
 Select a preferred forwarder quote and apply margin.
 
-### `GET|POST /api/forwarders` and `PATCH /api/forwarders/:id`
+### `GET|POST /api/forwarders` and `PATCH|DELETE /api/forwarders/:id`
 
-Forwarder directory.
+Forwarder directory. Delete returns `409` if the forwarder is already used on a quote.
 
 ## `POST /api/ai/insights`
 

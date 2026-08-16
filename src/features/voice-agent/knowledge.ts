@@ -42,7 +42,7 @@ export function buildSiteKnowledge(): string {
     `Legal name: ${siteConfig.legalName}`,
     `Tagline: ${siteConfig.tagline}`,
     `About: ${siteConfig.description}`,
-    `Positioning: Neutral NVOCC with 32 years in international cargo movement`,
+    `Positioning: Neutral NVOCC with 39 years in international cargo movement`,
     `Highlights: ${ABOUT_HIGHLIGHTS.join("; ")}`,
     `Stats: ${stats}`,
     `Address: ${siteConfig.contact.address}`,

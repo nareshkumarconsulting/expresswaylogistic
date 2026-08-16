@@ -1,3 +1,14 @@
+export function isForeignKeyError(error: {
+  code?: string;
+  message?: string;
+} | null): boolean {
+  if (!error) return false;
+  return (
+    error.code === "23503" ||
+    /foreign key/i.test(error.message ?? "")
+  );
+}
+
 /** PostgREST / Postgres errors when a migration has not been applied yet. */
 export function isMissingRelationError(error: {
   code?: string;
