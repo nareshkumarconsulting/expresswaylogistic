@@ -265,23 +265,7 @@ export const PAN_INDIA_FAQS: FaqItem[] = [
   },
 ];
 
-export function getServiceFaqs(title: string): FaqItem[] {
-  return [
-    {
-      question: `What is ExpressWay Logistic’s ${title} service?`,
-      answer: `${title} is one of the freight forwarding services offered by ExpressWay Logistic, a PAN India neutral NVOCC. It can be booked on its own or combined with customs, packing, insurance and door-to-door delivery for import or export.`,
-    },
-    {
-      question: `How much does ${title} cost?`,
-      answer: `Pricing for ${title} depends on origin, destination, cargo type, volume and whether you add clearance or delivery. There is no public rate card. Request a quote with those details.`,
-    },
-    {
-      question: `How do I book ${title} from India?`,
-      answer: `Share origin, destination and cargo on the quote form, or book an appointment. After you confirm, ExpressWay books the move, prepares documents and keeps status updates through delivery when that is in scope.`,
-    },
-    CORE_INTENT_FAQS[3],
-  ];
-}
+export { getServiceFaqs } from "@/constants/service-faqs";
 
 export const EXPORT_DOCUMENT_POINTS = [
   "Commercial invoice and packing list",

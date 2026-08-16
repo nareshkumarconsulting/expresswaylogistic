@@ -60,7 +60,7 @@ export default async function ServiceDetailPage({ params }: ServicePageProps) {
     .slice(0, 4);
   const fallbackRelated = SERVICES.filter((item) => item.id !== service.id).slice(0, 3);
   const relatedCards = related.length > 0 ? related : fallbackRelated;
-  const serviceFaqs = getServiceFaqs(service.title);
+  const serviceFaqs = getServiceFaqs(service.id, service.title);
   const industryLinks = (copy?.relatedIndustrySlugs ?? [])
     .map((industrySlug) => INDUSTRIES.find((industry) => industry.slug === industrySlug))
     .filter((item): item is NonNullable<typeof item> => Boolean(item))
@@ -215,7 +215,7 @@ export default async function ServiceDetailPage({ params }: ServicePageProps) {
       />
 
       <PageAeo
-        answers={serviceFaqs.slice(0, 3)}
+        answers={serviceFaqs.slice(0, 4)}
         faqs={serviceFaqs}
         breadcrumbs={[
           { name: "Home", path: "/" },
@@ -223,8 +223,10 @@ export default async function ServiceDetailPage({ params }: ServicePageProps) {
           { name: service.title, path: service.href },
         ]}
         extraJsonLd={[serviceSchema(service)]}
-        answerTitle={`About ${service.title}`}
-        answerDescription="What this service covers, how it is booked from India, and how cost is quoted."
+        answerTitle={`${service.title} — common questions`}
+        answerDescription="Straight answers shippers typically ask before booking this service. Remaining questions are in the FAQ below."
+        faqTitle={`${service.title} FAQ`}
+        faqDescription="More questions on scope, documents, pricing and how this service is booked from India."
       />
       <QuoteCtaBand />
     </div>
