@@ -41,14 +41,15 @@ export function QuoteHero() {
             Online Quote
           </motion.p>
           <motion.h1 {...fade(0.1)} className="text-h1 mb-4 text-white">
-            Get an accurate freight quote
+            Request a Freight Quote
           </motion.h1>
           <motion.p
             {...fade(0.2)}
             className="mb-6 max-w-2xl text-base leading-relaxed text-white/85 md:text-lg"
           >
-            Complete this form in about 5 minutes for air or ocean pricing. Our
-            team responds within one business day with a tailored rate.
+            Share your origin, destination and cargo details. ExpressWay Logistic
+            will evaluate the appropriate ocean, air, FCL, LCL or consolidation
+            option and respond with available logistics solutions.
           </motion.p>
           <motion.div
             {...fade(0.3)}
@@ -56,7 +57,7 @@ export function QuoteHero() {
           >
             <span className="inline-flex items-center gap-2 rounded-sm bg-white/10 px-3 py-1.5">
               <Clock className="size-4 text-accent" aria-hidden />
-              Response within 1 business day
+              Response after review of cargo details
             </span>
             <span className="text-white/60">Commercial cargo only</span>
           </motion.div>

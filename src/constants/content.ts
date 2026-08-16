@@ -59,13 +59,14 @@ export const HERO_HIGHLIGHTS = [
     icon: Award,
   },
   {
-    title: "Global Reach",
-    description: "Strong network across the world.",
+    title: "PAN India → Worldwide",
+    description:
+      "Nationwide origin coverage with global destination connectivity.",
     icon: Globe2,
   },
   {
-    title: "End-to-End Solutions",
-    description: "From pickup to final delivery.",
+    title: "End-to-End Logistics",
+    description: "From pickup and documentation to final delivery.",
     icon: PackageOpen,
   },
 ] as const;
@@ -103,6 +104,7 @@ export const ABOUT_HIGHLIGHTS = [
 ] as const;
 
 export const INDUSTRIES: {
+  slug: string;
   name: string;
   icon: LucideIcon;
   image?: string;
@@ -111,6 +113,7 @@ export const INDUSTRIES: {
   focus: string;
 }[] = [
   {
+    slug: "leather-products",
     name: "Leather Products",
     icon: Briefcase,
     image: "/images/industry-leather.jpg",
@@ -120,6 +123,7 @@ export const INDUSTRIES: {
     focus: "Export packing and condition control",
   },
   {
+    slug: "garments-apparel",
     name: "Garments & Apparel",
     icon: Shirt,
     image: "/images/industry-garments.jpg",
@@ -129,6 +133,7 @@ export const INDUSTRIES: {
     focus: "Sailing-date and consolidation control",
   },
   {
+    slug: "pharma-bulk-drugs",
     name: "Pharma & Bulk Drugs",
     icon: Pill,
     image: "/images/industry-pharma.jpg",
@@ -138,6 +143,7 @@ export const INDUSTRIES: {
     focus: "Compliant docs and careful handling",
   },
   {
+    slug: "handicrafts",
     name: "Handicrafts",
     icon: Hammer,
     image: "/images/industry-handicrafts.jpg",
@@ -147,6 +153,7 @@ export const INDUSTRIES: {
     focus: "Fragile packing and delivery care",
   },
   {
+    slug: "engineering-goods",
     name: "Engineering Goods",
     icon: Factory,
     image: "/images/industry-engineering.jpg",
@@ -156,6 +163,7 @@ export const INDUSTRIES: {
     focus: "Mode choice and parts documentation",
   },
   {
+    slug: "herbal-medicaments",
     name: "Herbal & Medicaments",
     icon: Leaf,
     image: "/images/industry-herbal.jpg",
@@ -165,6 +173,7 @@ export const INDUSTRIES: {
     focus: "Customs-ready product paperwork",
   },
   {
+    slug: "personal-effects",
     name: "Personal Effects",
     icon: Home,
     image: "/images/industry-personal.jpg",
@@ -174,15 +183,17 @@ export const INDUSTRIES: {
     focus: "Door-to-door household movement",
   },
   {
+    slug: "project-machinery",
     name: "Project Machinery",
     icon: Landmark,
     image: "/images/industry-project.jpg",
     description: "Project imports, clearance, and heavy-lift coordination.",
     detail:
-      "Project imports, clearance, and heavy-lift coordination — including registration, finalisation, and cancellation with authorities when the project cargo requires it.",
-    focus: "Project clearance and heavy-lift",
+      "Project imports, clearance, and delivery coordination — including registration, finalisation, and cancellation with authorities when the project cargo requires it. Specialised lifting is confirmed per shipment.",
+    focus: "Project clearance and delivery coordination",
   },
   {
+    slug: "second-hand-machinery",
     name: "Second-hand Machinery",
     icon: PackageSearch,
     image: "/images/industry-used-machinery.jpg",
@@ -192,6 +203,7 @@ export const INDUSTRIES: {
     focus: "Inspection and used-equipment docs",
   },
   {
+    slug: "bulk-cargo",
     name: "Bulk Cargo",
     icon: Ship,
     image: "/images/industry-bulk.jpg",
@@ -201,6 +213,7 @@ export const INDUSTRIES: {
     focus: "Bulk handling on sea lanes",
   },
   {
+    slug: "coastal-cargo",
     name: "Coastal Cargo",
     icon: Anchor,
     image: "/images/industry-coastal.jpg",
@@ -210,6 +223,7 @@ export const INDUSTRIES: {
     focus: "Port-to-port coastal control",
   },
   {
+    slug: "chemicals",
     name: "Chemicals",
     icon: FlaskConical,
     image: "/images/industry-chemicals.jpg",
@@ -219,6 +233,11 @@ export const INDUSTRIES: {
     focus: "Regulated handling and declarations",
   },
 ];
+
+export function getIndustryBySlug(slug: string) {
+  return INDUSTRIES.find((industry) => industry.slug === slug);
+}
+
 export const PROCESS_STEPS = [
   {
     title: "Request a Quote",
@@ -325,29 +344,33 @@ export const GLOBAL_CORRIDORS = [
     origin: "India",
     destination: "Middle East",
     modes: ["air", "ocean"] as const,
-    transit: "3–7 days",
+    transit: "Indicative; varies by carrier and conditions",
     highlight: "Dubai · Jeddah · Doha",
+    href: "/shipping-routes/india-to-dubai",
   },
   {
     origin: "India",
     destination: "Europe",
     modes: ["air", "ocean"] as const,
-    transit: "5–14 days",
+    transit: "Indicative; varies by carrier and conditions",
     highlight: "Rotterdam · Hamburg · London",
+    href: "/shipping-routes/india-to-netherlands",
   },
   {
     origin: "India",
     destination: "North America",
     modes: ["air", "ocean"] as const,
-    transit: "7–21 days",
+    transit: "Indicative; varies by carrier and conditions",
     highlight: "New York · Los Angeles · Toronto",
+    href: "/shipping-routes/india-to-usa",
   },
   {
     origin: "India",
     destination: "Southeast Asia",
     modes: ["air", "ocean"] as const,
-    transit: "2–6 days",
+    transit: "Indicative; varies by carrier and conditions",
     highlight: "Singapore · Bangkok · Jakarta",
+    href: "/shipping-routes/india-to-singapore",
   },
 ] as const;
 
@@ -359,32 +382,9 @@ export const GLOBAL_REACH_STATS = [
 
 /** Profile-backed figures only — avoid unverified shipment / on-time claims. */
 export const STATS = [
-  { label: "Years Experience", value: YEARS_EXPERIENCE, suffix: "+" },
-  { label: "Core Service Lines", value: 11, suffix: "" },
-  { label: "Customer Support", value: 24, suffix: "×7" },
-] as const;
-
-export const TESTIMONIALS = [
-  {
-    text: "ExpressWay handled our garment exports end to end — booking, consolidation, and customs — with clear updates whenever we needed them.",
-    author: "Rajesh Kumar",
-    company: "Apparel Exporter",
-  },
-  {
-    text: "Their project machinery clearance and documentation support made a complex import straightforward. Professional and responsive throughout.",
-    author: "Anita Desai",
-    company: "Industrial Importer",
-  },
-  {
-    text: "Competitive ocean rates and reliable door-to-door delivery. A true NVOCC partner that helps us control freight cost.",
-    author: "Amit Patel",
-    company: "Trading House",
-  },
-  {
-    text: "Leather shipments used to stall on paperwork. ExpressWay keeps the docs and sailing dates aligned so our buyers get cargo on schedule.",
-    author: "Priya Sharma",
-    company: "Leather Exporter",
-  },
+  { label: "Years of Experience", value: YEARS_EXPERIENCE, suffix: "+" },
+  { label: "Core Service Capabilities", value: 11, suffix: "" },
+  { label: "Shipment & Documentation Support", value: 24, suffix: "/7" },
 ] as const;
 
 export { FAQ_ITEMS } from "@/constants/faqs";

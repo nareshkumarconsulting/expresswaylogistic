@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Headphones, HelpCircle, Phone, X } from "lucide-react";
+import { Headphones, Headset, Phone, X } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
@@ -212,7 +212,10 @@ export function HelpLauncher() {
         type="button"
         onClick={handleFabClick}
         className={cn(
-          "flex size-14 items-center justify-center rounded-full shadow-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          "group flex h-14 items-center justify-center overflow-hidden rounded-full shadow-lg transition-[width,padding,background-color] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          expanded
+            ? "w-14 px-0"
+            : "w-14 px-0 hover:w-[9.75rem] hover:px-4 hover:pr-5 focus-visible:w-[9.75rem] focus-visible:px-4 focus-visible:pr-5",
           voiceOpen
             ? "bg-primary text-primary-foreground"
             : "bg-accent text-accent-foreground hover:bg-accent/90",
@@ -222,13 +225,22 @@ export function HelpLauncher() {
             ? "Close chat"
             : menuOpen
               ? "Close help menu"
-              : "Open help menu"
+              : "Need help?"
         }
         aria-expanded={expanded}
         aria-haspopup="menu"
         whileTap={{ scale: 0.96 }}
       >
-        {expanded ? <X className="size-6" /> : <HelpCircle className="size-6" />}
+        {expanded ? (
+          <X className="size-6" />
+        ) : (
+          <>
+            <Headset className="size-6 shrink-0" />
+            <span className="max-w-0 overflow-hidden whitespace-nowrap text-sm font-semibold opacity-0 transition-all duration-200 group-hover:max-w-[6.5rem] group-hover:pl-2 group-hover:opacity-100 group-focus-visible:max-w-[6.5rem] group-focus-visible:pl-2 group-focus-visible:opacity-100">
+              Need Help?
+            </span>
+          </>
+        )}
       </motion.button>
     </div>
   );

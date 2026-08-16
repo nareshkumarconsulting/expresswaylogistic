@@ -1,15 +1,15 @@
-import type { Metadata } from "next";
+import { pageSeo } from "@/lib/seo";
 import { QuoteHero } from "@/features/quote/components/quote-hero";
 import { QuoteWizardForm } from "@/features/quote/components/quote-wizard-form";
 import { PageAeo } from "@/components/organisms/page-aeo";
 import { CORE_INTENT_FAQS, QUOTE_PAGE_FAQS } from "@/constants/faqs";
 
-export const metadata: Metadata = {
-  title: "Get a Quote",
+export const metadata = pageSeo({
+  title: "International Freight Quote from India | ExpressWay Logistic",
   description:
-    "How much does international freight forwarding cost? Request an air or ocean quote from ExpressWay Logistic — rates depend on lane, cargo, and mode. Typical response within two business hours.",
-  alternates: { canonical: "/quote" },
-};
+    "Share origin, destination and cargo details. ExpressWay Logistic will evaluate ocean, air, FCL, LCL or consolidation options and respond with available logistics solutions.",
+  path: "/quote",
+});
 
 export default function QuotePage() {
   return (

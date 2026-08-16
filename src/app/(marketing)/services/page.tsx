@@ -1,34 +1,39 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import { Typography } from "@/components/atoms/typography";
-import { Button } from "@/components/atoms/button";
 import { PageHero } from "@/components/molecules/page-hero";
 import { ServiceCard } from "@/components/molecules/service-card";
-import { siteConfig } from "@/config/site";
+import { PageAeo } from "@/components/organisms/page-aeo";
+import { QuoteCtaBand } from "@/components/organisms/quote-cta-band";
 import { SERVICES } from "@/constants/services";
 import { CORE_INTENT_FAQS, SERVICES_PAGE_FAQS } from "@/constants/faqs";
-import { PageAeo } from "@/components/organisms/page-aeo";
 import { servicesItemListSchema } from "@/lib/schema";
+import { pageSeo } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Logistics Services",
+export const metadata = pageSeo({
+  title: "Freight Forwarding Services in India | ExpressWay Logistic",
   description:
-    "Neutral NVOCC ocean and air freight, consolidation, customs clearance, warehousing, project cargo, cargo insurance, EXIM advisory, and door-to-door delivery from ExpressWay Logistic.",
-  alternates: { canonical: "/services" },
-};
+    "PAN India freight forwarding: NVOCC, ocean and air freight, FCL/LCL, consolidation, customs clearance, warehousing, project cargo, EXIM advisory and door-to-door logistics.",
+  path: "/services",
+});
+
+const crumbs = [
+  { name: "Home", path: "/" },
+  { name: "Services", path: "/services" },
+];
 
 export default function ServicesPage() {
   return (
     <div className="bg-surface">
       <PageHero
         eyebrow="Services"
-        title="Complete Logistics & EXIM Capabilities"
-        description="From freight booking and consolidation to customs, warehousing, project cargo, and door-to-door delivery — ExpressWay Logistic is your neutral NVOCC partner."
+        title="Complete logistics"
+        accent="& EXIM capabilities"
+        description="From freight booking and consolidation to customs, warehousing, project cargo, and door-to-door delivery — ExpressWay Logistic is your PAN India neutral NVOCC partner."
+        breadcrumbs={crumbs}
+        note={`${SERVICES.length} service pages, one coordinating desk`}
       />
 
-      <section className="relative z-10 -mt-8 pb-[var(--space-section)] md:-mt-10">
+      <section className="bg-surface py-section">
         <div className="container-page">
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {SERVICES.map((service) => (
               <ServiceCard
                 key={service.id}
@@ -39,39 +44,18 @@ export default function ServicesPage() {
               />
             ))}
           </div>
-
-          <div className="mt-16 flex flex-col items-start justify-between gap-6 border border-border bg-card p-8 md:flex-row md:items-center">
-            <div>
-              <Typography as="h2" variant="h3" className="mb-2 text-foreground">
-                Need a custom lane quote?
-              </Typography>
-              <Typography
-                variant="muted"
-                className="text-base text-muted-foreground"
-              >
-                Share cargo details and our team responds within 2 hours.
-              </Typography>
-            </div>
-            <Button asChild size="lg" rounded="none">
-              <Link href={siteConfig.cta.primary.href}>
-                {siteConfig.cta.primary.label}
-              </Link>
-            </Button>
-          </div>
         </div>
       </section>
 
       <PageAeo
         answers={[CORE_INTENT_FAQS[0], CORE_INTENT_FAQS[4], SERVICES_PAGE_FAQS[2]]}
         faqs={SERVICES_PAGE_FAQS}
-        breadcrumbs={[
-          { name: "Home", path: "/" },
-          { name: "Services", path: "/services" },
-        ]}
+        breadcrumbs={crumbs}
         extraJsonLd={[servicesItemListSchema()]}
         answerTitle="Freight forwarding services, explained"
         answerDescription="What ExpressWay provides, how cost is quoted, and whether you can book a single service or a full door-to-door move."
       />
+      <QuoteCtaBand />
     </div>
   );
 }

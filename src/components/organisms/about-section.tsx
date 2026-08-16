@@ -41,16 +41,16 @@ export function AboutSection() {
             <div className="mb-6 h-px w-16 bg-accent" aria-hidden />
 
             <h2 className="text-h2 mb-6 text-slate-900">
-              Neutral NVOCC.{" "}
-              <span className="text-primary">Total Reliability.</span>
+              About ExpressWay Logistic
             </h2>
 
             <p className="text-lead mb-8 text-slate-600">
-              {siteConfig.legalName} is promoted by professionals with 39 years
-              in international cargo movement. As a neutral NVOCC, we combine
-              professionalism and practical innovation to clear and deliver
-              worldwide — with complete logistics, customs, warehousing,
-              consolidation, and EXIM guidance for your trade needs.
+              ExpressWay Logistic is an Indian neutral NVOCC and freight
+              forwarding company providing PAN India import and export logistics
+              to worldwide destinations — ocean freight, air freight, FCL/LCL,
+              consolidation, customs clearance, warehousing, project cargo, EXIM
+              advisory and door-to-door delivery. Headquarters are in Noida; the
+              commercial proposition is PAN India to worldwide.
             </p>
 
             <ul className="mb-8 grid gap-4 sm:grid-cols-2">

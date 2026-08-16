@@ -1,16 +1,16 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { TrackHero } from "@/features/tracking/components/track-hero";
 import { TrackingForm } from "@/features/tracking/components/tracking-form";
 import { PageAeo } from "@/components/organisms/page-aeo";
+import { pageSeo } from "@/lib/seo";
 import { TRACK_PAGE_FAQS } from "@/constants/faqs";
 
-export const metadata: Metadata = {
-  title: "Track Shipment",
+export const metadata = pageSeo({
+  title: "Track Shipment | ExpressWay Logistic",
   description:
-    "Track ExpressWay Logistic shipments in real time with live status, ETA, and timeline events.",
-  alternates: { canonical: "/track" },
-};
+    "Track your ExpressWay Logistic shipment using your shipment, booking or tracking reference. Public lookup shows operational status, not private commercial files.",
+  path: "/track",
+});
 
 type TrackPageProps = {
   searchParams: Promise<{ q?: string; id?: string }>;

@@ -18,14 +18,24 @@ export default function NotFound() {
         Page not found
       </Typography>
       <Typography variant="lead" className="max-w-md text-muted-foreground">
-        The page you requested does not exist or has been moved.
+        This URL does not exist. Use a service, route or quote page instead of
+        guessing paths.
       </Typography>
       <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
         <Button asChild rounded="none">
-          <Link href="/">Return Home</Link>
+          <Link href="/">Home</Link>
         </Button>
         <Button asChild variant="outline" rounded="none">
-          <Link href="/track">Track Shipment</Link>
+          <Link href="/services">Services</Link>
+        </Button>
+        <Button asChild variant="outline" rounded="none">
+          <Link href="/pan-india-logistics">PAN India</Link>
+        </Button>
+        <Button asChild variant="outline" rounded="none">
+          <Link href="/shipping-routes">Routes</Link>
+        </Button>
+        <Button asChild variant="outline" rounded="none">
+          <Link href="/quote">Get a Quote</Link>
         </Button>
       </div>
     </div>

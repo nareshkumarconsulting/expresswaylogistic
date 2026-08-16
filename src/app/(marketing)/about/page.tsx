@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { pageSeo } from "@/lib/seo";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -23,11 +23,12 @@ import { SERVICES } from "@/constants/services";
 import { ABOUT_PAGE_FAQS } from "@/constants/faqs";
 import { PageAeo } from "@/components/organisms/page-aeo";
 
-export const metadata: Metadata = {
-  title: "About Us",
-  description: `${siteConfig.legalName} is a neutral NVOCC with 39 years in international cargo movement — customs, warehousing, consolidation, and door-to-door EXIM logistics from Noida.`,
-  alternates: { canonical: "/about" },
-};
+export const metadata = pageSeo({
+  title: "About ExpressWay Logistic | PAN India NVOCC & Freight Forwarder",
+  description:
+    "Who ExpressWay Logistic is: an Indian neutral NVOCC and freight forwarding company with 39+ years of cargo experience, Noida headquarters, and PAN India to worldwide coverage.",
+  path: "/about",
+});
 
 const AIMS = [
   "Complete logistics solutions for import and export",
@@ -382,8 +383,8 @@ export default function AboutPage() {
           { name: "Home", path: "/" },
           { name: "About", path: "/about" },
         ]}
-        answerTitle="Who handles your export shipment"
-        answerDescription="Entity facts and what ExpressWay Logistic provides as a neutral NVOCC from Noida."
+        answerTitle="Who is ExpressWay Logistic"
+        answerDescription="Entity facts: NVOCC, freight forwarding, PAN India coverage, worldwide destinations, and leadership."
       />
     </div>
   );

@@ -14,8 +14,7 @@ export function WhyChooseUsSection() {
           </p>
           <div className="mb-6 h-px w-16 bg-accent" aria-hidden />
           <h2 className="text-h2 text-slate-900">
-            The Logistics{" "}
-            <span className="text-primary">Advantage</span>
+            Why Choose ExpressWay Logistic
           </h2>
           <p className="mt-4 max-w-xl text-sm leading-relaxed text-slate-600">
             39 years in international cargo — rates, documentation, and

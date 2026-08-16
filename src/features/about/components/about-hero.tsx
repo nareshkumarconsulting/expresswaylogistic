@@ -62,7 +62,7 @@ export function AboutHero() {
             >
               Neutral NVOCC.{" "}
               <span className="bg-gradient-to-r from-sky-300 to-[#00A3FF] bg-clip-text text-transparent">
-                Total reliability.
+                PAN India to worldwide.
               </span>
             </motion.h1>
 
@@ -71,8 +71,8 @@ export function AboutHero() {
               className="text-lead mb-8 max-w-2xl text-white/80"
             >
               {siteConfig.legalName} — 39 years of international cargo
-              experience, complete EXIM logistics, and a customer-first way of
-              clearing and delivering worldwide.
+              experience, PAN India freight forwarding, and a Noida headquarters
+              connecting Indian origins with worldwide destinations.
             </motion.p>
 
             <motion.div

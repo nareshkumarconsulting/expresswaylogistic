@@ -1,7 +1,15 @@
 import { siteConfig } from "@/config/site";
+import { LEADERS } from "@/constants/content";
 import type { FaqItem } from "@/constants/faqs";
 import type { ServiceItem } from "@/constants/services";
 import { SERVICES } from "@/constants/services";
+import {
+  HQ_COUNTRY,
+  HQ_LOCALITY,
+  HQ_POSTAL_CODE,
+  HQ_REGION,
+  HQ_STREET,
+} from "@/constants/entity";
 
 export const ORGANIZATION_ID = `${siteConfig.url}/#organization`;
 
@@ -32,23 +40,24 @@ export function organizationSchema() {
     telephone: siteConfig.contact.phone,
     address: {
       "@type": "PostalAddress",
-      streetAddress:
-        "Unit No. 623, 6th Floor, Tower-1, Assotech Business Cresterra, Sector-135",
-      addressLocality: "Noida",
-      addressRegion: "Uttar Pradesh",
-      postalCode: "201305",
-      addressCountry: "IN",
+      streetAddress: HQ_STREET,
+      addressLocality: HQ_LOCALITY,
+      addressRegion: HQ_REGION,
+      postalCode: HQ_POSTAL_CODE,
+      addressCountry: HQ_COUNTRY,
     },
-    areaServed: "Worldwide",
+    areaServed: [
+      { "@type": "Country", name: "India" },
+      "Worldwide",
+    ],
     knowsAbout: [
       "NVOCC",
-      "International freight forwarding",
+      "Freight forwarding",
       "Ocean freight",
       "Air freight",
       "Customs clearance",
       "EXIM documentation",
     ],
-    sameAs: Object.values(siteConfig.social),
     contactPoint: {
       "@type": "ContactPoint",
       telephone: siteConfig.contact.phone,
@@ -67,11 +76,49 @@ export function websiteSchema() {
     name: siteConfig.name,
     url: siteConfig.url,
     publisher: { "@id": ORGANIZATION_ID },
-    potentialAction: {
-      "@type": "SearchAction",
-      target: `${siteConfig.url}/track?q={search_term_string}`,
-      "query-input": "required name=search_term_string",
-    },
+  };
+}
+
+export function webPageSchema(input: {
+  name: string;
+  description: string;
+  path: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: input.name,
+    description: input.description,
+    url: `${siteConfig.url}${input.path === "/" ? "/" : input.path}`,
+    isPartOf: { "@id": `${siteConfig.url}/#website` },
+    about: { "@id": ORGANIZATION_ID },
+  };
+}
+
+export function personSchema() {
+  return LEADERS.map((leader) => ({
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: leader.name,
+    jobTitle: leader.title,
+    worksFor: { "@id": ORGANIZATION_ID },
+    image: `${siteConfig.url}${leader.image}`,
+  }));
+}
+
+export function articleSchema(input: {
+  headline: string;
+  description: string;
+  path: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: input.headline,
+    description: input.description,
+    url: `${siteConfig.url}${input.path}`,
+    author: { "@id": ORGANIZATION_ID },
+    publisher: { "@id": ORGANIZATION_ID },
   };
 }
 
@@ -89,7 +136,10 @@ export function servicesItemListSchema() {
         name: service.title,
         description: service.description,
         provider: { "@id": ORGANIZATION_ID },
-        areaServed: "Worldwide",
+        areaServed: [
+          { "@type": "Country", name: "India" },
+          "Worldwide",
+        ],
         serviceType: "Freight forwarding",
       },
     })),
@@ -134,8 +184,11 @@ export function serviceSchema(service: ServiceItem) {
     description: service.details,
     url: `${siteConfig.url}${service.href}`,
     provider: { "@id": ORGANIZATION_ID },
-    areaServed: "Worldwide",
-    serviceType: "Freight forwarding",
+    areaServed: [
+      { "@type": "Country", name: "India" },
+      "Worldwide",
+    ],
+    serviceType: service.title,
     brand: { "@id": ORGANIZATION_ID },
   };
 }
@@ -148,7 +201,7 @@ export function howToProcessSchema(
     "@type": "HowTo",
     name: "How to ship cargo internationally with ExpressWay Logistic",
     description:
-      "Five steps from quote to door delivery with one dedicated NVOCC team.",
+      "Quote, booking and documents, pickup, customs, and delivery when those steps are in scope.",
     step: steps.map((step, index) => ({
       "@type": "HowToStep",
       position: index + 1,

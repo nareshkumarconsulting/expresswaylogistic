@@ -38,24 +38,21 @@ export function HeroSection() {
         <div className="container-page relative z-10 flex min-h-[32rem] items-center pt-32 pb-12 md:min-h-[38rem] md:pt-36 md:pb-16 lg:min-h-[42rem]">
           <div className="max-w-xl lg:max-w-[34rem]">
             <p className="mb-3 text-xs font-semibold tracking-[0.22em] text-accent uppercase">
-              NVOCC • Freight Forwarding • Customs • Project Cargo
+              NVOCC • Freight Forwarding • Ocean • Air • Customs
             </p>
             <div className="mb-7 h-px w-24 bg-accent" aria-hidden />
 
             <h1 className="text-display mb-6 text-white">
-              Move Freight.
-              <span className="mt-1 block text-[#00A3FF] md:hidden">
-                Move Business
-                <span className="block">Forward.</span>
-              </span>
-              <span className="mt-1 hidden text-[#00A3FF] md:block">
-                Move Business Forward.
+              PAN India Freight Forwarding
+              <span className="mt-1 block text-[#00A3FF]">
+                &amp; Global Logistics
               </span>
             </h1>
 
             <p className="text-lead mb-10 max-w-lg text-white/85">
-              Reliable global freight forwarding, customs clearance and
-              end-to-end logistics solutions — from origin to destination.
+              Connect your cargo from anywhere in India to worldwide destinations
+              with neutral NVOCC, ocean freight, air freight, customs clearance
+              and end-to-end logistics support.
             </p>
 
             <div className="flex flex-col gap-4 sm:flex-row">

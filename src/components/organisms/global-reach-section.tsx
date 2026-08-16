@@ -90,13 +90,12 @@ export function GlobalReachSection() {
             </p>
             <div className="mb-6 h-px w-16 bg-accent" aria-hidden />
             <h2 className="text-h2 text-slate-900">
-              Your Cargo,{" "}
-              <span className="text-primary">Every Major Corridor</span>
+              India to Worldwide Shipping Corridors
             </h2>
             <p className="mt-4 max-w-xl text-sm leading-relaxed text-slate-600">
-              From Noida to ports worldwide — we operate scheduled lanes
-              across air and ocean with customs-ready documentation at every
-              handoff.
+              PAN India origins. Worldwide destinations. We book ocean and air
+              on commercially used corridors with customs-ready documentation at
+              every handoff.
             </p>
 
             <ul className="mt-6 grid max-w-md grid-cols-3 gap-2">
@@ -128,6 +127,7 @@ export function GlobalReachSection() {
         <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {GLOBAL_CORRIDORS.map((corridor) => (
             <li key={`${corridor.origin}-${corridor.destination}`}>
+              <Link href={corridor.href} className="block h-full">
               <article
                 className={cn(
                   "group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card p-5",
@@ -167,6 +167,7 @@ export function GlobalReachSection() {
                   {corridor.highlight}
                 </p>
               </article>
+              </Link>
             </li>
           ))}
         </ul>

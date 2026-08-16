@@ -31,7 +31,7 @@ export function DirectAnswers({
           {items.map((item, index) => (
             <article
               key={item.question}
-              className="border border-border bg-card p-6 md:p-8"
+              className="rounded-2xl border border-border bg-card p-6 md:p-8"
             >
               <p className="mb-3 font-heading text-sm font-bold text-[#00A3FF]">
                 {String(index + 1).padStart(2, "0")}

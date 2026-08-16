@@ -1,22 +1,24 @@
 import dynamic from "next/dynamic";
-import type { Metadata } from "next";
 import { preload } from "react-dom";
 import { HeroSection } from "@/components/organisms/hero-section";
 import { ConsultingCtaSection } from "@/components/organisms/consulting-cta-section";
 import { PageAeo } from "@/components/organisms/page-aeo";
+import { PanIndiaNetworkSection } from "@/components/organisms/pan-india-network-section";
+import { QuoteCtaBand } from "@/components/organisms/quote-cta-band";
 import { JsonLd } from "@/components/molecules/json-ld";
-import { CORE_INTENT_FAQS, HOME_SUPPORTING_FAQS } from "@/constants/faqs";
-import { servicesItemListSchema, websiteSchema } from "@/lib/schema";
-import { siteConfig } from "@/config/site";
+import { DirectAnswerBlock } from "@/components/molecules/direct-answer-block";
+import { HOME_SUPPORTING_FAQS } from "@/constants/faqs";
+import { ENTITY_STATEMENT } from "@/constants/entity";
+import { personSchema, servicesItemListSchema, websiteSchema } from "@/lib/schema";
+import { pageSeo } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: {
-    absolute: `${siteConfig.name} | ${siteConfig.tagline}`,
-  },
+export const metadata = pageSeo({
+  title:
+    "International Freight Forwarding & NVOCC in India | ExpressWay Logistic",
   description:
-    "Neutral NVOCC freight forwarding from India: ocean and air, customs, door-to-door, and EXIM docs. Ship India to Dubai and worldwide — request a quote for cost; typical reply within two business hours.",
-  alternates: { canonical: "/" },
-};
+    "ExpressWay Logistic provides PAN India freight forwarding, neutral NVOCC, ocean & air freight, customs clearance, EXIM advisory, project cargo and door-to-door logistics to worldwide destinations.",
+  path: "/",
+});
 
 const AboutSection = dynamic(() =>
   import("@/components/organisms/about-section").then((mod) => mod.AboutSection),
@@ -51,11 +53,6 @@ const StatisticsSection = dynamic(() =>
     (mod) => mod.StatisticsSection,
   ),
 );
-const TestimonialsSection = dynamic(() =>
-  import("@/components/organisms/testimonials-section").then(
-    (mod) => mod.TestimonialsSection,
-  ),
-);
 
 export default function HomePage() {
   preload("/images/hero-banner-750.webp", {
@@ -71,24 +68,33 @@ export default function HomePage() {
     <>
       <JsonLd data={websiteSchema()} />
       <JsonLd data={servicesItemListSchema()} />
+      {personSchema().map((person) => (
+        <JsonLd key={person.name} data={person} />
+      ))}
       <HeroSection />
-      <AboutSection />
+      <section className="bg-surface py-10">
+        <div className="container-page">
+          <DirectAnswerBlock text={ENTITY_STATEMENT} />
+        </div>
+      </section>
       <ServicesSection />
       <IndustriesSection />
       <WhyChooseUsSection />
       <ProcessSection />
+      <PanIndiaNetworkSection />
       <GlobalReachSection />
       <StatisticsSection />
-      <TestimonialsSection />
-      <ConsultingCtaSection />
+      <AboutSection />
       <PageAeo
-        answers={CORE_INTENT_FAQS}
+        answers={HOME_SUPPORTING_FAQS}
         faqs={HOME_SUPPORTING_FAQS}
         breadcrumbs={[{ name: "Home", path: "/" }]}
-        answerTitle="Answers to common freight queries"
-        answerDescription="Direct answers on services, India–Dubai shipping, export documents, who can handle your export, and how freight cost is quoted."
+        answerTitle="Answers to Common Freight Questions"
+        answerDescription="Visible answers on what ExpressWay does, cargo types, tracking, quotes, EXIM support, PAN India coverage, ports, door-to-door, import/export and pricing."
         faqTitle="More frequently asked questions"
       />
+      <QuoteCtaBand />
+      <ConsultingCtaSection />
     </>
   );
 }

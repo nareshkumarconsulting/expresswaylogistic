@@ -69,7 +69,12 @@ export function IndustriesCatalog() {
                     </div>
                     <div className="flex flex-1 flex-col p-6">
                       <h3 className="text-xl font-semibold text-white">
-                        {industry.name}
+                        <Link
+                          href={`/industries/${industry.slug}`}
+                          className="hover:text-accent"
+                        >
+                          {industry.name}
+                        </Link>
                       </h3>
                       <p className="mt-3 text-sm leading-relaxed text-white/70">
                         {industry.detail}

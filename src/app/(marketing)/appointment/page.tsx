@@ -1,16 +1,16 @@
-import type { Metadata } from "next";
 import { AppointmentForm } from "@/features/appointment/components/appointment-form";
 import { AppointmentHero } from "@/features/appointment/components/appointment-hero";
 import { AppointmentJourney } from "@/features/appointment/components/appointment-journey";
 import { PageAeo } from "@/components/organisms/page-aeo";
+import { pageSeo } from "@/lib/seo";
 import { APPOINTMENT_PAGE_FAQS } from "@/constants/faqs";
 
-export const metadata: Metadata = {
-  title: "Book an Appointment",
+export const metadata = pageSeo({
+  title: "Book a Logistics Appointment | ExpressWay Logistic",
   description:
-    "Meet ExpressWay Logistic specialists in Noida for freight planning, customs advisory, warehouse visits, or shipper account setup.",
-  alternates: { canonical: "/appointment" },
-};
+    "Schedule a logistics consultation, EXIM discussion, freight planning or customs meeting with ExpressWay. In-person meetings are at the Noida office; remote meetings are available.",
+  path: "/appointment",
+});
 
 export default function AppointmentPage() {
   return (

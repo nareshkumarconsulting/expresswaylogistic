@@ -160,7 +160,7 @@ export const MEETING_TYPES: MeetingTypeOption[] = [
     duration: "45 min",
     formatHint: "Video or phone",
     description:
-      "Get guidance on EXIM challenges including DEPB / advance licence and drawback claims.",
+      "Get guidance on EXIM processes, documentation, licence assistance and drawback claims where applicable.",
     includes: [
       "Licence requirement overview",
       "Drawback claim assistance path",

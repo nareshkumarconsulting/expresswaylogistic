@@ -4,14 +4,14 @@ import { ProcessHero } from "@/features/process/components/process-hero";
 import { ProcessJourney } from "@/features/process/components/process-journey";
 import { PageAeo } from "@/components/organisms/page-aeo";
 import { howToProcessSchema } from "@/lib/schema";
-import type { Metadata } from "next";
+import { pageSeo } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Our Process",
+export const metadata = pageSeo({
+  title: "How International Freight Forwarding Works | ExpressWay Logistic",
   description:
-    "How to ship cargo internationally with ExpressWay Logistic: quote, documents, pickup, customs clearance, and door delivery — including India to Dubai and other EXIM lanes.",
-  alternates: { canonical: "/process" },
-};
+    "Quote, booking and documents, pickup, customs clearance and door delivery — how ExpressWay moves cargo from origins across India to worldwide destinations.",
+  path: "/process",
+});
 
 export default function ProcessPage() {
   return (
@@ -26,8 +26,8 @@ export default function ProcessPage() {
           { name: "Process", path: "/process" },
         ]}
         extraJsonLd={[howToProcessSchema(PROCESS_STEPS)]}
-        answerTitle="How to ship from India — including Dubai"
-        answerDescription="The booking path, typical India–Middle East transit, and documents usually required for export from India."
+        answerTitle="How to ship from India"
+        answerDescription="The booking path, documents usually required for export from India, and why transit is not published as a guarantee."
       />
     </div>
   );

@@ -1,7 +1,6 @@
 import { Mail, MapPin, Phone } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import { YEARS_EXPERIENCE } from "@/constants/content";
-import { SERVICES } from "@/constants/services";
 
 export function EntityFacts() {
   return (
@@ -35,7 +34,15 @@ export function EntityFacts() {
               Service lines
             </dt>
             <dd className="mt-2 text-sm font-semibold text-foreground">
-              {SERVICES.length} EXIM logistics capabilities
+              11+ logistics service lines
+            </dd>
+          </div>
+          <div className="border border-border bg-card p-4">
+            <dt className="text-[10px] font-semibold tracking-[0.16em] text-muted-foreground uppercase">
+              Coverage
+            </dt>
+            <dd className="mt-2 text-sm font-semibold text-foreground">
+              PAN India → Worldwide
             </dd>
           </div>
           <div className="border border-border bg-card p-4">

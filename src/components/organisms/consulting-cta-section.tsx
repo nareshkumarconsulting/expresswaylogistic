@@ -5,10 +5,10 @@ import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
 const lanes = [
-  "Noida → Dubai",
-  "Mumbai → Rotterdam",
-  "Chennai → Singapore",
-  "Delhi → Hamburg",
+  "India → Dubai",
+  "India → Rotterdam",
+  "India → Singapore",
+  "India → Hamburg",
   "Nhava Sheva → New York",
   "Mundra → Jeddah",
 ];

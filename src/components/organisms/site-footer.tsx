@@ -28,9 +28,9 @@ export function SiteFooter() {
           <div>
             <BrandLogo variant="badge" size="lg" tone="light" className="mb-6" />
             <p className="text-muted-body mb-6">
-              Neutral NVOCC freight forwarding with customs, warehousing,
-              consolidation, and door-to-door delivery — 39 years of
-              international cargo experience.
+              PAN India freight forwarding and neutral NVOCC services connecting
+              Indian origins with worldwide destinations — 39+ years of cargo
+              experience. Headquarters in Noida.
             </p>
             <div className="flex gap-3">
               {socialLinks.map(({ href, label, Icon }) => (
@@ -112,8 +112,28 @@ export function SiteFooter() {
                 </Link>
               </li>
               <li>
+                <Link href="/pan-india-logistics" className="hover:text-accent">
+                  PAN India logistics
+                </Link>
+              </li>
+              <li>
+                <Link href="/shipping-routes" className="hover:text-accent">
+                  Shipping routes
+                </Link>
+              </li>
+              <li>
+                <Link href="/resources" className="hover:text-accent">
+                  Resources
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="hover:text-accent">
+                  Contact
+                </Link>
+              </li>
+              <li>
                 <Link href="/quote" className="hover:text-accent">
-                  Contact Us
+                  Get a Quote
                 </Link>
               </li>
               <li>

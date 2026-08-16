@@ -1,10 +1,10 @@
 export const siteConfig = {
   name: "ExpressWay Logistic",
-  legalName: "Expressway Logistic Pvt Ltd",
+  legalName: "Expressway Logistic Private Limited",
   shortName: "ExpressWay",
-  tagline: "Neutral NVOCC · Complete EXIM Logistics",
+  tagline: "PAN India Freight Forwarding & Global Logistics",
   description:
-    "Neutral NVOCC freight forwarding with customs clearance, warehousing, consolidation, project cargo, and door-to-door delivery — backed by 39 years of international cargo experience.",
+    "ExpressWay Logistic provides PAN India freight forwarding, neutral NVOCC, ocean & air freight, customs clearance, EXIM advisory, project cargo and door-to-door logistics to worldwide destinations.",
   url: "https://expresswaylogistic.com",
   locale: "en_IN",
   contact: {
@@ -24,9 +24,9 @@ export const siteConfig = {
   nav: [
     { name: "Services", href: "/services" },
     { name: "Industries", href: "/industries" },
-    { name: "Process", href: "/process" },
+    { name: "PAN India", href: "/pan-india-logistics" },
+    { name: "Routes", href: "/shipping-routes" },
     { name: "About", href: "/about" },
-    { name: "Appointment", href: "/appointment" },
     { name: "Track", href: "/track" },
   ],
   cta: {

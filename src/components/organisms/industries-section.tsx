@@ -42,8 +42,7 @@ export function IndustriesSection() {
             </p>
             <div className="mb-3 h-px w-16 bg-accent" aria-hidden />
             <h2 className="text-h2">
-              Tailored Supply Chain{" "}
-              <span className="text-[#00A3FF]">Solutions</span>
+              Industries We Serve
             </h2>
             <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/70">
               From garments and pharma to project machinery and bulk cargo — we
@@ -76,8 +75,9 @@ export function IndustriesSection() {
           {INDUSTRIES.map((industry) => {
             const Icon = industry.icon;
             return (
-              <li key={industry.name}>
-                <div
+              <li key={industry.slug}>
+                <Link
+                  href={`/industries/${industry.slug}`}
                   className={cn(
                     "group relative flex h-full items-center gap-3 overflow-hidden rounded-2xl border border-sky-400/20 bg-[#071e38]/80 px-4 py-3 backdrop-blur-sm",
                     "transition-colors duration-300 hover:border-accent/70 hover:bg-accent/[0.08]",
@@ -107,7 +107,7 @@ export function IndustriesSection() {
                       {industry.description}
                     </p>
                   </div>
-                </div>
+                </Link>
               </li>
             );
           })}

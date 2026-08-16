@@ -13,6 +13,9 @@ export function StatisticsSection() {
         GLOBAL LOGISTICS
       </div>
       <div className="container-page relative z-10">
+        <h2 className="text-h3 mb-10 text-center text-white">
+          Why Businesses Choose ExpressWay
+        </h2>
         <div className="mx-auto grid max-w-4xl grid-cols-1 gap-10 text-center sm:grid-cols-3">
           {STATS.map((stat, index) => (
             <motion.div

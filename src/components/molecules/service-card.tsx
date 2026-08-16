@@ -21,7 +21,7 @@ export function ServiceCard({
   const content = (
     <article
       className={cn(
-        "group relative h-full overflow-hidden rounded-md border border-border bg-card p-6 shadow-sm transition-shadow hover:shadow-lg",
+        "group relative h-full overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-sm transition-shadow hover:shadow-lg",
         className,
       )}
     >

@@ -1,5 +1,10 @@
+import type { Metadata } from "next";
 import { CommandSidebar } from "@/features/command-center/components/command-sidebar";
 import { CommandTopbar } from "@/features/command-center/components/command-topbar";
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default function DashboardLayout({
   children,
