@@ -7,6 +7,7 @@ import { ArrowRight, Clock3 } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import { siteConfig } from "@/config/site";
 import { PROCESS_STEPS } from "@/constants/content";
+import { QUOTE_RESPONSE_STATEMENT } from "@/constants/entity";
 import { processStepId } from "@/features/process/step-id";
 import { cn } from "@/lib/utils";
 
@@ -91,7 +92,7 @@ export function ProcessHero() {
               </Button>
               <span className="inline-flex items-center gap-2 text-sm text-white/70">
                 <Clock3 className="size-4 text-accent" aria-hidden />
-                Quote response within one business day
+                {QUOTE_RESPONSE_STATEMENT}
               </span>
             </motion.div>
           </div>

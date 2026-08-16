@@ -1,13 +1,5 @@
-"use client";
-
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { ArrowRight, ChevronDown } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import type { FaqItem } from "@/constants/faqs";
 import { siteConfig } from "@/config/site";
@@ -42,35 +34,31 @@ export function PageFaq({
           </p>
         </div>
 
-        <Accordion
-          type="single"
-          collapsible
-          defaultValue="item-0"
-          className="mx-auto max-w-3xl space-y-3"
-        >
+        <div className="mx-auto max-w-3xl space-y-3">
           {items.map((item, index) => (
-            <AccordionItem
+            <details
               key={item.question}
-              value={`item-${index}`}
+              open={index === 0}
               className={cn(
-                "overflow-hidden rounded-2xl border border-border bg-card px-5 last:border-b",
-                "data-[state=open]:border-accent data-[state=open]:bg-accent/[0.04]",
+                "group overflow-hidden rounded-2xl border border-border bg-card px-5",
+                "open:border-accent open:bg-accent/[0.04]",
               )}
             >
-              <AccordionTrigger className="py-5 text-sm text-slate-900 hover:text-accent hover:no-underline">
+              <summary className="flex cursor-pointer list-none items-center justify-between py-5 text-sm font-semibold text-slate-900 marker:content-none [&::-webkit-details-marker]:hidden">
                 <span className="flex items-start gap-3 pr-4 text-left">
                   <span className="mt-0.5 font-heading text-sm font-bold text-[#00A3FF]">
                     {String(index + 1).padStart(2, "0")}
                   </span>
                   {item.question}
                 </span>
-              </AccordionTrigger>
-              <AccordionContent className="pb-5 text-sm leading-relaxed text-slate-600">
+                <ChevronDown className="size-4 shrink-0 transition-transform group-open:rotate-180" />
+              </summary>
+              <p className="pb-5 text-sm leading-relaxed text-slate-600">
                 {item.answer}
-              </AccordionContent>
-            </AccordionItem>
+              </p>
+            </details>
           ))}
-        </Accordion>
+        </div>
 
         <div className="mx-auto mt-8 flex max-w-3xl flex-col gap-3 rounded-2xl border border-border bg-card px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div>

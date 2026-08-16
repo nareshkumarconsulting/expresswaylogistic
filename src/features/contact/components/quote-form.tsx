@@ -10,6 +10,7 @@ import { Input } from "@/components/atoms/input";
 import { Textarea } from "@/components/atoms/textarea";
 import { FormField } from "@/components/molecules/form-field";
 import { StateAlert } from "@/components/molecules/state-alert";
+import { QUOTE_RESPONSE_STATEMENT } from "@/constants/entity";
 import {
   Select,
   SelectContent,
@@ -111,7 +112,7 @@ export function QuoteForm() {
         <StateAlert
           variant="success"
           title="Quote request received"
-          description="Our logistics experts will respond within 2 business hours."
+          description={QUOTE_RESPONSE_STATEMENT}
         />
       ) : null}
       {status === "error" ? (

@@ -1,4 +1,5 @@
 import { TRUST_SIGNALS } from "@/constants/content";
+import { EXPERIENCE_STATEMENT } from "@/constants/entity";
 import { cn } from "@/lib/utils";
 
 export function WhyChooseUsSection() {
@@ -17,8 +18,8 @@ export function WhyChooseUsSection() {
             Why Choose ExpressWay Logistic
           </h2>
           <p className="mt-4 max-w-xl text-sm leading-relaxed text-slate-600">
-            39 years in international cargo — rates, documentation, and
-            clearance handled as one NVOCC partner.
+            {EXPERIENCE_STATEMENT} — rates, documentation, and clearance
+            handled as one NVOCC partner.
           </p>
         </div>
 

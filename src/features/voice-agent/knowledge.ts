@@ -6,6 +6,7 @@ import {
   PROCESS_STEPS,
   STATS,
 } from "@/constants/content";
+import { QUOTE_RESPONSE_STATEMENT } from "@/constants/entity";
 import { SERVICES } from "@/constants/services";
 import {
   MEETING_TYPES,
@@ -42,7 +43,7 @@ export function buildSiteKnowledge(): string {
     `Legal name: ${siteConfig.legalName}`,
     `Tagline: ${siteConfig.tagline}`,
     `About: ${siteConfig.description}`,
-    `Positioning: Neutral NVOCC with 39 years in international cargo movement`,
+    `Positioning: Neutral NVOCC with 39+ years of international cargo experience`,
     `Highlights: ${ABOUT_HIGHLIGHTS.join("; ")}`,
     `Stats: ${stats}`,
     `Address: ${siteConfig.contact.address}`,
@@ -65,6 +66,7 @@ export function buildSiteKnowledge(): string {
     "Meeting modes: video, phone, in-person",
     "Tracking: look up a shipment when the caller gives a tracking ID such as EW-10846. Live status comes from the tracking tool, not from memory.",
     "Quote: collect name, company, email, phone, origin, destination, service type, and cargo, then submit a quote request. Do not quote a price yourself.",
+    `Quote response: ${QUOTE_RESPONSE_STATEMENT}`,
     "Appointment: collect contact details, meeting type, weekday date, time slot, and meeting mode, then book.",
     "",
     "FAQs:",

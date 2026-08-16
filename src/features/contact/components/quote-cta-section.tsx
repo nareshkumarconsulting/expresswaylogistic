@@ -1,5 +1,6 @@
 import { Typography } from "@/components/atoms/typography";
 import { QuoteForm } from "@/features/contact/components/quote-form";
+import { QUOTE_RESPONSE_STATEMENT } from "@/constants/entity";
 
 export function QuoteCtaSection() {
   return (
@@ -14,8 +15,7 @@ export function QuoteCtaSection() {
               Ready to Ship?
             </Typography>
             <p className="mb-8 font-normal leading-relaxed text-slate-300">
-              Share your cargo details and our logistics experts will respond
-              within 2 hours with a customized quote.
+              Share your cargo details. {QUOTE_RESPONSE_STATEMENT}
             </p>
             <ol className="space-y-6">
               <li className="flex items-start gap-4">

@@ -32,6 +32,8 @@ import {
   Monitor,
   Headphones,
 } from "lucide-react";
+import { QUOTE_RESPONSE_STATEMENT, EXPERIENCE_STATEMENT } from "@/constants/entity";
+import { SERVICE_COUNT } from "@/constants/services";
 
 export const YEARS_EXPERIENCE = 39;
 
@@ -40,7 +42,7 @@ export const LEADERS = [
     name: "Sunil Kumar",
     title: "CEO & Managing Director",
     image: "/images/consulting-portrait.jpg",
-    bio: "Driving vision and growth with 39 years of expertise in global logistics and operations.",
+    bio: `Driving vision and growth with ${EXPERIENCE_STATEMENT}.`,
     imageClass: "object-cover object-[50%_28%]",
   },
   {
@@ -54,7 +56,7 @@ export const LEADERS = [
 
 export const HERO_HIGHLIGHTS = [
   {
-    title: "39+ Years of Experience",
+    title: EXPERIENCE_STATEMENT,
     description: "Trusted international cargo expertise.",
     icon: Award,
   },
@@ -95,7 +97,7 @@ export const HERO_FEATURES = [
 ] as const;
 
 export const ABOUT_HIGHLIGHTS = [
-  "39+ Years Experience",
+  EXPERIENCE_STATEMENT,
   "Neutral NVOCC Company",
   "24×7 Shipment & Docs Support",
   "Customs & Port Clearance",
@@ -244,7 +246,7 @@ export const PROCESS_STEPS = [
     description:
       "Share origin, destination, and cargo details for competitive sea or air rates.",
     detail:
-      "Tell us the lane, cargo type, volume, and any sailing or delivery window. We return competitive ocean or air options — typically within one business day.",
+      `Tell us the lane, cargo type, volume, and any sailing or delivery window. ${QUOTE_RESPONSE_STATEMENT}`,
     youProvide: "Origin, destination, cargo type, and approximate volume",
     weHandle: "Lane mapping, mode advice, and a comparable rate view",
     icon: MessageSquareText,
@@ -339,41 +341,6 @@ export const TRUST_SIGNALS = [
   },
 ] as const;
 
-export const GLOBAL_CORRIDORS = [
-  {
-    origin: "India",
-    destination: "Middle East",
-    modes: ["air", "ocean"] as const,
-    transit: "Indicative; varies by carrier and conditions",
-    highlight: "Dubai · Jeddah · Doha",
-    href: "/shipping-routes/india-to-dubai",
-  },
-  {
-    origin: "India",
-    destination: "Europe",
-    modes: ["air", "ocean"] as const,
-    transit: "Indicative; varies by carrier and conditions",
-    highlight: "Rotterdam · Hamburg · London",
-    href: "/shipping-routes/india-to-netherlands",
-  },
-  {
-    origin: "India",
-    destination: "North America",
-    modes: ["air", "ocean"] as const,
-    transit: "Indicative; varies by carrier and conditions",
-    highlight: "New York · Los Angeles · Toronto",
-    href: "/shipping-routes/india-to-usa",
-  },
-  {
-    origin: "India",
-    destination: "Southeast Asia",
-    modes: ["air", "ocean"] as const,
-    transit: "Indicative; varies by carrier and conditions",
-    highlight: "Singapore · Bangkok · Jakarta",
-    href: "/shipping-routes/india-to-singapore",
-  },
-] as const;
-
 export const GLOBAL_REACH_STATS = [
   { label: "Company type", value: "NVOCC" },
   { label: "Primary modes", value: "Sea · Air" },
@@ -382,8 +349,8 @@ export const GLOBAL_REACH_STATS = [
 
 /** Profile-backed figures only — avoid unverified shipment / on-time claims. */
 export const STATS = [
-  { label: "Years of Experience", value: YEARS_EXPERIENCE, suffix: "+" },
-  { label: "Core Service Capabilities", value: 11, suffix: "" },
+  { label: "years of international cargo experience", value: YEARS_EXPERIENCE, suffix: "+" },
+  { label: "Logistics & EXIM Services", value: SERVICE_COUNT, suffix: "" },
   { label: "Shipment & Documentation Support", value: 24, suffix: "/7" },
 ] as const;
 

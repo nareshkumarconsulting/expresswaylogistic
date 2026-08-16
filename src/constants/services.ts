@@ -268,6 +268,8 @@ export const SERVICES: ServiceItem[] = [
   },
 ];
 
+export const SERVICE_COUNT = SERVICES.length;
+
 export const SERVICE_ALIASES: Record<string, string> = {
   "ocean-nvocc": "nvocc",
   customs: "customs-clearance",

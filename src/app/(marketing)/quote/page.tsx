@@ -3,6 +3,7 @@ import { QuoteHero } from "@/features/quote/components/quote-hero";
 import { QuoteWizardForm } from "@/features/quote/components/quote-wizard-form";
 import { PageAeo } from "@/components/organisms/page-aeo";
 import { CORE_INTENT_FAQS, QUOTE_PAGE_FAQS } from "@/constants/faqs";
+import { QUOTE_RESPONSE_STATEMENT } from "@/constants/entity";
 
 export const metadata = pageSeo({
   title: "International Freight Quote from India | ExpressWay Logistic",
@@ -40,8 +41,8 @@ export default function QuotePage() {
               </h2>
               <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
                 Four steps — cargo, route, services, and contact. Cost is
-                quoted per shipment; there is no public rate list. The desk
-                typically responds within two business hours.
+                quoted per shipment; there is no public rate list.{" "}
+                {QUOTE_RESPONSE_STATEMENT}
               </p>
             </div>
             <QuoteWizardForm />

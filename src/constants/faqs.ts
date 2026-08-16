@@ -1,3 +1,5 @@
+import { QUOTE_RESPONSE_STATEMENT } from "@/constants/entity";
+
 export type FaqItem = {
   question: string;
   answer: string;
@@ -49,8 +51,7 @@ export const HOME_SUPPORTING_FAQS: FaqItem[] = [
   },
   {
     question: "How quickly can I get a freight quote?",
-    answer:
-      "Submit the quote form with origin, destination and cargo details. The operations desk reviews requests and responds with available ocean, air, FCL, LCL or consolidation options. Response time depends on the completeness of the file; we do not guarantee a fixed number of hours.",
+    answer: QUOTE_RESPONSE_STATEMENT,
   },
   {
     question: "Do you help with EXIM licences and drawback?",
@@ -106,7 +107,7 @@ export const SERVICES_PAGE_FAQS: FaqItem[] = [
   {
     question: "Can I book only customs or only freight?",
     answer:
-      "Yes. You can use a single line — for example ocean booking, air freight or customs clearance — or combine door-to-door with packing, insurance and EXIM advisory. Tell us what you already have in place when you request a quote.",
+      "Yes. ExpressWay can provide individual services such as freight booking or customs clearance where the shipment scope allows it. The exact service combination depends on the cargo, origin, destination and operational requirements.",
   },
 ];
 
@@ -172,7 +173,7 @@ export const QUOTE_PAGE_FAQS: FaqItem[] = [
   CORE_INTENT_FAQS[2],
   {
     question: "How quickly can I get a freight quote?",
-    answer: HOME_SUPPORTING_FAQS[3].answer,
+    answer: QUOTE_RESPONSE_STATEMENT,
   },
   {
     question: "What details do you need for an accurate quote?",

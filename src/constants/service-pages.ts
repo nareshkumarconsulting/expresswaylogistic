@@ -46,7 +46,7 @@ export const SERVICE_PAGES: Record<string, ServicePageCopy> = {
       "Documentation prepared for the actual product",
     ],
     whyExpressWay:
-      "ExpressWay is a PAN India neutral NVOCC and freight forwarder with 39+ years of cargo experience. Headquarters are in Noida; commercial coverage is India to worldwide destinations.",
+      "ExpressWay is a PAN India neutral NVOCC and freight forwarder with 39+ years of international cargo experience. Headquarters are in Noida; commercial coverage is India to worldwide destinations.",
     relatedServiceIds: ["nvocc", "ocean-freight", "air-freight", "customs-clearance"],
     relatedIndustrySlugs: ["garments-apparel", "engineering-goods", "leather-products"],
     relatedRouteIds: ["india-to-dubai", "india-to-usa", "india-to-uk"],

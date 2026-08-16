@@ -4,6 +4,7 @@ import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowDown, Clock } from "lucide-react";
 import { Button } from "@/components/atoms/button";
+import { QUOTE_RESPONSE_STATEMENT } from "@/constants/entity";
 
 export function QuoteHero() {
   const reduceMotion = useReducedMotion();
@@ -57,7 +58,7 @@ export function QuoteHero() {
           >
             <span className="inline-flex items-center gap-2 rounded-sm bg-white/10 px-3 py-1.5">
               <Clock className="size-4 text-accent" aria-hidden />
-              Response after review of cargo details
+              {QUOTE_RESPONSE_STATEMENT}
             </span>
             <span className="text-white/60">Commercial cargo only</span>
           </motion.div>

@@ -27,9 +27,9 @@ export function AboutSection() {
                 39+
               </p>
               <p className="mt-2 text-sm font-medium leading-snug text-white/80">
-                Years of
+                years of international
                 <br />
-                excellence
+                cargo experience
               </p>
             </div>
           </div>

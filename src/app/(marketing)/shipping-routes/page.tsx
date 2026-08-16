@@ -2,7 +2,7 @@ import { Plane, Ship } from "lucide-react";
 import { PageHero } from "@/components/molecules/page-hero";
 import { CatalogCard, BrandCatalog } from "@/components/molecules/catalog-card";
 import { QuoteCtaBand } from "@/components/organisms/quote-cta-band";
-import { ROUTES } from "@/constants/geography";
+import { getAdditionalRoutes, getFeaturedRoutes } from "@/constants/geography";
 import { pageSeo } from "@/lib/seo";
 
 export const metadata = pageSeo({
@@ -58,19 +58,40 @@ export default function ShippingRoutesPage() {
       />
 
       <BrandCatalog
-        eyebrow="Corridors"
+        eyebrow="Priority corridors"
         title="India to"
         accent="worldwide destinations"
-        description="Each route page has a distinct commercial intent. Transit is never published as a guarantee."
+        description="USA, Canada, Netherlands, Singapore, Australia, UAE and Saudi Arabia — commercially used country lanes. Transit is never published as a guarantee."
       >
         <ul className="grid gap-4 md:grid-cols-2">
-          {ROUTES.map((route) => (
+          {getFeaturedRoutes().map((route) => (
             <li key={route.slug}>
               <CatalogCard
                 href={`/shipping-routes/${route.slug}`}
                 kicker={route.destinationCountry}
                 title={`India → ${route.destination}`}
                 description={route.directAnswer}
+              />
+            </li>
+          ))}
+        </ul>
+      </BrandCatalog>
+      <BrandCatalog
+        eyebrow="More corridors"
+        title="Additional"
+        accent="India-origin lanes"
+        description="City and country pages kept for specific search intent. Dubai and Jeddah remain as gateway pages alongside UAE and Saudi Arabia."
+        tone="light"
+      >
+        <ul className="grid gap-4 md:grid-cols-2">
+          {getAdditionalRoutes().map((route) => (
+            <li key={route.slug}>
+              <CatalogCard
+                href={`/shipping-routes/${route.slug}`}
+                kicker={route.destinationCountry}
+                title={`India → ${route.destination}`}
+                description={route.directAnswer}
+                variant="light"
               />
             </li>
           ))}

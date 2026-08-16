@@ -38,6 +38,17 @@ export type RoutePage = {
   relatedIndustrySlugs: readonly string[];
 };
 
+/** Highest-intent country corridors for homepage and the routes hub. */
+export const FEATURED_ROUTE_SLUGS = [
+  "india-to-usa",
+  "india-to-canada",
+  "india-to-netherlands",
+  "india-to-singapore",
+  "india-to-australia",
+  "india-to-uae",
+  "india-to-saudi-arabia",
+] as const;
+
 export const REGIONS: RegionPage[] = [
   {
     slug: "north-india",
@@ -381,6 +392,36 @@ export const ROUTES: RoutePage[] = [
     relatedIndustrySlugs: ["engineering-goods", "chemicals", "garments-apparel"],
   },
   {
+    slug: "india-to-australia",
+    origin: "India",
+    destination: "Australia",
+    destinationCountry: "Australia",
+    h1: "India to Australia Freight Forwarding",
+    seoTitle: "India to Australia Freight Forwarding | ExpressWay Logistic",
+    seoDescription:
+      "Ocean and air freight forwarding from India to Australia, including FCL/LCL, documentation and customs coordination.",
+    directAnswer:
+      "ExpressWay Logistic provides ocean and air freight forwarding from origins across India to Australia, including FCL/LCL, consolidation, documentation, customs coordination and door-to-door delivery where required.",
+    body: "Australia-bound cargo is quoted from actual origin, destination, commodity and volume. We do not publish a fixed transit or rate. ExpressWay does not claim a physical office in Australia.",
+    relatedServiceIds: ["ocean-freight", "air-freight", "fcl-shipping", "customs-clearance"],
+    relatedIndustrySlugs: ["engineering-goods", "garments-apparel", "project-machinery"],
+  },
+  {
+    slug: "india-to-uae",
+    origin: "India",
+    destination: "UAE",
+    destinationCountry: "United Arab Emirates",
+    h1: "India to UAE Freight Forwarding",
+    seoTitle: "India to UAE Freight Forwarding | ExpressWay Logistic",
+    seoDescription:
+      "Ocean and air freight forwarding from India to the United Arab Emirates, including FCL/LCL, documentation and customs coordination.",
+    directAnswer:
+      "ExpressWay Logistic provides ocean and air freight forwarding from origins across India to the UAE, including FCL/LCL, consolidation, documentation, customs coordination and door-to-door delivery where required.",
+    body: "UAE destinations are served as worldwide delivery points through the logistics network. Dubai is a commonly used gateway when that is the discharge or delivery point. No ExpressWay office is claimed in the UAE.",
+    relatedServiceIds: ["ocean-freight", "air-freight", "fcl-shipping", "lcl-shipping"],
+    relatedIndustrySlugs: ["garments-apparel", "leather-products", "engineering-goods"],
+  },
+  {
     slug: "india-to-thailand",
     origin: "India",
     destination: "Thailand",
@@ -423,4 +464,19 @@ export function getLocationBySlug(slug: string) {
 
 export function getRouteBySlug(slug: string) {
   return ROUTES.find((route) => route.slug === slug);
+}
+
+export function getFeaturedRoutes() {
+  return FEATURED_ROUTE_SLUGS.map((slug) => {
+    const route = getRouteBySlug(slug);
+    if (!route) {
+      throw new Error(`Missing featured route: ${slug}`);
+    }
+    return route;
+  });
+}
+
+export function getAdditionalRoutes() {
+  const featured = new Set<string>(FEATURED_ROUTE_SLUGS);
+  return ROUTES.filter((route) => !featured.has(route.slug));
 }

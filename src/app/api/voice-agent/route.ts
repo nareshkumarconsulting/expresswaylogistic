@@ -12,6 +12,7 @@ import {
   type VoiceAgentResponse,
 } from "@/features/voice-agent/schemas";
 import { logger } from "@/lib/logger";
+import { QUOTE_RESPONSE_STATEMENT } from "@/constants/entity";
 
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 30;
@@ -106,7 +107,7 @@ export async function POST(request: Request) {
       skipPolish = true;
       const quoted = await submitVoiceQuote(quoteDraft);
       if ("referenceId" in quoted) {
-        reply = `You're all set. Your quote reference is ${quoted.referenceId}. Our team typically responds within two business hours. Anything else I can help with?`;
+        reply = `You're all set. Your quote reference is ${quoted.referenceId}. ${QUOTE_RESPONSE_STATEMENT} Anything else I can help with?`;
         action = {
           type: "quote_submitted",
           referenceId: quoted.referenceId,

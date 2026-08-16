@@ -26,7 +26,7 @@ import { PageAeo } from "@/components/organisms/page-aeo";
 export const metadata = pageSeo({
   title: "About ExpressWay Logistic | PAN India NVOCC & Freight Forwarder",
   description:
-    "Who ExpressWay Logistic is: an Indian neutral NVOCC and freight forwarding company with 39+ years of cargo experience, Noida headquarters, and PAN India to worldwide coverage.",
+    "Who ExpressWay Logistic is: an Indian neutral NVOCC and freight forwarding company with 39+ years of international cargo experience, Noida headquarters, and PAN India to worldwide coverage.",
   path: "/about",
 });
 
@@ -88,9 +88,9 @@ export default function AboutPage() {
               <div className="absolute right-0 bottom-0 bg-primary px-6 py-5 text-white md:-right-4 md:-bottom-4">
                 <p className="text-stat text-accent">39+</p>
                 <p className="text-sm font-medium leading-tight">
-                  Years in international
+                  years of international
                   <br />
-                  cargo movement
+                  cargo experience
                 </p>
               </div>
             </div>
@@ -106,8 +106,7 @@ export default function AboutPage() {
               <div className="space-y-4 text-base leading-relaxed text-muted-foreground">
                 <p>
                   {siteConfig.legalName} has been promoted by professionals with
-                  vast experience in international cargo movement for the last
-                  39 years.
+                  39+ years of international cargo experience.
                 </p>
                 <p>
                   As a neutral NVOCC company backed by professionalism and

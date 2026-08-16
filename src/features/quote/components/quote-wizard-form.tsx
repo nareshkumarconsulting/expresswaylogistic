@@ -34,6 +34,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { QUOTE_RESPONSE_STATEMENT } from "@/constants/entity";
 import {
   collectReactHookFormErrors,
   firstErrorFieldPath,
@@ -745,8 +746,8 @@ export function QuoteWizardForm() {
           </h2>
           <p className="text-sm leading-relaxed text-muted-foreground md:text-base">
             {referenceId
-              ? `Reference ${referenceId}. Our freight desk will respond with pricing within one business day.`
-              : "Our freight desk will respond with pricing within one business day."}
+              ? `Reference ${referenceId}. ${QUOTE_RESPONSE_STATEMENT}`
+              : QUOTE_RESPONSE_STATEMENT}
           </p>
         </div>
         <div className="flex w-full max-w-sm flex-col gap-3 sm:flex-row">

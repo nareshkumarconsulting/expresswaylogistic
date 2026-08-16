@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { ArrowRight, Globe2, Plane, Ship } from "lucide-react";
 import { Button } from "@/components/atoms/button";
-import { GLOBAL_CORRIDORS, GLOBAL_REACH_STATS } from "@/constants/content";
-import { siteConfig } from "@/config/site";
+import { GLOBAL_REACH_STATS } from "@/constants/content";
+import { getFeaturedRoutes } from "@/constants/geography";
 import { cn } from "@/lib/utils";
 
 const modeIcon = {
@@ -124,10 +124,10 @@ export function GlobalReachSection() {
           </div>
         </div>
 
-        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {GLOBAL_CORRIDORS.map((corridor) => (
-            <li key={`${corridor.origin}-${corridor.destination}`}>
-              <Link href={corridor.href} className="block h-full">
+        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {getFeaturedRoutes().map((route) => (
+            <li key={route.slug}>
+              <Link href={`/shipping-routes/${route.slug}`} className="block h-full">
               <article
                 className={cn(
                   "group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card p-5",
@@ -141,7 +141,7 @@ export function GlobalReachSection() {
                 />
 
                 <div className="relative mb-4 flex items-center gap-2">
-                  {corridor.modes.map((mode) => {
+                  {(["ocean", "air"] as const).map((mode) => {
                     const Icon = modeIcon[mode];
                     return (
                       <span
@@ -153,18 +153,14 @@ export function GlobalReachSection() {
                       </span>
                     );
                   })}
-                  <span className="ml-auto text-sm font-semibold text-accent">
-                    {corridor.transit}
-                  </span>
                 </div>
 
                 <h3 className="relative text-base font-semibold text-slate-900">
-                  {corridor.origin}{" "}
-                  <span className="text-slate-400">→</span>{" "}
-                  {corridor.destination}
+                  India <span className="text-slate-400">→</span> {route.destination}
                 </h3>
                 <p className="relative mt-2 text-sm leading-relaxed text-slate-600">
-                  {corridor.highlight}
+                  Ocean and air freight from origins across India. Transit is
+                  indicative and varies by carrier and conditions.
                 </p>
               </article>
               </Link>
@@ -188,8 +184,8 @@ export function GlobalReachSection() {
             </div>
           </div>
           <Button asChild rounded="md" className="shadow-accent-glow">
-            <Link href={siteConfig.cta.primary.href}>
-              Plan your route
+            <Link href="/shipping-routes">
+              View all routes
               <ArrowRight className="size-4" aria-hidden />
             </Link>
           </Button>

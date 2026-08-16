@@ -6,6 +6,12 @@ export const GEOGRAPHIC_PROPOSITION = "PAN India → Worldwide";
 export const COVERAGE_STATEMENT =
   "Serving customers across India through a nationwide logistics network, connecting Indian origins with worldwide destinations.";
 
+export const QUOTE_RESPONSE_STATEMENT =
+  "Typical response: within one business day, depending on the completeness of shipment details.";
+
+export const EXPERIENCE_STATEMENT =
+  "39+ years of international cargo experience";
+
 export const HQ_LOCALITY = "Noida";
 export const HQ_REGION = "Uttar Pradesh";
 export const HQ_POSTAL_CODE = "201305";

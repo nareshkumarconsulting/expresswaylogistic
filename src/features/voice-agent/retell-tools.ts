@@ -11,6 +11,7 @@ import {
 } from "@/features/voice-agent/actions";
 import { normalizeVoiceBookingArgs } from "@/features/voice-agent/booking-normalize";
 import { logger } from "@/lib/logger";
+import { QUOTE_RESPONSE_STATEMENT } from "@/constants/entity";
 import {
   VOICE_QUOTE_SERVICES,
   type QuoteDraft,
@@ -138,7 +139,7 @@ export async function runRetellTool(
     return {
       ok: true,
       referenceId: quoted.referenceId,
-      spoken: `Quote request submitted. Reference ${quoted.referenceId}. The team typically replies within two business hours. I did not quote a price.`,
+      spoken: `Quote request submitted. Reference ${quoted.referenceId}. ${QUOTE_RESPONSE_STATEMENT} I did not quote a price.`,
     };
   }
 

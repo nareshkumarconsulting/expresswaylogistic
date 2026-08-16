@@ -44,8 +44,8 @@ export const SEARCH_INTENT_PAGES: SearchIntentPage[] = [
     indexable: true,
   },
   {
-    url: "/shipping-routes/india-to-dubai",
-    primaryKeyword: "India to Dubai freight forwarding",
+    url: "/shipping-routes/india-to-usa",
+    primaryKeyword: "India to USA freight forwarding",
     searchIntent: "route",
     indexable: true,
   },

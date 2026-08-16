@@ -78,30 +78,41 @@ export function BrandCatalog({
   accent,
   description,
   children,
+  tone = "dark",
 }: {
   eyebrow: string;
   title: string;
   accent?: string;
   description?: string;
   children: ReactNode;
+  tone?: "dark" | "light";
 }) {
+  const dark = tone === "dark";
+
   return (
-    <section className="relative isolate overflow-hidden bg-brand py-16 text-white md:py-20">
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.1]"
-        aria-hidden
-        style={{
-          backgroundImage:
-            "radial-gradient(circle, white 1px, transparent 1px)",
-          backgroundSize: "22px 22px",
-        }}
-      />
+    <section
+      className={cn(
+        "relative isolate overflow-hidden py-16 md:py-20",
+        dark ? "bg-brand text-white" : "bg-surface",
+      )}
+    >
+      {dark ? (
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.1]"
+          aria-hidden
+          style={{
+            backgroundImage:
+              "radial-gradient(circle, white 1px, transparent 1px)",
+            backgroundSize: "22px 22px",
+          }}
+        />
+      ) : null}
       <div className="container-page relative z-10">
         <div className="mb-12 max-w-2xl">
           <p className="mb-2 text-xs font-semibold tracking-[0.22em] text-accent uppercase">
             {eyebrow}
           </p>
-          <h2 className="text-h2 text-white">
+          <h2 className={cn("text-h2", dark ? "text-white" : "text-slate-900")}>
             {title}
             {accent ? (
               <>
@@ -111,7 +122,12 @@ export function BrandCatalog({
             ) : null}
           </h2>
           {description ? (
-            <p className="mt-4 max-w-xl text-sm leading-relaxed text-white/70">
+            <p
+              className={cn(
+                "mt-4 max-w-xl text-sm leading-relaxed",
+                dark ? "text-white/70" : "text-slate-600",
+              )}
+            >
               {description}
             </p>
           ) : null}

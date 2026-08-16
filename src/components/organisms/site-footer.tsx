@@ -29,8 +29,8 @@ export function SiteFooter() {
             <BrandLogo variant="badge" size="lg" tone="light" className="mb-6" />
             <p className="text-muted-body mb-6">
               PAN India freight forwarding and neutral NVOCC services connecting
-              Indian origins with worldwide destinations — 39+ years of cargo
-              experience. Headquarters in Noida.
+              Indian origins with worldwide destinations — 39+ years of
+              international cargo experience. Headquarters in Noida.
             </p>
             <div className="flex gap-3">
               {socialLinks.map(({ href, label, Icon }) => (

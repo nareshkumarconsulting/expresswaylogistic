@@ -1,4 +1,5 @@
 import { siteConfig } from "@/config/site";
+import { QUOTE_RESPONSE_STATEMENT } from "@/constants/entity";
 import { formatMoney } from "@/features/quotes/money";
 import type { QuoteRequest } from "@/types";
 
@@ -46,7 +47,7 @@ export function customerReceivedEmail(quote: QuoteRequest) {
   const title = `We received your quotation request ${quote.id}`;
   const { html, text } = wrap(
     title,
-    `<p>Thank you for contacting ${escapeHtml(siteConfig.name)}. Our team is reviewing this request and will send a quotation shortly.</p>${shipmentBlock(quote)}`,
+    `<p>Thank you for contacting ${escapeHtml(siteConfig.name)}. ${escapeHtml(QUOTE_RESPONSE_STATEMENT)}</p>${shipmentBlock(quote)}`,
   );
   return {
     subject: `Quote request received · ${quote.id}`,
