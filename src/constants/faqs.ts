@@ -148,7 +148,7 @@ export const ABOUT_PAGE_FAQS: FaqItem[] = [
   {
     question: "Who is ExpressWay Logistic?",
     answer:
-      "ExpressWay Logistic (legal name Expressway Logistic Private Limited) is an Indian neutral NVOCC and freight forwarding company. Headquarters are in Noida, Uttar Pradesh. Leadership includes Sunil Kumar, CEO & Managing Director, and Jugendra, General Manager & Business Development Officer.",
+      "ExpressWay Logistic (legal name Expressway Logistic Private Limited) is an Indian neutral NVOCC and freight forwarding company. Headquarters are in Noida, Uttar Pradesh. Leadership includes Sunil Kumar, CEO & Managing Director, and Jugendra Singh, General Manager & Business Development Officer.",
   },
   {
     question: "Where does ExpressWay operate?",
