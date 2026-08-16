@@ -12,19 +12,30 @@ export function PageBreadcrumbs({
   const dark = tone === "dark";
 
   return (
-    <nav aria-label="Breadcrumb">
+    <nav
+      aria-label="Breadcrumb"
+      className={cn(!dark && "border-b border-border/70 bg-background")}
+    >
       <ol
         className={cn(
-          "flex flex-wrap items-center gap-1 text-sm",
-          dark ? "text-white/60" : "text-muted-foreground",
+          "flex flex-wrap items-center gap-x-2 gap-y-1.5 text-sm leading-none",
+          dark
+            ? "text-white/60"
+            : "container-page py-3.5 text-muted-foreground md:py-4",
         )}
       >
         {items.map((item, index) => {
           const last = index === items.length - 1;
           return (
-            <li key={`${item.path}-${item.name}`} className="flex items-center gap-1">
+            <li
+              key={`${item.path}-${item.name}`}
+              className="flex items-center gap-2"
+            >
               {index > 0 ? (
-                <ChevronRight className="size-3.5 shrink-0" aria-hidden />
+                <ChevronRight
+                  className="size-3.5 shrink-0 opacity-70"
+                  aria-hidden
+                />
               ) : null}
               {last ? (
                 <span
@@ -38,9 +49,7 @@ export function PageBreadcrumbs({
               ) : (
                 <Link
                   href={item.path}
-                  className={cn(
-                    dark ? "hover:text-accent" : "hover:text-accent",
-                  )}
+                  className="transition-colors hover:text-accent"
                 >
                   {item.name}
                 </Link>

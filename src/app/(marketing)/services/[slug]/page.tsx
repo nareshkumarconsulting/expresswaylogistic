@@ -87,7 +87,7 @@ export default async function ServiceDetailPage({ params }: ServicePageProps) {
         ]}
       />
 
-      <section className="relative z-10 pb-[var(--space-section)]">
+      <section className="relative z-10 pt-8 pb-[var(--space-section)] md:pt-10">
         <div className="container-page">
           <div className="mb-10">
             <DirectAnswerBlock text={service.details} />
