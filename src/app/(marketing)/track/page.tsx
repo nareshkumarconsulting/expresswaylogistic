@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
-import { MapPin, Package, ShieldCheck } from "lucide-react";
-import { PageHero } from "@/components/molecules/page-hero";
+import Link from "next/link";
+import { TrackHero } from "@/features/tracking/components/track-hero";
 import { TrackingForm } from "@/features/tracking/components/tracking-form";
+import { PageAeo } from "@/components/organisms/page-aeo";
+import { TRACK_PAGE_FAQS } from "@/constants/faqs";
 
 export const metadata: Metadata = {
   title: "Track Shipment",
@@ -9,24 +11,6 @@ export const metadata: Metadata = {
     "Track ExpressWay Logistic shipments in real time with live status, ETA, and timeline events.",
   alternates: { canonical: "/track" },
 };
-
-const highlights = [
-  {
-    icon: Package,
-    title: "Live status",
-    description: "Milestone updates from booking through delivery",
-  },
-  {
-    icon: MapPin,
-    title: "Lane & ETA",
-    description: "Origin, destination, mode, and predicted arrival",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Secure lookup",
-    description: "Public tracking without exposing client details",
-  },
-] as const;
 
 type TrackPageProps = {
   searchParams: Promise<{ q?: string; id?: string }>;
@@ -38,35 +22,74 @@ export default async function TrackPage({ searchParams }: TrackPageProps) {
 
   return (
     <div className="bg-surface">
-      <PageHero
-        eyebrow="Shipment Tracking"
-        title="Track Your Cargo"
-        description="Enter your ExpressWay tracking ID for live status, predicted ETA, and milestone history across air and ocean lanes."
-      />
+      <TrackHero />
 
-      <section className="relative z-10 -mt-10 pb-[var(--space-section)] md:-mt-12">
-        <div className="container-page max-w-3xl">
-          <div className="border border-border bg-card p-6 shadow-lg md:p-8">
-            <TrackingForm initialTrackingId={initialTrackingId} />
+      <section className="relative pb-16 md:pb-20">
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-primary/[0.04] to-transparent"
+          aria-hidden
+        />
+        <div className="container-page relative z-10 -mt-12 max-w-4xl md:-mt-16">
+          <div
+            id="track-lookup"
+            className="relative scroll-mt-28 overflow-hidden border border-border/80 bg-card shadow-[var(--ds-shadow-lg)]"
+          >
+            <div
+              className="pointer-events-none absolute top-0 right-0 h-32 w-32 bg-accent/10 blur-3xl"
+              aria-hidden
+            />
+            <div
+              className="pointer-events-none absolute bottom-0 left-0 h-24 w-24 bg-primary/5 blur-2xl"
+              aria-hidden
+            />
+            <div className="relative border-b border-border/60 bg-surface/50 px-5 py-4 md:px-8 md:py-5">
+              <p className="text-xs font-semibold tracking-[0.18em] text-accent uppercase">
+                Shipment lookup
+              </p>
+              <h2 className="mt-1 text-xl font-semibold tracking-tight text-foreground md:text-2xl">
+                Enter your tracking ID
+              </h2>
+              <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+                Format EW-XXXXX. Live status, lane, and milestone history for
+                air and ocean shipments.
+              </p>
+            </div>
+            <div className="relative px-5 py-6 md:px-8 md:py-8">
+              <TrackingForm initialTrackingId={initialTrackingId} />
+            </div>
           </div>
 
-          <ul className="mt-10 grid gap-6 sm:grid-cols-3">
-            {highlights.map(({ icon: Icon, title, description }) => (
-              <li key={title} className="flex gap-3">
-                <span className="flex size-10 shrink-0 items-center justify-center bg-primary text-primary-foreground">
-                  <Icon className="size-5" aria-hidden />
-                </span>
-                <div>
-                  <p className="text-h4 text-foreground">{title}</p>
-                  <p className="text-muted-body mt-1 text-muted-foreground">
-                    {description}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
+          <p className="mt-6 text-center text-sm text-muted-foreground">
+            Don&apos;t have a tracking ID yet?{" "}
+            <Link
+              href="/quote"
+              className="font-semibold text-primary underline-offset-4 hover:underline"
+            >
+              Request a quote
+            </Link>{" "}
+            or{" "}
+            <Link
+              href="/appointment"
+              className="font-semibold text-primary underline-offset-4 hover:underline"
+            >
+              book an appointment
+            </Link>
+            .
+          </p>
         </div>
       </section>
+
+      <PageAeo
+        answers={TRACK_PAGE_FAQS}
+        faqs={TRACK_PAGE_FAQS}
+        breadcrumbs={[
+          { name: "Home", path: "/" },
+          { name: "Track Shipment", path: "/track" },
+        ]}
+        answerTitle="How shipment tracking works"
+        answerDescription="Use an ExpressWay tracking ID for live status. Public lookup does not expose full client commercial files."
+        faqTitle="Tracking questions"
+      />
     </div>
   );
 }

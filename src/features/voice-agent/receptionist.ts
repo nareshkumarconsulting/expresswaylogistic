@@ -1110,11 +1110,11 @@ export function runReceptionistTurn(input: {
       break;
     case "process":
       reply = answerProcess();
-      action = { type: "navigate", href: "/#process", label: "View process" };
+      action = { type: "navigate", href: "/process", label: "View process" };
       break;
     case "industries":
       reply = answerIndustries();
-      action = { type: "navigate", href: "/#industries", label: "View industries" };
+      action = { type: "navigate", href: "/industries", label: "View industries" };
       break;
     case "contact":
       reply = answerContact();

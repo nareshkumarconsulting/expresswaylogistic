@@ -1,98 +1,22 @@
 import dynamic from "next/dynamic";
+import type { Metadata } from "next";
 import { preload } from "react-dom";
 import { HeroSection } from "@/components/organisms/hero-section";
 import { ConsultingCtaSection } from "@/components/organisms/consulting-cta-section";
+import { PageAeo } from "@/components/organisms/page-aeo";
+import { JsonLd } from "@/components/molecules/json-ld";
+import { CORE_INTENT_FAQS, HOME_SUPPORTING_FAQS } from "@/constants/faqs";
+import { servicesItemListSchema, websiteSchema } from "@/lib/schema";
 import { siteConfig } from "@/config/site";
-import { FAQ_ITEMS } from "@/constants/content";
-import { SERVICES } from "@/constants/services";
 
-function JsonLd() {
-  const organization = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: siteConfig.name,
-    url: siteConfig.url,
-    logo: `${siteConfig.url}/images/expressway-logo.png`,
-    description: siteConfig.description,
-    email: siteConfig.contact.email,
-    telephone: siteConfig.contact.phone,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress:
-        "Unit No. 623, 6th Floor, Tower-1, Assotech Business Cresterra, Sector-135",
-      addressLocality: "Noida",
-      addressRegion: "Uttar Pradesh",
-      postalCode: "201305",
-      addressCountry: "IN",
-    },
-    sameAs: Object.values(siteConfig.social),
-  };
-
-  const services = {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    itemListElement: SERVICES.map((service, index) => ({
-      "@type": "ListItem",
-      position: index + 1,
-      item: {
-        "@type": "Service",
-        name: service.title,
-        description: service.description,
-        provider: {
-          "@type": "Organization",
-          name: siteConfig.name,
-        },
-        areaServed: "Worldwide",
-      },
-    })),
-  };
-
-  const faq = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: FAQ_ITEMS.map((item) => ({
-      "@type": "Question",
-      name: item.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: item.answer,
-      },
-    })),
-  };
-
-  const website = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: siteConfig.name,
-    url: siteConfig.url,
-    potentialAction: {
-      "@type": "SearchAction",
-      target: `${siteConfig.url}/track?q={search_term_string}`,
-      "query-input": "required name=search_term_string",
-    },
-  };
-
-  return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organization) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(services) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faq) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(website) }}
-      />
-    </>
-  );
-}
+export const metadata: Metadata = {
+  title: {
+    absolute: `${siteConfig.name} | ${siteConfig.tagline}`,
+  },
+  description:
+    "Neutral NVOCC freight forwarding from India: ocean and air, customs, door-to-door, and EXIM docs. Ship India to Dubai and worldwide — request a quote for cost; typical reply within two business hours.",
+  alternates: { canonical: "/" },
+};
 
 const AboutSection = dynamic(() =>
   import("@/components/organisms/about-section").then((mod) => mod.AboutSection),
@@ -132,9 +56,6 @@ const TestimonialsSection = dynamic(() =>
     (mod) => mod.TestimonialsSection,
   ),
 );
-const FaqSection = dynamic(() =>
-  import("@/components/organisms/faq-section").then((mod) => mod.FaqSection),
-);
 
 export default function HomePage() {
   preload("/images/hero-banner-750.webp", {
@@ -148,7 +69,8 @@ export default function HomePage() {
 
   return (
     <>
-      <JsonLd />
+      <JsonLd data={websiteSchema()} />
+      <JsonLd data={servicesItemListSchema()} />
       <HeroSection />
       <AboutSection />
       <ServicesSection />
@@ -159,7 +81,14 @@ export default function HomePage() {
       <StatisticsSection />
       <TestimonialsSection />
       <ConsultingCtaSection />
-      <FaqSection />
+      <PageAeo
+        answers={CORE_INTENT_FAQS}
+        faqs={HOME_SUPPORTING_FAQS}
+        breadcrumbs={[{ name: "Home", path: "/" }]}
+        answerTitle="Answers to common freight queries"
+        answerDescription="Direct answers on services, India–Dubai shipping, export documents, who can handle your export, and how freight cost is quoted."
+        faqTitle="More frequently asked questions"
+      />
     </>
   );
 }

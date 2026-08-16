@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { AppointmentForm } from "@/features/appointment/components/appointment-form";
-import { AppointmentFaqs } from "@/features/appointment/components/appointment-faqs";
 import { AppointmentHero } from "@/features/appointment/components/appointment-hero";
 import { AppointmentJourney } from "@/features/appointment/components/appointment-journey";
+import { PageAeo } from "@/components/organisms/page-aeo";
+import { APPOINTMENT_PAGE_FAQS } from "@/constants/faqs";
 
 export const metadata: Metadata = {
   title: "Book an Appointment",
@@ -51,7 +52,16 @@ export default function AppointmentPage() {
       </section>
 
       <AppointmentJourney />
-      <AppointmentFaqs />
+      <PageAeo
+        answers={APPOINTMENT_PAGE_FAQS.slice(0, 3)}
+        faqs={APPOINTMENT_PAGE_FAQS}
+        breadcrumbs={[
+          { name: "Home", path: "/" },
+          { name: "Appointment", path: "/appointment" },
+        ]}
+        answerTitle="Talk to the Noida freight desk"
+        answerDescription="When to book a meeting versus a quote, and which company handles your export shipment."
+      />
     </div>
   );
 }

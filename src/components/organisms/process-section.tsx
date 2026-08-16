@@ -45,7 +45,13 @@ export function ProcessSection() {
           </h2>
           <p className="mt-4 max-w-xl text-sm leading-relaxed text-white/70">
             Five clear steps from quote to door delivery — one dedicated team
-            handling booking, documents, clearance, and updates.
+            handling booking, documents, clearance, and updates.{" "}
+            <Link
+              href="/process"
+              className="font-medium text-accent underline-offset-4 hover:underline"
+            >
+              See the full process
+            </Link>
           </p>
         </div>
 

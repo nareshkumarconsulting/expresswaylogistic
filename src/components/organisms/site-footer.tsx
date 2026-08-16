@@ -87,7 +87,12 @@ export function SiteFooter() {
                 </Link>
               </li>
               <li>
-                <Link href="/#process" className="hover:text-accent">
+                <Link href="/industries" className="hover:text-accent">
+                  Industries
+                </Link>
+              </li>
+              <li>
+                <Link href="/process" className="hover:text-accent">
                   Our Process
                 </Link>
               </li>

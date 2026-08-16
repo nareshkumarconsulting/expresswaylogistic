@@ -23,8 +23,8 @@ export const siteConfig = {
   },
   nav: [
     { name: "Services", href: "/services" },
-    { name: "Industries", href: "/#industries" },
-    { name: "Process", href: "/#process" },
+    { name: "Industries", href: "/industries" },
+    { name: "Process", href: "/process" },
     { name: "About", href: "/about" },
     { name: "Appointment", href: "/appointment" },
     { name: "Track", href: "/track" },

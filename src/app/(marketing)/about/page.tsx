@@ -20,6 +20,8 @@ import { AboutLeadership } from "@/features/about/components/about-leadership";
 import { siteConfig } from "@/config/site";
 import { ABOUT_HIGHLIGHTS, INDUSTRIES } from "@/constants/content";
 import { SERVICES } from "@/constants/services";
+import { ABOUT_PAGE_FAQS } from "@/constants/faqs";
+import { PageAeo } from "@/components/organisms/page-aeo";
 
 export const metadata: Metadata = {
   title: "About Us",
@@ -372,6 +374,17 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+
+      <PageAeo
+        answers={ABOUT_PAGE_FAQS.slice(0, 3)}
+        faqs={ABOUT_PAGE_FAQS}
+        breadcrumbs={[
+          { name: "Home", path: "/" },
+          { name: "About", path: "/about" },
+        ]}
+        answerTitle="Who handles your export shipment"
+        answerDescription="Entity facts and what ExpressWay Logistic provides as a neutral NVOCC from Noida."
+      />
     </div>
   );
 }

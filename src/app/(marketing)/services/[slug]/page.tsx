@@ -12,6 +12,9 @@ import {
   getServiceIds,
   SERVICES,
 } from "@/constants/services";
+import { getServiceFaqs } from "@/constants/faqs";
+import { PageAeo } from "@/components/organisms/page-aeo";
+import { serviceSchema } from "@/lib/schema";
 
 type ServicePageProps = {
   params: Promise<{ slug: string }>;
@@ -48,6 +51,7 @@ export default async function ServiceDetailPage({ params }: ServicePageProps) {
   if (!service) notFound();
 
   const related = SERVICES.filter((item) => item.id !== service.id).slice(0, 3);
+  const serviceFaqs = getServiceFaqs(service.title);
 
   return (
     <div className="bg-surface">
@@ -161,6 +165,19 @@ export default async function ServiceDetailPage({ params }: ServicePageProps) {
           </div>
         </div>
       </section>
+
+      <PageAeo
+        answers={serviceFaqs.slice(0, 3)}
+        faqs={serviceFaqs}
+        breadcrumbs={[
+          { name: "Home", path: "/" },
+          { name: "Services", path: "/services" },
+          { name: service.title, path: service.href },
+        ]}
+        extraJsonLd={[serviceSchema(service)]}
+        answerTitle={`About ${service.title}`}
+        answerDescription="What this service covers, how it is booked from India, and how cost is quoted — plus typical export documents."
+      />
     </div>
   );
 }

@@ -6,6 +6,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
     "",
     "/about",
+    "/process",
+    "/industries",
     "/services",
     ...getServiceIds().map((id) => `/services/${id}`),
     "/track",

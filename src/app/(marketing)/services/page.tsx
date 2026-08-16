@@ -6,6 +6,9 @@ import { PageHero } from "@/components/molecules/page-hero";
 import { ServiceCard } from "@/components/molecules/service-card";
 import { siteConfig } from "@/config/site";
 import { SERVICES } from "@/constants/services";
+import { CORE_INTENT_FAQS, SERVICES_PAGE_FAQS } from "@/constants/faqs";
+import { PageAeo } from "@/components/organisms/page-aeo";
+import { servicesItemListSchema } from "@/lib/schema";
 
 export const metadata: Metadata = {
   title: "Logistics Services",
@@ -57,6 +60,18 @@ export default function ServicesPage() {
           </div>
         </div>
       </section>
+
+      <PageAeo
+        answers={[CORE_INTENT_FAQS[0], CORE_INTENT_FAQS[4], SERVICES_PAGE_FAQS[2]]}
+        faqs={SERVICES_PAGE_FAQS}
+        breadcrumbs={[
+          { name: "Home", path: "/" },
+          { name: "Services", path: "/services" },
+        ]}
+        extraJsonLd={[servicesItemListSchema()]}
+        answerTitle="Freight forwarding services, explained"
+        answerDescription="What ExpressWay provides, how cost is quoted, and whether you can book a single service or a full door-to-door move."
+      />
     </div>
   );
 }

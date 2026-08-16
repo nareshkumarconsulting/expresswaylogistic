@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { QuoteHero } from "@/features/quote/components/quote-hero";
 import { QuoteWizardForm } from "@/features/quote/components/quote-wizard-form";
+import { PageAeo } from "@/components/organisms/page-aeo";
+import { CORE_INTENT_FAQS, QUOTE_PAGE_FAQS } from "@/constants/faqs";
 
 export const metadata: Metadata = {
   title: "Get a Quote",
   description:
-    "Request an accurate air or ocean freight quote from ExpressWay Logistic. Share cargo details, route, and contact info — we respond within one business day.",
+    "How much does international freight forwarding cost? Request an air or ocean quote from ExpressWay Logistic — rates depend on lane, cargo, and mode. Typical response within two business hours.",
   alternates: { canonical: "/quote" },
 };
 
@@ -37,8 +39,9 @@ export default function QuotePage() {
                 Build your quote request
               </h2>
               <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-                Four steps — cargo, route, services, and contact. Our freight
-                desk responds within one business day.
+                Four steps — cargo, route, services, and contact. Cost is
+                quoted per shipment; there is no public rate list. The desk
+                typically responds within two business hours.
               </p>
             </div>
             <QuoteWizardForm />
@@ -56,6 +59,17 @@ export default function QuotePage() {
           </p>
         </div>
       </section>
+
+      <PageAeo
+        answers={[CORE_INTENT_FAQS[4], CORE_INTENT_FAQS[1], QUOTE_PAGE_FAQS[2]]}
+        faqs={QUOTE_PAGE_FAQS}
+        breadcrumbs={[
+          { name: "Home", path: "/" },
+          { name: "Get a Quote", path: "/quote" },
+        ]}
+        answerTitle="How freight cost is quoted"
+        answerDescription="Why there is no single price, what we need for an accurate option, and how to start an India–Dubai or other international move."
+      />
     </div>
   );
 }

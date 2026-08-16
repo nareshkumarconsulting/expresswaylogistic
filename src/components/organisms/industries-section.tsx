@@ -47,7 +47,13 @@ export function IndustriesSection() {
             </h2>
             <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/70">
               From garments and pharma to project machinery and bulk cargo — we
-              move the cargo types Indian EXIM actually ships.
+              move the cargo types Indian EXIM actually ships.{" "}
+              <Link
+                href="/industries"
+                className="font-medium text-accent underline-offset-4 hover:underline"
+              >
+                See all industries
+              </Link>
             </p>
           </div>
 
