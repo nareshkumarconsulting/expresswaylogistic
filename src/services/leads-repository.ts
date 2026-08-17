@@ -17,6 +17,10 @@ import {
   type QuoteWizardValues,
   type TransportMode,
 } from "@/features/quote/schemas";
+import {
+  formatWizardCompanyAddress,
+  parseQuoteWizardPayload,
+} from "@/features/quotes/wizard-payload";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import type { Database } from "@/lib/supabase/database.types";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
@@ -106,11 +110,17 @@ export function mapTransportModeToServiceType(
 export function buildQuoteWizardMessage(data: QuoteWizardValues): string {
   const totals = formatCargoTotals(data.cargoItems);
   const addOns = formatQuoteAddOns(data);
+  const hsCodes = data.cargoItems
+    .map((item) => item.hsCode?.trim())
+    .filter((code): code is string => Boolean(code));
 
   return [
     `Transport: ${TRANSPORT_MODE_LABELS[data.transportMode]}`,
     `Cargo ready: ${data.cargoReadyDate}`,
     `Line items: ${data.cargoItems.length} · ${totals.weightKg} kg · ${totals.cbm} CBM`,
+    data.originPickup ? "Need origin pickup" : null,
+    data.destinationDelivery ? "Need destination delivery" : null,
+    hsCodes.length > 0 ? `HS codes: ${hsCodes.join(", ")}` : null,
     addOns.length > 0 ? `Add-ons: ${addOns.join(", ")}` : null,
     data.dangerousCargoNotes
       ? `Special notes: ${data.dangerousCargoNotes}`
@@ -150,16 +160,34 @@ export function mapQuoteWizardToQuoteInsert(
   data: QuoteWizardValues,
   referenceId: string,
 ): QuoteRequestInsert {
+  const totals = formatCargoTotals(data.cargoItems);
+  const addOns = formatQuoteAddOns(data);
+  const wizard = parseQuoteWizardPayload(data);
+  const companyAddress = wizard
+    ? formatWizardCompanyAddress(wizard)
+    : undefined;
+
   return {
     id: referenceId,
     source: "quote_wizard",
     name: `${data.firstName} ${data.lastName}`.trim(),
     company: data.company,
+    company_address: companyAddress ?? null,
     email: data.email,
     phone: data.phone ?? null,
     origin: data.origin,
     destination: data.destination,
     service_type: mapTransportModeToServiceType(data.transportMode),
+    total_packages: data.cargoItems.reduce(
+      (sum, item) => sum + (Number(item.quantity) || 0),
+      0,
+    ),
+    approx_weight: `${totals.weightKg} KG · ${totals.cbm} CBM`,
+    pickup_location: data.originPickup ? "Need origin pickup" : null,
+    delivery_location: data.destinationDelivery
+      ? "Need destination delivery"
+      : null,
+    additional_requirements: addOns.length > 0 ? addOns.join(" · ") : null,
     message: buildQuoteWizardMessage(data),
     payload: data as unknown as QuoteRequestInsert["payload"],
   };
@@ -221,11 +249,16 @@ export function mapAppointmentToInsert(
 }
 
 export function mapQuoteRowToQuoteRequest(row: QuoteRequestRow): QuoteRequest {
+  const wizard = parseQuoteWizardPayload(row.payload);
+  const companyAddress =
+    row.company_address ??
+    (wizard ? formatWizardCompanyAddress(wizard) : undefined);
+
   return {
     id: row.id,
     name: row.name,
     company: row.company,
-    companyAddress: row.company_address ?? undefined,
+    companyAddress: companyAddress ?? undefined,
     email: row.email,
     phone: row.phone ?? undefined,
     origin: row.origin,
@@ -255,6 +288,13 @@ export function mapQuoteRowToQuoteRequest(row: QuoteRequestRow): QuoteRequest {
     internalNotes: row.internal_notes ?? undefined,
     quotedAmount: row.quoted_amount ?? undefined,
     updatedAt: row.updated_at,
+    originPickup:
+      wizard?.originPickup === true ||
+      row.pickup_location === "Need origin pickup",
+    destinationDelivery:
+      wizard?.destinationDelivery === true ||
+      row.delivery_location === "Need destination delivery",
+    wizard: wizard ?? undefined,
     pickupLocation: row.pickup_location ?? undefined,
     deliveryLocation: row.delivery_location ?? undefined,
     requiredDeliveryDate: row.required_delivery_date ?? undefined,

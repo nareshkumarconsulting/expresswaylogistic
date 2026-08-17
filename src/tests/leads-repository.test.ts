@@ -4,9 +4,11 @@ import {
   buildQuoteWizardMessage,
   mapAppointmentRowToCalendarEvent,
   mapContactFormToQuoteInsert,
+  mapQuoteWizardToQuoteInsert,
   mapTransportModeToServiceType,
 } from "@/services/leads-repository";
 import type { QuoteWizardValues } from "@/features/quote/schemas";
+import { parseQuoteWizardPayload } from "@/features/quotes/wizard-payload";
 
 describe("leads-repository mappers", () => {
   it("maps transport mode to quote service type", () => {
@@ -84,6 +86,8 @@ describe("leads-repository mappers", () => {
           weightKg: 12,
         },
       ],
+      originPickup: true,
+      destinationDelivery: false,
       insurance: false,
       projectCargo: false,
       packingRequired: false,
@@ -95,5 +99,60 @@ describe("leads-repository mappers", () => {
     expect(message).toContain("Air Freight");
     expect(message).toContain("2026-08-15");
     expect(message).toContain("Customs brokerage");
+    expect(message).toContain("Need origin pickup");
+    expect(message).not.toContain("Need destination delivery");
+  });
+
+  it("maps quote wizard pickup, delivery, cargo totals, and payload", () => {
+    const wizard = {
+      firstName: "Naresh",
+      lastName: "Kumar",
+      company: "nareshkumarconsulting.com",
+      email: "nareshsam02@gmail.com",
+      phone: "+19958696357",
+      origin: "Mumbai",
+      destination: "Ghana",
+      originPickup: true,
+      destinationDelivery: true,
+      transportMode: "fcl",
+      cargoReadyDate: "2026-08-20",
+      cargoItems: [
+        {
+          description: "Computer Parts",
+          hsCode: "8473.30",
+          quantity: 300,
+          packageType: "carton",
+          dimensionUnit: "cm",
+          length: 200,
+          width: 400,
+          height: 100,
+          weightKg: 1200,
+        },
+      ],
+      insurance: true,
+      insuranceCoverage: "all-risk",
+      insuranceCargoValueInr: 1500000,
+      projectCargo: false,
+      packingRequired: false,
+      customsBrokerage: false,
+      address: "D-1101, Fusion Homes Tech zone IV",
+      city: "Greater Noida West",
+      state: "Uttar Pradesh",
+      postalCode: "201318",
+      country: "India",
+    } as QuoteWizardValues;
+
+    const row = mapQuoteWizardToQuoteInsert(wizard, "QW-TEST-FCL");
+    const parsed = parseQuoteWizardPayload(row.payload);
+
+    expect(row.pickup_location).toBe("Need origin pickup");
+    expect(row.delivery_location).toBe("Need destination delivery");
+    expect(row.approx_weight).toBe("360000.0 KG · 2400.000 CBM");
+    expect(row.total_packages).toBe(300);
+    expect(row.company_address).toContain("Greater Noida West");
+    expect(parsed?.originPickup).toBe(true);
+    expect(parsed?.destinationDelivery).toBe(true);
+    expect(parsed?.cargoItems[0]?.hsCode).toBe("8473.30");
+    expect(parsed?.insuranceCoverage).toBe("all-risk");
   });
 });

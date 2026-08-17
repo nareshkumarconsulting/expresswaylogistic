@@ -40,7 +40,7 @@ export async function sendForwarderRfq(
   forwarder: Forwarder,
   deadline?: string,
 ) {
-  const email = forwarderRfqEmail(quote, deadline);
+  const email = forwarderRfqEmail(quote, forwarder, deadline);
   return sendEmail({
     to: forwarder.email,
     ...email,

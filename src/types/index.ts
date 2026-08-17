@@ -1,3 +1,5 @@
+import type { QuoteWizardPayload } from "@/features/quotes/wizard-payload";
+
 export type ShipmentStatus =
   | "Processing"
   | "In Transit"
@@ -191,6 +193,9 @@ export interface QuoteRequest {
   internalNotes?: string;
   quotedAmount?: string;
   updatedAt?: string;
+  originPickup?: boolean;
+  destinationDelivery?: boolean;
+  wizard?: QuoteWizardPayload;
   pickupLocation?: string;
   deliveryLocation?: string;
   requiredDeliveryDate?: string;

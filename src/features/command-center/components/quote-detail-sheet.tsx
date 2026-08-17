@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { ChevronDown, Package, Truck } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import { Badge } from "@/components/atoms/badge";
 import { Input } from "@/components/atoms/input";
@@ -31,6 +32,18 @@ import {
   formatMoney,
   parseAmount,
 } from "@/features/quotes/money";
+import {
+  cargoItemCbm,
+  formatCargoItemDimensions,
+  formatCargoItemPackageType,
+  formatWizardCompanyAddress,
+  insuranceLabel,
+  packingLabel,
+  projectCargoLabel,
+  referralLabel,
+  wizardCargoTotals,
+  type QuoteWizardPayload,
+} from "@/features/quotes/wizard-payload";
 import { cn } from "@/lib/utils";
 import { QUOTE_REQUEST_STATUSES, type Forwarder, type QuoteRequest } from "@/types";
 
@@ -56,6 +69,188 @@ function Field({
     <div className="flex justify-between gap-4">
       <dt className="text-muted-foreground">{label}</dt>
       <dd className="max-w-[60%] text-right font-medium">{value}</dd>
+    </div>
+  );
+}
+
+function ServiceNeedBadge({ label }: { label: string }) {
+  return (
+    <Badge variant="accent" className="rounded-none">
+      <Truck className="size-3" aria-hidden />
+      {label}
+    </Badge>
+  );
+}
+
+function ShipmentDetails({ quote }: { quote: QuoteRequest }) {
+  const wizard = quote.wizard;
+  const companyAddress =
+    quote.companyAddress ??
+    (wizard ? formatWizardCompanyAddress(wizard) : undefined);
+  const pickupValue =
+    quote.originPickup && quote.pickupLocation === "Need origin pickup"
+      ? undefined
+      : quote.pickupLocation;
+  const deliveryValue =
+    quote.destinationDelivery &&
+    quote.deliveryLocation === "Need destination delivery"
+      ? undefined
+      : quote.deliveryLocation;
+
+  return (
+    <div className="mt-3 space-y-4">
+      <dl className="space-y-2 text-sm">
+        <Field label="Company" value={quote.company} />
+        <Field label="Phone" value={quote.phone} />
+        <Field label="Address" value={companyAddress} />
+        <Field label="Submitted" value={formatDateTime(quote.submittedAt)} />
+        <Field
+          label="Cargo ready"
+          value={wizard?.cargoReadyDate ?? quote.requiredDeliveryDate}
+        />
+        <Field label="Pickup" value={pickupValue} />
+        <Field label="Delivery" value={deliveryValue} />
+        {quote.productType ? (
+          <Field
+            label="Shipment type"
+            value={PRODUCT_TYPE_LABELS[quote.productType]}
+          />
+        ) : null}
+        {quote.containerSize ? (
+          <Field
+            label="Container"
+            value={`${CONTAINER_SIZE_LABELS[quote.containerSize]}${
+              quote.containerType
+                ? ` · ${CONTAINER_TYPE_LABELS[quote.containerType]}`
+                : ""
+            }`}
+          />
+        ) : null}
+        {quote.valueInr != null ? (
+          <Field
+            label="Declared value"
+            value={formatMoney(quote.valueInr)}
+          />
+        ) : null}
+        <Field label="Assigned" value={quote.assignedTo} />
+      </dl>
+
+      {wizard ? <WizardShipmentDetails wizard={wizard} /> : null}
+
+      {!wizard && (quote.message || quote.additionalRequirements) ? (
+        <div className="rounded-lg bg-muted/50 p-3 text-sm whitespace-pre-wrap">
+          {quote.message}
+          {quote.additionalRequirements
+            ? `\n${quote.additionalRequirements}`
+            : ""}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function WizardShipmentDetails({ wizard }: { wizard: QuoteWizardPayload }) {
+  const totals = wizardCargoTotals(wizard.cargoItems);
+  const insurance = insuranceLabel(wizard);
+  const project = projectCargoLabel(wizard);
+  const packing = packingLabel(wizard);
+
+  return (
+    <div className="space-y-4">
+      {wizard.cargoItems.length > 0 ? (
+        <section className="space-y-2">
+          <h4 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+            Cargo line items
+          </h4>
+          <p className="text-sm font-medium">
+            {totals.cbm.toFixed(3)} CBM · {totals.weightKg.toFixed(1)} KG
+          </p>
+          <ul className="space-y-2">
+            {wizard.cargoItems.map((item, index) => (
+              <li
+                key={`${item.description}-${index}`}
+                className="rounded-lg border border-border bg-muted/40 p-3 text-sm"
+              >
+                <p className="font-semibold">
+                  Line {index + 1} · {item.description}
+                </p>
+                <dl className="mt-2 space-y-1">
+                  {item.hsCode ? (
+                    <Field label="HS code" value={item.hsCode} />
+                  ) : null}
+                  <Field label="Qty" value={item.quantity} />
+                  <Field
+                    label="Type"
+                    value={formatCargoItemPackageType(item)}
+                  />
+                  <Field
+                    label="Weight / unit"
+                    value={`${item.weightKg} KG`}
+                  />
+                  <Field
+                    label="Dimensions"
+                    value={formatCargoItemDimensions(item)}
+                  />
+                  <Field
+                    label="Line CBM"
+                    value={cargoItemCbm(item).toFixed(3)}
+                  />
+                </dl>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      <section className="space-y-2">
+        <h4 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+          Add-on services
+        </h4>
+        <dl className="space-y-2 text-sm">
+          <Field label="Insurance" value={insurance ?? "Not requested"} />
+          {wizard.insurance && wizard.insuranceCargoValueInr != null ? (
+            <Field
+              label="Insured value"
+              value={formatMoney(wizard.insuranceCargoValueInr)}
+            />
+          ) : null}
+          <Field
+            label="Project cargo"
+            value={project ?? "Not requested"}
+          />
+          {wizard.projectRegistrationHelp ? (
+            <Field
+              label="Project registration"
+              value="Help requested"
+            />
+          ) : null}
+          <Field label="Project notes" value={wizard.projectNotes} />
+          <Field label="Packing" value={packing ?? "Not requested"} />
+          <Field label="Packing notes" value={wizard.packingNotes} />
+          <Field
+            label="Customs brokerage"
+            value={wizard.customsBrokerage ? "Requested" : "Not requested"}
+          />
+          <Field
+            label="Dangerous cargo"
+            value={wizard.dangerousCargoNotes}
+          />
+        </dl>
+      </section>
+
+      <dl className="space-y-2 text-sm">
+        <Field
+          label="Existing customer"
+          value={
+            wizard.existingCustomer === true
+              ? "Yes"
+              : wizard.existingCustomer === false
+                ? "No"
+                : undefined
+          }
+        />
+        <Field label="Heard about us" value={referralLabel(wizard)} />
+      </dl>
     </div>
   );
 }
@@ -106,7 +301,7 @@ export function QuoteDetailSheet({
   const [busy, setBusy] = useState<"save" | "send" | "forwarders" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [workPath, setWorkPath] = useState<WorkPath>("customer");
-  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(true);
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [selectedForwarders, setSelectedForwarders] = useState<string[]>([]);
@@ -131,7 +326,7 @@ export function QuoteDetailSheet({
     setMargin(quote.margin != null ? String(quote.margin) : "");
     setError(null);
     setPickerOpen(false);
-    setDetailsOpen(false);
+    setDetailsOpen(true);
     setAdvancedOpen(false);
     const hasForwarderWork = (quote.forwarderRequests ?? []).length > 0;
     setWorkPath(
@@ -261,62 +456,38 @@ export function QuoteDetailSheet({
             ) : (
               <Badge variant="muted">New customer</Badge>
             )}
+            {quote.originPickup ? (
+              <ServiceNeedBadge label="Need origin pickup" />
+            ) : null}
+            {quote.destinationDelivery ? (
+              <ServiceNeedBadge label="Need destination delivery" />
+            ) : null}
           </div>
         </div>
 
         <div className="space-y-5 px-6 py-5">
           <div>
-            <button
+            <Button
               type="button"
-              className="text-xs font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground"
+              variant={detailsOpen ? "outline" : "default"}
+              rounded="none"
+              className="h-11 w-full justify-between"
+              aria-expanded={detailsOpen}
               onClick={() => setDetailsOpen((value) => !value)}
             >
-              {detailsOpen ? "Hide shipment details" : "Show shipment details"}
-            </button>
-            {detailsOpen ? (
-              <div className="mt-3 space-y-3">
-                <dl className="space-y-2 text-sm">
-                  <Field label="Company" value={quote.company} />
-                  <Field label="Phone" value={quote.phone} />
-                  <Field label="Submitted" value={formatDateTime(quote.submittedAt)} />
-                  <Field label="Pickup" value={quote.pickupLocation} />
-                  <Field label="Delivery" value={quote.deliveryLocation} />
-                  {quote.productType ? (
-                    <Field
-                      label="Shipment type"
-                      value={PRODUCT_TYPE_LABELS[quote.productType]}
-                    />
-                  ) : null}
-                  {quote.containerSize ? (
-                    <Field
-                      label="Container"
-                      value={`${CONTAINER_SIZE_LABELS[quote.containerSize]}${
-                        quote.containerType
-                          ? ` · ${CONTAINER_TYPE_LABELS[quote.containerType]}`
-                          : ""
-                      }`}
-                    />
-                  ) : null}
-                  <Field
-                    label="Required delivery"
-                    value={quote.requiredDeliveryDate}
-                  />
-                  {quote.valueInr != null ? (
-                    <Field
-                      label="Declared value"
-                      value={formatMoney(quote.valueInr)}
-                    />
-                  ) : null}
-                  <Field label="Assigned" value={quote.assignedTo} />
-                </dl>
-                <div className="rounded-lg bg-muted/50 p-3 text-sm whitespace-pre-wrap">
-                  {quote.message}
-                  {quote.additionalRequirements
-                    ? `\n${quote.additionalRequirements}`
-                    : ""}
-                </div>
-              </div>
-            ) : null}
+              <span className="inline-flex items-center gap-2">
+                <Package className="size-4" aria-hidden />
+                {detailsOpen ? "Hide shipment details" : "View shipment details"}
+              </span>
+              <ChevronDown
+                className={cn(
+                  "size-4 transition-transform",
+                  detailsOpen && "rotate-180",
+                )}
+                aria-hidden
+              />
+            </Button>
+            {detailsOpen ? <ShipmentDetails quote={quote} /> : null}
           </div>
 
           <section className="space-y-3">
