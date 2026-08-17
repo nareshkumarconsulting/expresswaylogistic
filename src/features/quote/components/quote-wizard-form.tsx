@@ -1734,20 +1734,6 @@ export function QuoteWizardForm() {
                       />
                     </FormField>
 
-                    <Controller
-                      control={control}
-                      name="marketingOptIn"
-                      render={({ field }) => (
-                        <ToggleField
-                          id="marketingOptIn"
-                          label="Send me ExpressWay updates and logistics insights"
-                          description="You can unsubscribe at any time. See our Privacy Policy."
-                          checked={Boolean(field.value)}
-                          onChange={field.onChange}
-                        />
-                      )}
-                    />
-
                     <div className="overflow-hidden border border-primary/15 bg-gradient-to-br from-primary/5 via-background to-accent/5 shadow-sm">
                       <div className="flex items-center justify-between border-b border-border/70 bg-primary px-4 py-3 text-primary-foreground md:px-5">
                         <div>

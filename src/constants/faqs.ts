@@ -107,7 +107,7 @@ export const SERVICES_PAGE_FAQS: FaqItem[] = [
   {
     question: "Can I book only customs or only freight?",
     answer:
-      "Yes. ExpressWay can provide individual services such as freight booking or customs clearance where the shipment scope allows it. The exact service combination depends on the cargo, origin, destination and operational requirements.",
+      "Yes. ExpressWay can arrange individual services such as freight booking or customs clearance where the shipment scope allows. The available service depends on the cargo, origin, destination and specific operational requirements.",
   },
 ];
 
@@ -122,12 +122,12 @@ export const PROCESS_PAGE_FAQS: FaqItem[] = [
   {
     question: "How long does international transit take?",
     answer:
-      "Indicative transit times vary based on origin, destination, carrier, sailing schedule, customs and operational conditions. Your quote states the booked mode and expected window. We do not publish guaranteed transits.",
+      "Transit time varies by origin, destination, mode, carrier, sailing or flight schedule, customs clearance and operational conditions. ExpressWay provides indicative transit information for specific routes rather than guaranteeing a fixed transit time.",
   },
   {
     question: "Who prepares the shipping documents?",
     answer:
-      "You provide commercial details — invoice, packing list, and any licences you already hold. ExpressWay books freight, prepares clearance documentation, and files for port and customs so cargo is not waiting on paperwork.",
+      "ExpressWay coordinates the freight and clearance documentation required for the booked shipment. The exact documents depend on the cargo, origin, destination, mode and applicable regulations. The exporter or importer remains responsible for providing accurate commercial and regulatory information.",
   },
 ];
 
@@ -178,12 +178,12 @@ export const QUOTE_PAGE_FAQS: FaqItem[] = [
   {
     question: "What details do you need for an accurate quote?",
     answer:
-      "Origin, destination, mode preference if you have one (sea or air), cargo type, approximate weight or CBM or container size, and any extras (customs, packing, insurance, door delivery). Incomplete details produce a wider estimate, not a bookable rate.",
+      "We typically need the origin, destination, cargo type, quantity, weight, dimensions or container requirement, cargo-ready date and requested service. Additional details may be required depending on the commodity and destination.",
   },
   {
     question: "Do you publish a freight rate list?",
     answer:
-      "No. Liner and air rates move with space, fuel and season. ExpressWay sources competitive options per shipment instead of a static public tariff.",
+      "No. International freight pricing depends on the origin, destination, mode, cargo, volume or container size, carrier availability and additional services. ExpressWay provides shipment-specific options rather than a generic public tariff.",
   },
 ];
 

@@ -1,9 +1,8 @@
 import Link from "next/link";
-import { ArrowRight, ChevronDown } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import type { FaqItem } from "@/constants/faqs";
 import { siteConfig } from "@/config/site";
-import { cn } from "@/lib/utils";
 
 interface PageFaqProps {
   items: readonly FaqItem[];
@@ -34,29 +33,22 @@ export function PageFaq({
           </p>
         </div>
 
-        <div className="mx-auto max-w-3xl space-y-3">
+        <div className="mx-auto max-w-3xl space-y-4">
           {items.map((item, index) => (
-            <details
+            <article
               key={item.question}
-              open={index === 0}
-              className={cn(
-                "group overflow-hidden rounded-2xl border border-border bg-card px-5",
-                "open:border-accent open:bg-accent/[0.04]",
-              )}
+              className="rounded-2xl border border-border bg-card px-5 py-5 md:px-6"
             >
-              <summary className="flex cursor-pointer list-none items-center justify-between py-5 text-sm font-semibold text-slate-900 marker:content-none [&::-webkit-details-marker]:hidden">
-                <span className="flex items-start gap-3 pr-4 text-left">
-                  <span className="mt-0.5 font-heading text-sm font-bold text-[#00A3FF]">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  {item.question}
+              <h3 className="flex items-start gap-3 text-sm font-semibold text-slate-900 md:text-base">
+                <span className="mt-0.5 font-heading text-sm font-bold text-[#00A3FF]">
+                  {String(index + 1).padStart(2, "0")}
                 </span>
-                <ChevronDown className="size-4 shrink-0 transition-transform group-open:rotate-180" />
-              </summary>
-              <p className="pb-5 text-sm leading-relaxed text-slate-600">
+                <span>{item.question}</span>
+              </h3>
+              <p className="mt-3 pl-8 text-sm leading-relaxed text-slate-600 md:text-base">
                 {item.answer}
               </p>
-            </details>
+            </article>
           ))}
         </div>
 

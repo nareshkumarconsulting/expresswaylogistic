@@ -19,7 +19,11 @@ export default function ProcessPage() {
       <ProcessHero />
       <ProcessJourney />
       <PageAeo
-        answers={[CORE_INTENT_FAQS[1], CORE_INTENT_FAQS[2], PROCESS_PAGE_FAQS[2]]}
+        answers={[
+          CORE_INTENT_FAQS[3],
+          PROCESS_PAGE_FAQS[3],
+          PROCESS_PAGE_FAQS[4],
+        ]}
         faqs={PROCESS_PAGE_FAQS}
         breadcrumbs={[
           { name: "Home", path: "/" },
@@ -27,7 +31,7 @@ export default function ProcessPage() {
         ]}
         extraJsonLd={[howToProcessSchema(PROCESS_STEPS)]}
         answerTitle="How to ship from India"
-        answerDescription="The booking path, documents usually required for export from India, and why transit is not published as a guarantee."
+        answerDescription="Documents usually required for export from India, how transit is estimated, and who prepares shipping paperwork."
       />
     </div>
   );

@@ -3,7 +3,7 @@ import { ServiceCard } from "@/components/molecules/service-card";
 import { PageAeo } from "@/components/organisms/page-aeo";
 import { QuoteCtaBand } from "@/components/organisms/quote-cta-band";
 import { SERVICES } from "@/constants/services";
-import { CORE_INTENT_FAQS, SERVICES_PAGE_FAQS } from "@/constants/faqs";
+import { SERVICES_PAGE_FAQS } from "@/constants/faqs";
 import { servicesItemListSchema } from "@/lib/schema";
 import { pageSeo } from "@/lib/seo";
 
@@ -48,12 +48,16 @@ export default function ServicesPage() {
       </section>
 
       <PageAeo
-        answers={[CORE_INTENT_FAQS[0], CORE_INTENT_FAQS[4], SERVICES_PAGE_FAQS[2]]}
+        answers={[
+          SERVICES_PAGE_FAQS[3],
+          SERVICES_PAGE_FAQS[4],
+          SERVICES_PAGE_FAQS[2],
+        ]}
         faqs={SERVICES_PAGE_FAQS}
         breadcrumbs={crumbs}
         extraJsonLd={[servicesItemListSchema()]}
         answerTitle="Freight forwarding services, explained"
-        answerDescription="What ExpressWay provides, how cost is quoted, and whether you can book a single service or a full door-to-door move."
+        answerDescription="What a neutral NVOCC is, whether you can book a single service line, and how import and export freight are covered."
       />
       <QuoteCtaBand />
     </div>

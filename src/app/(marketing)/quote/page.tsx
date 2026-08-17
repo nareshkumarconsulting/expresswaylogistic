@@ -62,14 +62,18 @@ export default function QuotePage() {
       </section>
 
       <PageAeo
-        answers={[CORE_INTENT_FAQS[4], CORE_INTENT_FAQS[1], QUOTE_PAGE_FAQS[2]]}
+        answers={[
+          CORE_INTENT_FAQS[2],
+          QUOTE_PAGE_FAQS[3],
+          QUOTE_PAGE_FAQS[4],
+        ]}
         faqs={QUOTE_PAGE_FAQS}
         breadcrumbs={[
           { name: "Home", path: "/" },
           { name: "Get a Quote", path: "/quote" },
         ]}
         answerTitle="How freight cost is quoted"
-        answerDescription="Why there is no single price, what we need for an accurate option, and how to start an India–Dubai or other international move."
+        answerDescription="How to start an India–Dubai or other international move, what details we need, and why there is no public rate list."
       />
     </div>
   );
