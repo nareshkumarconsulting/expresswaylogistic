@@ -9,6 +9,23 @@ export const EMAIL_CATEGORIES = [
 
 export const EMAIL_URGENCIES = ["low", "medium", "high", "critical"] as const;
 
+/** LLMs often return "normal" / "urgent" — map those so ingest does not 400. */
+export function coerceEmailUrgency(
+  value: unknown,
+): (typeof EMAIL_URGENCIES)[number] | undefined {
+  if (value == null || value === "") return undefined;
+  const v = String(value).toLowerCase().trim();
+  if ((EMAIL_URGENCIES as readonly string[]).includes(v)) {
+    return v as (typeof EMAIL_URGENCIES)[number];
+  }
+  if (["normal", "moderate", "info", "informational"].includes(v)) {
+    return "medium";
+  }
+  if (["urgent", "important", "warning"].includes(v)) return "high";
+  if (["emergency", "severe"].includes(v)) return "critical";
+  return "medium";
+}
+
 export const EMAIL_STATUSES = ["new", "read", "actioned", "archived"] as const;
 
 export const EMAIL_CATEGORY_LABELS: Record<
@@ -73,7 +90,10 @@ export const emailIngestSchema = z.object({
   category: z.enum(EMAIL_CATEGORIES),
   confidence: z.number().min(0).max(1).optional(),
   summary: z.string().max(5000).optional(),
-  urgency: z.enum(EMAIL_URGENCIES).optional(),
+  urgency: z.preprocess(
+    coerceEmailUrgency,
+    z.enum(EMAIL_URGENCIES).optional(),
+  ),
   hasAttachments: z.boolean().optional(),
   attachmentNames: z.array(z.string()).optional(),
   extractedData: z

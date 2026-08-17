@@ -29,6 +29,21 @@ export const STATUS_FILTER_LABELS: Record<QuoteRequest["status"] | "all", string
     Expired: "Expired",
   };
 
+export const STATUS_CHIP_LABELS: Record<QuoteRequest["status"] | "all", string> =
+  {
+    all: "All",
+    New: "New",
+    "Under Review": "In review",
+    "Sent to Forwarders": "Sent",
+    "Awaiting Forwarder Quotes": "Waiting",
+    "Quote Received": "Received",
+    Quoted: "Emailed",
+    "Quote Ready / Email Failed": "Failed",
+    Accepted: "Accepted",
+    Rejected: "Rejected",
+    Expired: "Expired",
+  };
+
 export function statusBadgeVariant(
   status: QuoteRequest["status"],
 ): "secondary" | "warning" | "success" | "accent" | "muted" | "destructive" {
