@@ -12,12 +12,12 @@ export const SERVICE_FAQS: Record<string, FaqItem[]> = {
     {
       question: "What does a freight forwarder do?",
       answer:
-        "A freight forwarder organises the move: booking ocean or air space, assembling documents, arranging pickup, coordinating customs and port or airport handling, and arranging delivery when that is in scope. ExpressWay does this as a PAN India neutral NVOCC connecting Indian origins with worldwide destinations.",
+        "A freight forwarder organises the move: booking ocean or air space, assembling documents, arranging pickup, coordinating customs and port or airport handling, and arranging delivery when that is in scope. ExpressWay does this as a PAN India Neutral Logistics Provider connecting Indian origins with worldwide destinations.",
     },
     {
       question: "Is a freight forwarder the same as a shipping line?",
       answer:
-        "No. A shipping line operates vessels. ExpressWay books space and coordinates the file. As a neutral NVOCC we source FCL and LCL options rather than locking you to a single liner.",
+        "No. A shipping line operates vessels. ExpressWay books space and coordinates the file. As a Neutral Logistics Provider we source FCL and LCL options rather than locking you to a single liner.",
     },
     {
       question: "Do you handle both import and export?",
@@ -51,19 +51,19 @@ export const SERVICE_FAQS: Record<string, FaqItem[]> = {
   ],
   nvocc: [
     {
-      question: "What is an NVOCC?",
+      question: "What is a Neutral Logistics Provider?",
       answer:
-        "A Non-Vessel Operating Common Carrier books ocean space with vessel operators and issues house documentation to the shipper. It does not operate the ocean vessel.",
+        "A Neutral Logistics Provider books ocean space with vessel operators and issues house documentation to the shipper, without operating the vessel and without locking you to a single liner.",
     },
     {
-      question: "What does “neutral NVOCC” mean?",
+      question: "What does “neutral” mean here?",
       answer:
         "Neutral means ExpressWay is not locked to promoting a single carrier. FCL and LCL are sourced so you can compare cost and schedule. We do not publish exclusive liner lists.",
     },
     {
-      question: "How is an NVOCC different from a freight forwarder?",
+      question: "How is a Neutral Logistics Provider different from a freight forwarder?",
       answer:
-        "Freight forwarding is the broader coordination of the move. NVOCC is the ocean-space and house-bill role. ExpressWay provides both: NVOCC ocean booking plus forwarding, customs and door delivery when scoped.",
+        "Freight forwarding is the broader coordination of the move. A Neutral Logistics Provider also books ocean space and issues house documentation. ExpressWay provides both, plus customs and door delivery when scoped.",
     },
     {
       question: "Do you issue a bill of lading?",
@@ -71,22 +71,22 @@ export const SERVICE_FAQS: Record<string, FaqItem[]> = {
         "Ocean shipments typically move with a house bill of lading issued for the shipper’s lot, alongside the commercial invoice, packing list and shipping bill or bill of entry. Exact documents depend on the booking.",
     },
     {
-      question: "Can an NVOCC move LCL as well as FCL?",
+      question: "Can you move LCL as well as FCL?",
       answer:
-        "Yes. Neutral NVOCC coverage includes FCL, LCL and consolidation for lots that do not fill a container.",
+        "Yes. Coverage includes FCL, LCL and consolidation for lots that do not fill a container.",
     },
     {
-      question: "Is NVOCC only for export from India?",
+      question: "Is this only for export from India?",
       answer:
-        "No. ExpressWay books inbound and outbound ocean cargo as a neutral NVOCC.",
+        "No. ExpressWay books inbound and outbound ocean cargo as a Neutral Logistics Provider.",
     },
     {
       question: "Do you operate your own ships?",
       answer:
-        "No. An NVOCC does not operate the vessel. Space is booked with ocean carriers for the shipment.",
+        "No. ExpressWay does not operate the vessel. Space is booked with ocean carriers for the shipment.",
     },
     {
-      question: "How do I book NVOCC space?",
+      question: "How do I book ocean space?",
       answer: QUOTE,
     },
   ],
@@ -642,7 +642,7 @@ export function getServiceFaqs(serviceId: string, title?: string): FaqItem[] {
     {
       question: `What is ExpressWay Logistic’s ${title ?? "this"} service?`,
       answer:
-        "This is one of the freight forwarding services offered by ExpressWay Logistic, a PAN India neutral NVOCC. Request a quote with origin, destination and cargo details.",
+        "This is one of the freight forwarding services offered by ExpressWay Logistic, a PAN India Neutral Logistics Provider. Request a quote with origin, destination and cargo details.",
     },
   ];
 }

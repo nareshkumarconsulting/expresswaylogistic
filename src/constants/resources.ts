@@ -29,22 +29,22 @@ export const GUIDES: GuideArticle[] = [
     body: [
       "A freight forwarder does not have to own the ship or aircraft. The job is to select mode, book capacity, assemble the commercial file, and coordinate the parties who physically move and clear the cargo.",
       "From India, that typically includes inland pickup, port or airport handling, ocean or air main carriage, customs filings and destination delivery when those steps are in scope.",
-      "ExpressWay Logistic provides PAN India freight forwarding as a neutral NVOCC and complete EXIM logistics provider. See the freight forwarding service page to book.",
+      "ExpressWay Logistic provides PAN India freight forwarding as a Neutral Logistics Provider and complete EXIM logistics provider. See the freight forwarding service page to book.",
     ],
     relatedServiceIds: ["freight-forwarding", "nvocc", "customs-clearance"],
   },
   {
-    slug: "what-is-an-nvocc",
-    title: "What is an NVOCC?",
-    h1: "What is an NVOCC?",
-    seoTitle: "What is an NVOCC? Guide | ExpressWay Logistic",
+    slug: "what-is-a-neutral-logistics-provider",
+    title: "What is a Neutral Logistics Provider?",
+    h1: "What is a Neutral Logistics Provider?",
+    seoTitle: "What is a Neutral Logistics Provider? Guide | ExpressWay Logistic",
     seoDescription:
-      "An NVOCC books ocean space and issues house documentation without operating the vessel. How a neutral NVOCC in India works.",
+      "A Neutral Logistics Provider books ocean space and issues house documentation without operating the vessel. How a Neutral Logistics Provider in India works.",
     directAnswer:
-      "An NVOCC (Non-Vessel Operating Common Carrier) books ocean space with vessel operators and issues house documentation to the shipper. It does not operate the ocean vessel.",
+      "A Neutral Logistics Provider books ocean space with vessel operators and issues house documentation to the shipper. It does not operate the ocean vessel.",
     body: [
-      "Shippers use an NVOCC to obtain FCL or LCL space and a house bill of lading. The NVOCC in turn has a contract or booking with the ocean carrier.",
-      "A neutral NVOCC is not locked to promoting a single liner. ExpressWay sources options so cost and schedule can be compared. We do not publish exclusive carrier lists.",
+      "Shippers use a Neutral Logistics Provider to obtain FCL or LCL space and a house bill of lading. The Neutral Logistics Provider in turn has a contract or booking with the ocean carrier.",
+      "A Neutral Logistics Provider is not locked to promoting a single liner. ExpressWay sources options so cost and schedule can be compared. We do not publish exclusive carrier lists.",
     ],
     relatedServiceIds: ["nvocc", "ocean-freight", "fcl-shipping", "lcl-shipping"],
   },
@@ -168,11 +168,11 @@ export const GUIDES: GuideArticle[] = [
     h1: "How to Choose a Freight Forwarder",
     seoTitle: "How to Choose a Freight Forwarder | ExpressWay Logistic",
     seoDescription:
-      "Choose a forwarder who can state entity type, coverage, modes, documents and what they will not claim. ExpressWay is a PAN India neutral NVOCC.",
+      "Choose a forwarder who can state entity type, coverage, modes, documents and what they will not claim. ExpressWay is a PAN India Neutral Logistics Provider.",
     directAnswer:
       "Choose a freight forwarder who can state who they are, which modes they book, which cargo they actually handle, and whether coverage is a network or a claimed office in every city.",
     body: [
-      "Ask whether they are an NVOCC, whether they handle both import and export, and how quotes are built. ExpressWay publishes those facts on this site rather than generic excellence claims.",
+      "Ask whether they are a Neutral Logistics Provider, whether they handle both import and export, and how quotes are built. ExpressWay publishes those facts on this site rather than generic excellence claims.",
     ],
     relatedServiceIds: ["freight-forwarding", "nvocc", "exim-consultancy"],
   },
@@ -208,10 +208,10 @@ export const GUIDES: GuideArticle[] = [
 
 export const GLOSSARY: GlossaryTerm[] = [
   {
-    slug: "nvocc",
-    term: "NVOCC",
+    slug: "neutral-logistics-provider",
+    term: "Neutral Logistics Provider",
     definition:
-      "Non-Vessel Operating Common Carrier: books ocean space and issues house documentation without operating the vessel.",
+      "A logistics company that books ocean space and issues house documentation without operating the vessel, and is not locked to a single carrier.",
     relatedServiceIds: ["nvocc", "ocean-freight"],
   },
   {
@@ -246,7 +246,7 @@ export const GLOSSARY: GlossaryTerm[] = [
     slug: "bill-of-lading",
     term: "Bill of Lading",
     definition:
-      "Ocean transport document evidencing receipt of cargo and the contract of carriage. House bills may be issued by an NVOCC.",
+      "Ocean transport document evidencing receipt of cargo and the contract of carriage. House bills may be issued by a Neutral Logistics Provider.",
     relatedServiceIds: ["ocean-freight", "nvocc"],
   },
   {

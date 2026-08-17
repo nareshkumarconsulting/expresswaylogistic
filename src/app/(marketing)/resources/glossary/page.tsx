@@ -7,7 +7,7 @@ import { pageSeo } from "@/lib/seo";
 export const metadata = pageSeo({
   title: "Logistics Glossary | ExpressWay Logistic",
   description:
-    "Concise definitions of NVOCC, FCL, LCL, bill of lading, IEC, shipping bill, demurrage and related freight terms.",
+    "Concise definitions of Neutral Logistics Provider, FCL, LCL, bill of lading, IEC, shipping bill, demurrage and related freight terms.",
   path: "/resources/glossary",
 });
 

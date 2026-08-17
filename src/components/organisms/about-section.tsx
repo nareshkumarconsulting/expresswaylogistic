@@ -45,7 +45,7 @@ export function AboutSection() {
             </h2>
 
             <p className="text-lead mb-8 text-slate-600">
-              ExpressWay Logistic is an Indian neutral NVOCC and freight
+              ExpressWay Logistic is an Indian Neutral Logistics Provider and freight
               forwarding company providing PAN India import and export logistics
               to worldwide destinations — ocean freight, air freight, FCL/LCL,
               consolidation, customs clearance, warehousing, project cargo, EXIM

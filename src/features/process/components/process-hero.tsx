@@ -73,7 +73,7 @@ export function ProcessHero() {
               className="text-lead mb-8 max-w-2xl text-white/80"
             >
               Five steps from quote to door — booking, documents, clearance, and
-              updates handled by one NVOCC desk.
+              updates handled by one Neutral Logistics Provider desk.
             </motion.p>
             <motion.div
               {...fade(0.26)}

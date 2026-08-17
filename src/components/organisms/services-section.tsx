@@ -28,7 +28,7 @@ export function ServicesSection() {
             </h2>
           </div>
           <p className="max-w-md text-sm leading-relaxed text-slate-600 lg:pb-1">
-            Ocean, air, customs, warehousing, and door-to-door — one NVOCC
+            Ocean, air, customs, warehousing, and door-to-door — one Neutral Logistics Provider
             partner from origin to destination.
           </p>
         </div>

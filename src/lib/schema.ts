@@ -51,7 +51,7 @@ export function organizationSchema() {
       "Worldwide",
     ],
     knowsAbout: [
-      "NVOCC",
+      "Neutral Logistics Provider",
       "Freight forwarding",
       "Ocean freight",
       "Air freight",

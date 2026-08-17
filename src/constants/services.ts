@@ -44,19 +44,19 @@ export const SERVICES: ServiceItem[] = [
   },
   {
     id: "nvocc",
-    title: "NVOCC",
+    title: "Neutral Logistics Provider",
     description:
-      "Neutral NVOCC ocean services from India: FCL, LCL, consolidation, booking and documentation without locking you to a single liner.",
+      "Ocean services from India as a Neutral Logistics Provider: FCL, LCL, consolidation, booking and documentation without locking you to a single liner.",
     details:
-      "A Non-Vessel Operating Common Carrier (NVOCC) issues house documentation and books space with ocean carriers. As a neutral NVOCC, ExpressWay sources FCL and LCL options so shippers can compare cost and schedule rather than a house-only sailing. We do not publish exclusive carrier lists.",
+      "ExpressWay books ocean space with vessel operators and issues house documentation without operating the vessel. As a Neutral Logistics Provider, ExpressWay sources FCL and LCL options so shippers can compare cost and schedule rather than a house-only sailing. We do not publish exclusive carrier lists.",
     highlights: [
-      "Neutral NVOCC booking for inbound and outbound ocean cargo",
+      "Neutral booking for inbound and outbound ocean cargo",
       "FCL and LCL options on commercially used trade lanes",
       "Consolidation for less-than-container volumes",
       "Booking and documentation support through to delivery",
     ],
     icon: Ship,
-    href: "/services/nvocc",
+    href: "/services/neutral-logistics-provider",
   },
   {
     id: "ocean-freight",
@@ -271,6 +271,8 @@ export const SERVICES: ServiceItem[] = [
 export const SERVICE_COUNT = SERVICES.length;
 
 export const SERVICE_ALIASES: Record<string, string> = {
+  nvocc: "nvocc",
+  "neutral-logistics-provider": "nvocc",
   "ocean-nvocc": "nvocc",
   customs: "customs-clearance",
   "door-to-door": "door-to-door-logistics",
@@ -285,9 +287,14 @@ export function resolveServiceId(id: string): string {
 
 export function getServiceById(id: string): ServiceItem | undefined {
   const resolved = resolveServiceId(id);
-  return SERVICES.find((service) => service.id === resolved);
+  return SERVICES.find(
+    (service) =>
+      service.id === resolved ||
+      service.href === `/services/${id}` ||
+      service.href === `/services/${resolved}`,
+  );
 }
 
 export function getServiceIds(): string[] {
-  return SERVICES.map((service) => service.id);
+  return SERVICES.map((service) => service.href.replace(/^\/services\//, ""));
 }

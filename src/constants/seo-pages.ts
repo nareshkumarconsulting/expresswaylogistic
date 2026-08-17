@@ -20,8 +20,8 @@ export const SEARCH_INTENT_PAGES: SearchIntentPage[] = [
     indexable: true,
   },
   {
-    url: "/services/nvocc",
-    primaryKeyword: "NVOCC India",
+    url: "/services/neutral-logistics-provider",
+    primaryKeyword: "Neutral Logistics Provider India",
     searchIntent: "service",
     indexable: true,
   },

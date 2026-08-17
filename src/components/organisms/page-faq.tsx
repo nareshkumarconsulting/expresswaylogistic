@@ -15,7 +15,7 @@ export function PageFaq({
   items,
   eyebrow = "FAQ",
   title = "Frequently asked questions",
-  description = "Straight answers on NVOCC freight, documents, lanes, quotes, and EXIM support.",
+  description = "Straight answers on Neutral Logistics Provider freight, documents, lanes, quotes, and EXIM support.",
 }: PageFaqProps) {
   if (items.length === 0) return null;
 

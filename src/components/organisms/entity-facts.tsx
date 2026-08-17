@@ -19,7 +19,7 @@ export function EntityFacts() {
               Entity type
             </dt>
             <dd className="mt-2 text-sm font-semibold text-foreground">
-              Neutral NVOCC · Freight forwarder
+              Neutral Logistics Provider · Freight forwarder
             </dd>
           </div>
           <div className="border border-border bg-card p-4">

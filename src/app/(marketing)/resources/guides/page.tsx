@@ -7,7 +7,7 @@ import { pageSeo } from "@/lib/seo";
 export const metadata = pageSeo({
   title: "Freight Forwarding Guides | ExpressWay Logistic",
   description:
-    "Practical guides on freight forwarding, NVOCC, FCL vs LCL, export and import processes, documentation and freight cost.",
+    "Practical guides on freight forwarding, Neutral Logistics Provider, FCL vs LCL, export and import processes, documentation and freight cost.",
   path: "/resources/guides",
 });
 

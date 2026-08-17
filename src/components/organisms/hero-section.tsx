@@ -38,7 +38,7 @@ export function HeroSection() {
         <div className="container-page relative z-10 flex min-h-[32rem] items-center pt-32 pb-12 md:min-h-[38rem] md:pt-36 md:pb-16 lg:min-h-[42rem]">
           <div className="max-w-xl lg:max-w-[34rem]">
             <p className="mb-3 text-xs font-semibold tracking-[0.22em] text-accent uppercase">
-              NVOCC • Freight Forwarding • Ocean • Air • Customs
+              Neutral Logistics Provider • Freight Forwarding • Ocean • Air • Customs
             </p>
             <div className="mb-7 h-px w-24 bg-accent" aria-hidden />
 
@@ -51,7 +51,7 @@ export function HeroSection() {
 
             <p className="text-lead mb-10 max-w-lg text-white/85">
               Connect your cargo from anywhere in India to worldwide destinations
-              with neutral NVOCC, ocean freight, air freight, customs clearance
+              as a Neutral Logistics Provider, with ocean freight, air freight, customs clearance
               and end-to-end logistics support.
             </p>
 

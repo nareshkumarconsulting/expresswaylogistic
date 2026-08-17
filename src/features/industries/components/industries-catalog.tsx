@@ -7,7 +7,7 @@ import { INDUSTRIES } from "@/constants/content";
 import { industryId } from "@/features/industries/industry-id";
 
 const PROMISES = [
-  "Same NVOCC desk for every cargo type",
+  "Same Neutral Logistics Provider desk for every cargo type",
   "Handling and packing matched to the commodity",
   "Documentation prepared for the actual product",
   "Sea, air, coastal, and door-to-door options",

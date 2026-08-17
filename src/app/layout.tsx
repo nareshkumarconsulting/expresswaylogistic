@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   description: siteConfig.description,
   applicationName: siteConfig.name,
   keywords: [
-    "NVOCC",
+    "Neutral Logistics Provider",
     "freight forwarding",
     "ocean freight",
     "air freight",
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     "India to Dubai freight",
     "international shipping documents India",
     "export freight forwarding India",
-    "NVOCC freight cost",
+    "freight cost India",
     "shipment tracking",
   ],
   authors: [{ name: siteConfig.name }],

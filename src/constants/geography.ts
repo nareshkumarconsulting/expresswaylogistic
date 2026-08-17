@@ -110,7 +110,7 @@ export const LOCATIONS: LocationPage[] = [
     h1: "ExpressWay Logistic Headquarters in Noida",
     seoTitle: "Freight Forwarding in Noida | ExpressWay Logistic",
     seoDescription:
-      "ExpressWay Logistic headquarters in Noida, Uttar Pradesh — PAN India freight forwarding and NVOCC services connecting Indian origins with worldwide destinations.",
+      "ExpressWay Logistic headquarters in Noida, Uttar Pradesh — PAN India freight forwarding as a Neutral Logistics Provider, connecting Indian origins with worldwide destinations.",
     directAnswer:
       "ExpressWay Logistic’s headquarters are in Noida, Uttar Pradesh. The office is the registered operating location for appointments and correspondence. Commercial coverage is PAN India to worldwide destinations, not Noida-only freight.",
     body: "The Noida office is at Unit No. 623, 6th Floor, Tower-1, Assotech Business Cresterra, Sector-135, Noida, G.B. Nagar, Uttar Pradesh 201305. Use this page for office location and North India origin context. For service coverage across India, see PAN India logistics.",

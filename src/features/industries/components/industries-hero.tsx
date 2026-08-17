@@ -91,7 +91,7 @@ export function IndustriesHero() {
               </Button>
               <span className="inline-flex items-center gap-2 text-sm text-white/70">
                 <Layers3 className="size-4 text-accent" aria-hidden />
-                {INDUSTRIES.length} cargo specialisations, one NVOCC desk
+                {INDUSTRIES.length} cargo specialisations, one Neutral Logistics Provider desk
               </span>
             </motion.div>
           </div>

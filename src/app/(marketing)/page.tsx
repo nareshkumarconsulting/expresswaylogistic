@@ -14,9 +14,9 @@ import { pageSeo } from "@/lib/seo";
 
 export const metadata = pageSeo({
   title:
-    "International Freight Forwarding & NVOCC in India | ExpressWay Logistic",
+    "International Freight Forwarding & Neutral Logistics Provider in India | ExpressWay Logistic",
   description:
-    "ExpressWay Logistic provides PAN India freight forwarding, neutral NVOCC, ocean & air freight, customs clearance, EXIM advisory, project cargo and door-to-door logistics to worldwide destinations.",
+    "ExpressWay Logistic provides PAN India freight forwarding as a Neutral Logistics Provider, with ocean & air freight, customs clearance, EXIM advisory, project cargo and door-to-door logistics to worldwide destinations.",
   path: "/",
 });
 

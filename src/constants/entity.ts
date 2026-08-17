@@ -1,5 +1,5 @@
 export const ENTITY_STATEMENT =
-  "ExpressWay Logistic is an Indian neutral NVOCC and freight forwarding company providing PAN India import and export logistics services to worldwide destinations, including ocean freight, air freight, FCL/LCL, consolidation, customs clearance, warehousing, project cargo, EXIM advisory and door-to-door delivery.";
+  "ExpressWay Logistic is an Indian Neutral Logistics Provider and freight forwarding company providing PAN India import and export logistics services to worldwide destinations, including ocean freight, air freight, FCL/LCL, consolidation, customs clearance, warehousing, project cargo, EXIM advisory and door-to-door delivery.";
 
 export const GEOGRAPHIC_PROPOSITION = "PAN India → Worldwide";
 

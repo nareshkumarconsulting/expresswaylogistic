@@ -10,7 +10,7 @@ import { pageSeo } from "@/lib/seo";
 export const metadata = pageSeo({
   title: "Freight Forwarding Services in India | ExpressWay Logistic",
   description:
-    "PAN India freight forwarding: NVOCC, ocean and air freight, FCL/LCL, consolidation, customs clearance, warehousing, project cargo, EXIM advisory and door-to-door logistics.",
+    "PAN India freight forwarding as a Neutral Logistics Provider: ocean and air freight, FCL/LCL, consolidation, customs clearance, warehousing, project cargo, EXIM advisory and door-to-door logistics.",
   path: "/services",
 });
 
@@ -26,7 +26,7 @@ export default function ServicesPage() {
         eyebrow="Services"
         title="Complete logistics"
         accent="& EXIM capabilities"
-        description="From freight booking and consolidation to customs, warehousing, project cargo, and door-to-door delivery — ExpressWay Logistic is your PAN India neutral NVOCC partner."
+        description="From freight booking and consolidation to customs, warehousing, project cargo, and door-to-door delivery — ExpressWay Logistic is your PAN India Neutral Logistics Provider."
         breadcrumbs={crumbs}
         note={`${SERVICES.length} service pages, one coordinating desk`}
       />
@@ -57,7 +57,7 @@ export default function ServicesPage() {
         breadcrumbs={crumbs}
         extraJsonLd={[servicesItemListSchema()]}
         answerTitle="Freight forwarding services, explained"
-        answerDescription="What a neutral NVOCC is, whether you can book a single service line, and how import and export freight are covered."
+        answerDescription="What a Neutral Logistics Provider is, whether you can book a single service line, and how import and export freight are covered."
       />
       <QuoteCtaBand />
     </div>

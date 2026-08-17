@@ -99,7 +99,7 @@ export async function runRetellTool(
     return {
       ok: true,
       spoken:
-        "ExpressWay Logistic is a neutral NVOCC for air, ocean, customs, warehousing, and door-to-door cargo.",
+        "ExpressWay Logistic is a Neutral Logistics Provider for air, ocean, customs, warehousing, and door-to-door cargo.",
       knowledge: buildSiteKnowledge().slice(0, 3500),
     };
   }

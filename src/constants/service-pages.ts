@@ -46,16 +46,16 @@ export const SERVICE_PAGES: Record<string, ServicePageCopy> = {
       "Documentation prepared for the actual product",
     ],
     whyExpressWay:
-      "ExpressWay is a PAN India neutral NVOCC and freight forwarder with 39+ years of international cargo experience. Headquarters are in Noida; commercial coverage is India to worldwide destinations.",
+      "ExpressWay is a PAN India Neutral Logistics Provider and freight forwarder with 39+ years of international cargo experience. Headquarters are in Noida; commercial coverage is India to worldwide destinations.",
     relatedServiceIds: ["nvocc", "ocean-freight", "air-freight", "customs-clearance"],
     relatedIndustrySlugs: ["garments-apparel", "engineering-goods", "leather-products"],
     relatedRouteIds: ["india-to-dubai", "india-to-usa", "india-to-uk"],
   },
   nvocc: {
     whatIs:
-      "An NVOCC (Non-Vessel Operating Common Carrier) books ocean space with vessel operators and issues house documentation to the shipper. It does not operate the ocean vessel.",
+      "A Neutral Logistics Provider books ocean space with vessel operators and issues house documentation to the shipper. It does not operate the ocean vessel.",
     howProvided:
-      "ExpressWay operates as a neutral NVOCC: FCL and LCL are sourced so you can compare cost and schedule. Consolidation is used when cargo does not fill a container. We do not publish exclusive liner relationship lists.",
+      "ExpressWay operates as a Neutral Logistics Provider: FCL and LCL are sourced so you can compare cost and schedule. Consolidation is used when cargo does not fill a container. We do not publish exclusive liner relationship lists.",
     whoFor:
       "Exporters and importers who want ocean options without being locked to a single carrier brand.",
     cargoTypes:
@@ -74,7 +74,7 @@ export const SERVICE_PAGES: Record<string, ServicePageCopy> = {
       "Consolidation for smaller volumes",
     ],
     whyExpressWay:
-      "Neutral NVOCC is a core ExpressWay identity: ocean space is booked for the shipment, not to fill a proprietary vessel schedule.",
+      "Neutral Logistics Provider is a core ExpressWay identity: ocean space is booked for the shipment, not to fill a proprietary vessel schedule.",
     relatedServiceIds: ["ocean-freight", "fcl-shipping", "lcl-shipping", "consolidation"],
     relatedIndustrySlugs: ["garments-apparel", "leather-products", "handicrafts"],
     relatedRouteIds: ["india-to-dubai", "india-to-singapore", "india-to-netherlands"],
@@ -102,7 +102,7 @@ export const SERVICE_PAGES: Record<string, ServicePageCopy> = {
       "Port and customs coordination included in the operating model",
     ],
     whyExpressWay:
-      "Ocean freight from India is ExpressWay’s primary NVOCC mode, paired with PAN India origin pickup through the logistics network.",
+      "Ocean freight from India is ExpressWay’s primary mode as a Neutral Logistics Provider, paired with PAN India origin pickup through the logistics network.",
     relatedServiceIds: ["nvocc", "fcl-shipping", "lcl-shipping", "customs-clearance"],
     relatedIndustrySlugs: ["garments-apparel", "bulk-cargo", "engineering-goods"],
     relatedRouteIds: ["india-to-dubai", "india-to-germany", "india-to-usa"],
@@ -158,7 +158,7 @@ export const SERVICE_PAGES: Record<string, ServicePageCopy> = {
       "Clearer sailing identity for the shipper’s cargo",
     ],
     whyExpressWay:
-      "FCL is booked as a neutral NVOCC movement. Rates are quoted per shipment; we do not publish a public container tariff.",
+      "FCL is booked by ExpressWay as a Neutral Logistics Provider. Rates are quoted per shipment; we do not publish a public container tariff.",
     relatedServiceIds: ["lcl-shipping", "ocean-freight", "nvocc", "door-to-door-logistics"],
     relatedIndustrySlugs: ["garments-apparel", "leather-products", "engineering-goods"],
     relatedRouteIds: ["india-to-dubai", "india-to-usa", "india-to-netherlands"],
@@ -186,7 +186,7 @@ export const SERVICE_PAGES: Record<string, ServicePageCopy> = {
       "Same documentation desk as FCL and air",
     ],
     whyExpressWay:
-      "LCL sits beside FCL and consolidation on the same NVOCC desk, so the recommendation can change if volume or sailing changes.",
+      "LCL sits beside FCL and consolidation on the same desk, so the recommendation can change if volume or sailing changes.",
     relatedServiceIds: ["fcl-shipping", "consolidation", "ocean-freight", "nvocc"],
     relatedIndustrySlugs: ["handicrafts", "garments-apparel", "herbal-medicaments"],
     relatedRouteIds: ["india-to-dubai", "india-to-singapore", "india-to-uk"],

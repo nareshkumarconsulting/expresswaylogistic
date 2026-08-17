@@ -24,9 +24,9 @@ import { ABOUT_PAGE_FAQS } from "@/constants/faqs";
 import { PageAeo } from "@/components/organisms/page-aeo";
 
 export const metadata = pageSeo({
-  title: "About ExpressWay Logistic | PAN India NVOCC & Freight Forwarder",
+  title: "About ExpressWay Logistic | PAN India Neutral Logistics Provider & Freight Forwarder",
   description:
-    "Who ExpressWay Logistic is: an Indian neutral NVOCC and freight forwarding company with 39+ years of international cargo experience, Noida headquarters, and PAN India to worldwide coverage.",
+    "Who ExpressWay Logistic is: an Indian Neutral Logistics Provider and freight forwarding company with 39+ years of international cargo experience, Noida headquarters, and PAN India to worldwide coverage.",
   path: "/about",
 });
 
@@ -41,7 +41,7 @@ const AIMS = [
 
 const VALUES = [
   {
-    title: "Neutral NVOCC",
+    title: "Neutral Logistics Provider",
     description:
       "We book competitive sea and air options through reputed liner relationships — without locking you into a single carrier.",
     icon: Globe2,
@@ -109,7 +109,7 @@ export default function AboutPage() {
                   39+ years of international cargo experience.
                 </p>
                 <p>
-                  As a neutral NVOCC company backed by professionalism and
+                  As a Neutral Logistics Provider backed by professionalism and
                   practical innovation, ExpressWay Logistic is a commitment to
                   service with a global accent and true customer orientation.
                 </p>
@@ -237,7 +237,7 @@ export default function AboutPage() {
                 variant="muted"
                 className="text-base text-muted-foreground"
               >
-                Neutral NVOCC ocean and air freight, plus the EXIM services that
+                Ocean and air freight as a Neutral Logistics Provider, plus the EXIM services that
                 keep cargo moving.
               </Typography>
             </div>
@@ -383,7 +383,7 @@ export default function AboutPage() {
           { name: "About", path: "/about" },
         ]}
         answerTitle="Who is ExpressWay Logistic"
-        answerDescription="Entity facts: NVOCC, freight forwarding, PAN India coverage, worldwide destinations, and leadership."
+        answerDescription="Entity facts: Neutral Logistics Provider, freight forwarding, PAN India coverage, worldwide destinations, and leadership."
       />
     </div>
   );

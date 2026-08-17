@@ -60,7 +60,7 @@ export function AboutHero() {
               {...fade(0.1)}
               className="text-display mb-5 max-w-3xl text-white"
             >
-              Neutral NVOCC.{" "}
+              Neutral Logistics Provider.{" "}
               <span className="bg-gradient-to-r from-sky-300 to-[#00A3FF] bg-clip-text text-transparent">
                 PAN India to worldwide.
               </span>

@@ -8,7 +8,7 @@ import { processStepId } from "@/features/process/step-id";
 import { cn } from "@/lib/utils";
 
 const PROMISES = [
-  "Neutral NVOCC booking on sea and air",
+  "Neutral Logistics Provider booking on sea and air",
   "Documentation ready before cargo reaches the port",
   "Import and export customs clearance",
   "24×7 shipment and document status support",

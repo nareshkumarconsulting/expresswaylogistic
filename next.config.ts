@@ -26,8 +26,23 @@ const nextConfig: NextConfig = {
         permanent: false,
       },
       {
+        source: "/services/nvocc",
+        destination: "/services/neutral-logistics-provider",
+        permanent: true,
+      },
+      {
         source: "/services/ocean-nvocc",
-        destination: "/services/nvocc",
+        destination: "/services/neutral-logistics-provider",
+        permanent: true,
+      },
+      {
+        source: "/resources/glossary/nvocc",
+        destination: "/resources/glossary/neutral-logistics-provider",
+        permanent: true,
+      },
+      {
+        source: "/resources/guides/what-is-an-nvocc",
+        destination: "/resources/guides/what-is-a-neutral-logistics-provider",
         permanent: true,
       },
       {

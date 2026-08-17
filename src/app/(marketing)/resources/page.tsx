@@ -9,7 +9,7 @@ import { pageSeo } from "@/lib/seo";
 export const metadata = pageSeo({
   title: "Freight Forwarding Resources | ExpressWay Logistic",
   description:
-    "Guides, glossary and FAQs on freight forwarding, NVOCC, FCL/LCL, EXIM and customs — written from ExpressWay’s actual service model.",
+    "Guides, glossary and FAQs on freight forwarding, Neutral Logistics Provider, FCL/LCL, EXIM and customs — written from ExpressWay’s actual service model.",
   path: "/resources",
 });
 

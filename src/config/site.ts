@@ -4,7 +4,7 @@ export const siteConfig = {
   shortName: "ExpressWay",
   tagline: "PAN India Freight Forwarding & Global Logistics",
   description:
-    "ExpressWay Logistic provides PAN India freight forwarding, neutral NVOCC, ocean & air freight, customs clearance, EXIM advisory, project cargo and door-to-door logistics to worldwide destinations.",
+    "ExpressWay Logistic provides PAN India freight forwarding as a Neutral Logistics Provider, with ocean & air freight, customs clearance, EXIM advisory, project cargo and door-to-door logistics to worldwide destinations.",
   url: "https://expresswaylogistic.com",
   locale: "en_IN",
   contact: {

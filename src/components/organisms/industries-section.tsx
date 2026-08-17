@@ -65,7 +65,7 @@ export function IndustriesSection() {
                 Built for every industry
               </p>
               <p className="mt-1 text-xs leading-relaxed text-white/60">
-                Same NVOCC desk, cargo-specific handling and paperwork.
+                Same Neutral Logistics Provider desk, cargo-specific handling and paperwork.
               </p>
             </div>
           </div>

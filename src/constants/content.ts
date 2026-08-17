@@ -47,7 +47,7 @@ export const LEADERS = [
   },
   {
     name: "Jugendra Singh",
-    title: "General Manager & Business Development Officer",
+    title: "General Manager Business Development",
     image: "/images/team/joginder-singh.jpg",
     bio: "Leading business development and client relationships with a focus on trust and results.",
     imageClass: "object-cover object-[50%_18%]",
@@ -98,7 +98,7 @@ export const HERO_FEATURES = [
 
 export const ABOUT_HIGHLIGHTS = [
   EXPERIENCE_STATEMENT,
-  "Neutral NVOCC Company",
+  "Neutral Logistics Provider",
   "24×7 Shipment & Docs Support",
   "Customs & Port Clearance",
   "Door-to-Door Delivery",
@@ -296,7 +296,7 @@ export const PROCESS_STEPS = [
 export const TRUST_SIGNALS = [
   {
     title: "Competitive Sea & Air Rates",
-    description: "Neutral NVOCC booking so you get cost-effective options.",
+    description: "Neutral booking so you get cost-effective sea and air options.",
     icon: DollarSign,
   },
   {
@@ -342,7 +342,7 @@ export const TRUST_SIGNALS = [
 ] as const;
 
 export const GLOBAL_REACH_STATS = [
-  { label: "Company type", value: "NVOCC" },
+  { label: "Company type", value: "Neutral Logistics Provider" },
   { label: "Primary modes", value: "Sea · Air" },
   { label: "Delivery model", value: "Door-to-Door" },
 ] as const;

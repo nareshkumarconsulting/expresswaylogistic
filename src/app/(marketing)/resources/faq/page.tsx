@@ -9,7 +9,7 @@ import { pageSeo } from "@/lib/seo";
 export const metadata = pageSeo({
   title: "Freight Forwarding FAQ | ExpressWay Logistic",
   description:
-    "Answers on ExpressWay Logistic services, PAN India coverage, documents, quotes, tracking and NVOCC freight.",
+    "Answers on ExpressWay Logistic services, PAN India coverage, documents, quotes, tracking and Neutral Logistics Provider freight.",
   path: "/resources/faq",
 });
 

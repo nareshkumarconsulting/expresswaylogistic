@@ -19,7 +19,7 @@ export function WhyChooseUsSection() {
           </h2>
           <p className="mt-4 max-w-xl text-sm leading-relaxed text-slate-600">
             {EXPERIENCE_STATEMENT} — rates, documentation, and clearance
-            handled as one NVOCC partner.
+            handled as one Neutral Logistics Provider.
           </p>
         </div>
 

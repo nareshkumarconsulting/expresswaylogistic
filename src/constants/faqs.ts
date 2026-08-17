@@ -9,7 +9,7 @@ export const CORE_INTENT_FAQS: FaqItem[] = [
   {
     question: "What does ExpressWay Logistic do?",
     answer:
-      "ExpressWay Logistic is an Indian neutral NVOCC and freight forwarding company providing PAN India import and export logistics to worldwide destinations, including ocean freight, air freight, FCL/LCL, consolidation, customs clearance, warehousing, project cargo, EXIM advisory and door-to-door delivery.",
+      "ExpressWay Logistic is an Indian Neutral Logistics Provider and freight forwarding company providing PAN India import and export logistics to worldwide destinations, including ocean freight, air freight, FCL/LCL, consolidation, customs clearance, warehousing, project cargo, EXIM advisory and door-to-door delivery.",
   },
   {
     question: "Does ExpressWay provide PAN India logistics services?",
@@ -37,7 +37,7 @@ export const HOME_SUPPORTING_FAQS: FaqItem[] = [
   {
     question: "What does ExpressWay Logistic do?",
     answer:
-      "We are a neutral NVOCC and freight forwarder offering ocean and air freight, consolidation, customs clearance, warehousing, project cargo, cargo insurance arrangement, packing, and door-to-door delivery — plus EXIM guidance such as licence and drawback assistance where offered.",
+      "We are a Neutral Logistics Provider and freight forwarder offering ocean and air freight, consolidation, customs clearance, warehousing, project cargo, cargo insurance arrangement, packing, and door-to-door delivery — plus EXIM guidance such as licence and drawback assistance where offered.",
   },
   {
     question: "Which cargo types do you specialise in?",
@@ -76,7 +76,7 @@ export const HOME_SUPPORTING_FAQS: FaqItem[] = [
   {
     question: "Does ExpressWay handle both imports and exports?",
     answer:
-      "Yes. Ocean NVOCC, air freight, consolidation, customs, warehousing and door-to-door cover inbound and outbound cargo.",
+      "Yes. Ocean freight as a Neutral Logistics Provider, air freight, consolidation, customs, warehousing and door-to-door cover inbound and outbound cargo.",
   },
   {
     question: "How is international freight pricing calculated?",
@@ -97,12 +97,12 @@ export const SERVICES_PAGE_FAQS: FaqItem[] = [
   {
     question: "Do you handle both import and export freight?",
     answer:
-      "Yes. Ocean NVOCC, air freight, consolidation, customs, warehousing and door-to-door cover inbound and outbound cargo.",
+      "Yes. Ocean freight as a Neutral Logistics Provider, air freight, consolidation, customs, warehousing and door-to-door cover inbound and outbound cargo.",
   },
   {
-    question: "What is a neutral NVOCC?",
+    question: "What is a Neutral Logistics Provider?",
     answer:
-      "A neutral NVOCC books ocean space without locking you into a single carrier. ExpressWay sources FCL and LCL options so you can compare cost and schedule. We do not publish exclusive liner lists.",
+      "A Neutral Logistics Provider books ocean space without locking you into a single carrier. ExpressWay sources FCL and LCL options so you can compare cost and schedule. We do not publish exclusive liner lists.",
   },
   {
     question: "Can I book only customs or only freight?",
@@ -149,7 +149,7 @@ export const ABOUT_PAGE_FAQS: FaqItem[] = [
   {
     question: "Who is ExpressWay Logistic?",
     answer:
-      "ExpressWay Logistic (legal name Expressway Logistic Private Limited) is an Indian neutral NVOCC and freight forwarding company. Headquarters are in Noida, Uttar Pradesh. Leadership includes Sunil Kumar, CEO & Managing Director, and Jugendra Singh, General Manager & Business Development Officer.",
+      "ExpressWay Logistic (legal name Expressway Logistic Private Limited) is an Indian Neutral Logistics Provider and freight forwarding company. Headquarters are in Noida, Uttar Pradesh. Leadership includes Sunil Kumar, CEO & Managing Director, and Jugendra Singh, General Manager Business Development.",
   },
   {
     question: "Where does ExpressWay operate?",
@@ -157,9 +157,9 @@ export const ABOUT_PAGE_FAQS: FaqItem[] = [
       "The company serves customers across India through a nationwide logistics network and connects Indian origins with worldwide destinations. Noida is the office location, not the limit of geographic coverage.",
   },
   {
-    question: "Is ExpressWay an NVOCC?",
+    question: "Is ExpressWay a Neutral Logistics Provider?",
     answer:
-      "Yes. ExpressWay operates as a neutral NVOCC for ocean cargo, alongside freight forwarding, customs clearance, warehousing arranged through the network, project cargo and related EXIM services.",
+      "Yes. ExpressWay operates as a Neutral Logistics Provider for ocean cargo, alongside freight forwarding, customs clearance, warehousing arranged through the network, project cargo and related EXIM services.",
   },
   {
     question: "Does ExpressWay provide air and ocean freight?",
