@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@/components/atoms/badge";
 import { Input } from "@/components/atoms/input";
@@ -45,16 +46,33 @@ async function fetchQuote(id: string): Promise<QuoteRequest> {
   return json.data;
 }
 
+function isStatusFilter(value: string | null): value is StatusFilter {
+  return (
+    value === "all" ||
+    (QUOTE_REQUEST_STATUSES as readonly string[]).includes(value ?? "")
+  );
+}
+
 export function QuotesPanel() {
   const queryClient = useQueryClient();
+  const searchParams = useSearchParams();
+  const statusFromUrl = searchParams.get("status");
   const [query, setQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>(
+    isStatusFilter(statusFromUrl) ? statusFromUrl : "all",
+  );
   const [originFilter, setOriginFilter] = useState("");
   const [destinationFilter, setDestinationFilter] = useState("");
   const [serviceFilter, setServiceFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
+
+  useEffect(() => {
+    if (isStatusFilter(statusFromUrl)) {
+      setStatusFilter(statusFromUrl);
+    }
+  }, [statusFromUrl]);
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["quotes"],
