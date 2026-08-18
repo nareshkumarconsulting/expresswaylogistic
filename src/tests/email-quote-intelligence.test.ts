@@ -129,6 +129,31 @@ describe("ingest and quote schemas", () => {
     if (parsed.success) expect(parsed.data.body).toContain("2 tons");
   });
 
+  it("coerces LLM confidence labels like high to a 0-1 number", () => {
+    const parsed = emailIngestSchema.safeParse({
+      sourceAccount: "support@expresswaylogistics.com",
+      senderEmail: "nareshkumarconsulting@gmail.com",
+      subject: "Please quote Mumbai to Dubai",
+      receivedAt: "2026-08-18T09:19:35Z",
+      category: "quotation",
+      confidence: "high",
+      extractedData: {
+        origin: "Mumbai",
+        destination: "Dubai",
+        quoteNo: null,
+      },
+      body: "Can you send freight rates Mumbai to Dubai?",
+    });
+    expect(parsed.success).toBe(true);
+    if (parsed.success) {
+      expect(parsed.data.confidence).toBe(0.85);
+      expect(parsed.data.extractedData).toEqual({
+        origin: "Mumbai",
+        destination: "Dubai",
+      });
+    }
+  });
+
   it("accepts AI review status on quote update", () => {
     expect(
       quoteUpdateSchema.safeParse({ aiReviewStatus: "confirmed" }).success,

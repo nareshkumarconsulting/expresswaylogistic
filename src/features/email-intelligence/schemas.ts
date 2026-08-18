@@ -26,6 +26,39 @@ export function coerceEmailUrgency(
   return "medium";
 }
 
+/** LLMs often send confidence as "high" instead of 0.0–1.0. */
+export function coerceEmailConfidence(value: unknown): number | undefined {
+  if (value == null || value === "") return undefined;
+  if (typeof value === "number" && Number.isFinite(value)) {
+    if (value > 1 && value <= 100) return Math.min(1, value / 100);
+    return Math.min(1, Math.max(0, value));
+  }
+  const v = String(value).toLowerCase().trim();
+  const labels: Record<string, number> = {
+    low: 0.4,
+    medium: 0.6,
+    moderate: 0.6,
+    high: 0.85,
+    critical: 0.95,
+  };
+  if (v in labels) return labels[v];
+  const parsed = Number.parseFloat(v);
+  if (!Number.isFinite(parsed)) return 0.5;
+  if (parsed > 1 && parsed <= 100) return Math.min(1, parsed / 100);
+  return Math.min(1, Math.max(0, parsed));
+}
+
+function stripNullFields(value: unknown): unknown {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return value ?? {};
+  }
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>).filter(
+      ([, field]) => field != null,
+    ),
+  );
+}
+
 export const EMAIL_STATUSES = ["new", "read", "actioned", "archived"] as const;
 
 export const EMAIL_CATEGORY_LABELS: Record<
@@ -88,7 +121,10 @@ export const emailIngestSchema = z.object({
   subject: z.string().min(1).max(1000),
   receivedAt: z.string().min(1),
   category: z.enum(EMAIL_CATEGORIES),
-  confidence: z.number().min(0).max(1).optional(),
+  confidence: z.preprocess(
+    coerceEmailConfidence,
+    z.number().min(0).max(1).optional(),
+  ),
   summary: z.string().max(5000).optional(),
   urgency: z.preprocess(
     coerceEmailUrgency,
@@ -97,16 +133,10 @@ export const emailIngestSchema = z.object({
   hasAttachments: z.boolean().optional(),
   attachmentNames: z.array(z.string()).optional(),
   body: z.string().max(20_000).optional(),
-  extractedData: z
-    .union([
-      shipmentExtractSchema,
-      quotationExtractSchema,
-      alertExtractSchema,
-      generalExtractSchema,
-      z.record(z.string(), z.unknown()),
-    ])
-    .optional()
-    .default({}),
+  extractedData: z.preprocess(
+    stripNullFields,
+    z.record(z.string(), z.unknown()).optional().default({}),
+  ),
 });
 
 export const emailStatusUpdateSchema = z.object({

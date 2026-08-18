@@ -3,7 +3,7 @@
 // Groq: llama-3.3-70b-versatile was shut down 16 Aug 2026 → use openai/gpt-oss-20b
 
 const SYSTEM_PROMPT =
-  'You are an email intelligence assistant for ExpressWay Logistics. Classify into ONE category: shipment, quotation, alert, or general. Return JSON: { category, confidence, summary, urgency, extractedData }. urgency MUST be exactly one of: low, medium, high, critical (never "normal"). Shipment fields: awb, trackingNo, pickup, destination, status, eta. Quotation: quoteNo, origin, destination, carrier, price, validity. Alert: alertType, urgency, requiredAction, deadline. General: sender, subject, date, summary.';
+  'You are an email intelligence assistant for ExpressWay Logistics. Classify into ONE category: shipment, quotation, alert, or general. Return JSON: { category, confidence, summary, urgency, extractedData }. confidence MUST be a number 0.0-1.0 (never "high"/"low"). urgency MUST be exactly one of: low, medium, high, critical (never "normal"). Shipment fields: awb, trackingNo, pickup, destination, status, eta. Quotation: quoteNo, origin, destination, carrier, price, validity. Alert: alertType, urgency, requiredAction, deadline. General: sender, subject, date, summary.';
 
 const groqKey = $env.GROQ_API_KEY;
 const geminiKey = $env.GEMINI_API_KEY;
@@ -134,6 +134,30 @@ async function classifyOne(email) {
   const allowedCategory = ['shipment', 'quotation', 'alert', 'general'];
   if (!allowedCategory.includes(parsed.category)) {
     parsed.category = 'general';
+  }
+
+  const confidenceLabels = { low: 0.4, medium: 0.6, moderate: 0.6, high: 0.85, critical: 0.95 };
+  const rawConf = parsed.confidence;
+  if (typeof rawConf === 'number' && Number.isFinite(rawConf)) {
+    parsed.confidence = rawConf > 1 ? Math.min(1, rawConf / 100) : Math.min(1, Math.max(0, rawConf));
+  } else {
+    const label = String(rawConf ?? '').toLowerCase().trim();
+    if (confidenceLabels[label] != null) {
+      parsed.confidence = confidenceLabels[label];
+    } else {
+      const n = parseFloat(label);
+      parsed.confidence = Number.isFinite(n)
+        ? (n > 1 ? Math.min(1, n / 100) : Math.min(1, Math.max(0, n)))
+        : 0.5;
+    }
+  }
+
+  if (parsed.extractedData && typeof parsed.extractedData === 'object') {
+    for (const key of Object.keys(parsed.extractedData)) {
+      if (parsed.extractedData[key] == null) delete parsed.extractedData[key];
+    }
+  } else {
+    parsed.extractedData = {};
   }
 
   parsed._aiProvider = provider;
