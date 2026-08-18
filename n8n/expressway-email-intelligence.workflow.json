@@ -288,7 +288,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const email = $('Prepare Email Context').first().json;\nconst ai = $input.first().json;\n\nconst payload = {\n  sourceAccount: email.sourceAccount,\n  externalMessageId: email.externalMessageId,\n  senderEmail: email.senderEmail,\n  subject: email.subject,\n  receivedAt: email.receivedAt,\n  category: ai.category,\n  confidence: ai.confidence,\n  summary: ai.summary,\n  urgency: ai.urgency,\n  hasAttachments: email.hasAttachments,\n  attachmentNames: email.attachmentNames,\n  extractedData: ai.extractedData || {},\n};\n\nif (email.senderName) {\n  payload.senderName = email.senderName;\n}\n\nreturn [{ json: payload }];"
+        "jsCode": "const email = $('Prepare Email Context').first().json;\nconst ai = $input.first().json;\n\nconst payload = {\n  sourceAccount: email.sourceAccount,\n  externalMessageId: email.externalMessageId,\n  senderEmail: email.senderEmail,\n  subject: email.subject,\n  receivedAt: email.receivedAt,\n  category: ai.category,\n  confidence: ai.confidence,\n  summary: ai.summary,\n  urgency: ai.urgency,\n  hasAttachments: email.hasAttachments,\n  attachmentNames: email.attachmentNames,\n  extractedData: ai.extractedData || {},\n  body: typeof email.body === 'string' ? email.body.slice(0, 20000) : undefined,\n};\n\nif (email.senderName) {\n  payload.senderName = email.senderName;\n}\n\nreturn [{ json: payload }];"
       },
       "id": "build-001",
       "name": "Build Ingest Payload",

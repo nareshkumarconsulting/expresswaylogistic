@@ -240,9 +240,15 @@ function applyUpdate(
   quote: QuoteRequest,
   update: QuoteUpdateInput,
 ): QuoteRequest {
+  const aiReviewStatus = update.aiReviewStatus ?? quote.aiReviewStatus;
+  const confirmedFromNew =
+    update.aiReviewStatus === "confirmed" &&
+    !update.status &&
+    quote.status === "New";
+
   return {
     ...quote,
-    status: update.status ?? quote.status,
+    status: update.status ?? (confirmedFromNew ? "Under Review" : quote.status),
     internalNotes: update.internalNotes ?? quote.internalNotes,
     quotedAmount: update.quotedAmount ?? quote.quotedAmount,
     currency: update.currency ?? quote.currency,
@@ -266,6 +272,7 @@ function applyUpdate(
         : (update.forwarderCost ?? undefined),
     margin:
       update.margin === undefined ? quote.margin : (update.margin ?? undefined),
+    aiReviewStatus,
     updatedAt: new Date().toISOString(),
   };
 }
@@ -310,6 +317,7 @@ export async function updateManagedQuote(
       additional_requirements: next.additionalRequirements ?? null,
       forwarder_cost: next.forwarderCost ?? null,
       margin: next.margin ?? null,
+      ai_review_status: next.aiReviewStatus ?? null,
     })
     .eq("id", id);
 
@@ -318,13 +326,24 @@ export async function updateManagedQuote(
     throw new Error("Failed to update quote");
   }
 
-  if (update.status && update.status !== current.status) {
+  if (next.status !== current.status) {
     await logQuoteActivity(
       id,
       "status_changed",
-      `Status changed: ${current.status} → ${update.status}`,
+      `Status changed: ${current.status} → ${next.status}`,
       actor,
-      { from: current.status, to: update.status },
+      { from: current.status, to: next.status },
+    );
+  } else if (
+    update.aiReviewStatus &&
+    update.aiReviewStatus !== current.aiReviewStatus
+  ) {
+    await logQuoteActivity(
+      id,
+      "ai_review",
+      `Email AI review: ${update.aiReviewStatus}`,
+      actor,
+      { from: current.aiReviewStatus, to: update.aiReviewStatus },
     );
   } else {
     await logQuoteActivity(id, "quote_updated", "Quote details saved", actor);

@@ -5,7 +5,9 @@ export type LeadNotifyType =
   | "quote_request"
   | "quote_wizard_request"
   | "appointment_request"
-  | "voice_agent_event";
+  | "voice_agent_event"
+  | "email_quote_draft"
+  | "email_quote_needs_info";
 
 export type LeadNotifyInput = {
   type: LeadNotifyType;

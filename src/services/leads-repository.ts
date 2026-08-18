@@ -312,6 +312,13 @@ export function mapQuoteRowToQuoteRequest(row: QuoteRequestRow): QuoteRequest {
       row.forwarder_cost != null ? Number(row.forwarder_cost) : undefined,
     margin: row.margin != null ? Number(row.margin) : undefined,
     selectedForwarderId: row.selected_forwarder_id ?? undefined,
+    source: row.source,
+    emailIntelligenceId: row.email_intelligence_id ?? undefined,
+    aiReviewStatus: row.ai_review_status ?? undefined,
+    aiMissingFields: row.ai_missing_fields ?? [],
+    aiCompleteness:
+      row.ai_completeness != null ? Number(row.ai_completeness) : undefined,
+    aiSuggestedReply: row.ai_suggested_reply ?? undefined,
   };
 }
 

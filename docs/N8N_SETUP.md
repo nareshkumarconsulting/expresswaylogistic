@@ -60,6 +60,8 @@ Verify in n8n: **Settings → Variables** — you should see `EMAIL_INGEST_SECRE
    - `n8n/expressway-email-intelligence-rediffmail.workflow.json` — **Rediffmail Pro** (`webmail.rediffmailpro.com`)
 3. Open the imported workflow
 
+If this workflow was imported before email-quote drafts, **re-import** (or edit **Build Ingest Payload** so it sends `body`). The app needs the email text to create Quotes list items.
+
 ## 4. Connect credentials
 
 ### OpenAI (required for AI classification)

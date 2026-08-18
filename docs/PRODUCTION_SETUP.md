@@ -39,6 +39,7 @@ supabase/migrations/002_api_grants.sql
 supabase/migrations/003_staff_auth.sql
 supabase/migrations/004_email_intelligence.sql   ← required for email dashboard
 supabase/migrations/005_quote_management.sql     ← quote workflow + forwarders
+supabase/migrations/006_email_quote_intelligence.sql  ← email → quote drafts
 ```
 
 ### Step 1.3 — Create staff user for Command Center

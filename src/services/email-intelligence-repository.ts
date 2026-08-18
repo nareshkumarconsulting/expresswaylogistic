@@ -34,6 +34,10 @@ export function mapEmailRowToIntelligence(row: EmailRow): EmailIntelligence {
     processedAt: row.processed_at,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
+    body: row.body ?? undefined,
+    quoteRequestId: row.quote_request_id ?? undefined,
+    quoteSubtype: row.quote_subtype ?? undefined,
+    quoteAction: row.quote_action ?? undefined,
   };
 }
 
@@ -52,13 +56,14 @@ export function mapIngestToInsert(payload: EmailIngestPayload): EmailInsert {
     urgency: payload.urgency ?? null,
     has_attachments: payload.hasAttachments ?? false,
     attachment_names: payload.attachmentNames ?? [],
+    body: payload.body?.slice(0, 20_000) ?? null,
   };
 }
 
 export async function insertEmailIntelligence(
   payload: EmailIngestPayload,
-): Promise<EmailIntelligence | null> {
-  if (!isSupabaseConfigured()) return null;
+): Promise<{ email: EmailIntelligence | null; created: boolean }> {
+  if (!isSupabaseConfigured()) return { email: null, created: false };
 
   const supabase = createSupabaseAdmin();
   const row = mapIngestToInsert(payload);
@@ -81,7 +86,10 @@ export async function insertEmailIntelligence(
         .eq("source_account", payload.sourceAccount)
         .eq("external_message_id", payload.externalMessageId)
         .maybeSingle();
-      return existing ? mapEmailRowToIntelligence(existing) : null;
+      return {
+        email: existing ? mapEmailRowToIntelligence(existing) : null,
+        created: false,
+      };
     }
 
     logger.error("email_intelligence.insert.failed", { error: error.message });
@@ -89,7 +97,7 @@ export async function insertEmailIntelligence(
   }
 
   logger.info("email_intelligence.inserted", { id: data.id });
-  return mapEmailRowToIntelligence(data);
+  return { email: mapEmailRowToIntelligence(data), created: true };
 }
 
 export async function listEmailIntelligence(options?: {

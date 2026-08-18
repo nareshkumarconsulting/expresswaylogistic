@@ -16,6 +16,7 @@ import {
   formatDateTime,
   SERVICE_TYPE_LABELS,
   STATUS_FILTER_LABELS,
+  emailAiBadgeLabel,
   statusBadgeVariant,
 } from "@/features/quotes/labels";
 import { cn } from "@/lib/utils";
@@ -53,20 +54,38 @@ function isStatusFilter(value: string | null): value is StatusFilter {
   );
 }
 
+type AiFilter = "all" | "email" | "needs_info" | "needs_review";
+
+function isAiFilter(value: string | null): value is AiFilter {
+  return (
+    value === "all" ||
+    value === "email" ||
+    value === "needs_info" ||
+    value === "needs_review"
+  );
+}
+
 export function QuotesPanel() {
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const statusFromUrl = searchParams.get("status");
+  const quoteFromUrl = searchParams.get("quote");
+  const aiFromUrl = searchParams.get("ai");
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>(
     isStatusFilter(statusFromUrl) ? statusFromUrl : "all",
+  );
+  const [aiFilter, setAiFilter] = useState<AiFilter>(
+    isAiFilter(aiFromUrl) ? aiFromUrl : "all",
   );
   const [originFilter, setOriginFilter] = useState("");
   const [destinationFilter, setDestinationFilter] = useState("");
   const [serviceFilter, setServiceFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState("");
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [sheetOpen, setSheetOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(
+    quoteFromUrl,
+  );
+  const [sheetOpen, setSheetOpen] = useState(Boolean(quoteFromUrl));
 
   useEffect(() => {
     if (isStatusFilter(statusFromUrl)) {
@@ -90,6 +109,19 @@ export function QuotesPanel() {
     enabled: Boolean(selectedId && sheetOpen),
   });
 
+  const aiCounts = useMemo(() => {
+    const items = data ?? [];
+    return {
+      all: items.length,
+      email: items.filter((item) => item.source === "email").length,
+      needs_info: items.filter((item) => item.aiReviewStatus === "needs_info")
+        .length,
+      needs_review: items.filter(
+        (item) => item.aiReviewStatus === "needs_review",
+      ).length,
+    };
+  }, [data]);
+
   const counts = useMemo(() => {
     const base = {
       all: data?.length ?? 0,
@@ -105,6 +137,11 @@ export function QuotesPanel() {
     const q = query.toLowerCase();
     return data.filter((item) => {
       if (statusFilter !== "all" && item.status !== statusFilter) return false;
+      if (aiFilter === "email" && item.source !== "email") return false;
+      if (aiFilter === "needs_info" && item.aiReviewStatus !== "needs_info")
+        return false;
+      if (aiFilter === "needs_review" && item.aiReviewStatus !== "needs_review")
+        return false;
       if (serviceFilter !== "all" && item.serviceType !== serviceFilter)
         return false;
       if (
@@ -133,6 +170,7 @@ export function QuotesPanel() {
       );
     });
   }, [
+    aiFilter,
     data,
     dateFilter,
     destinationFilter,
@@ -231,6 +269,37 @@ export function QuotesPanel() {
         onChange={setStatusFilter}
       />
 
+      <div
+        className="flex flex-wrap gap-2"
+        role="group"
+        aria-label="Email AI filters"
+      >
+        {(
+          [
+            ["all", "All sources", aiCounts.all],
+            ["email", "Email AI", aiCounts.email],
+            ["needs_review", "AI drafts", aiCounts.needs_review],
+            ["needs_info", "Needs info", aiCounts.needs_info],
+          ] as const
+        ).map(([id, label, count]) => (
+          <button
+            key={id}
+            type="button"
+            aria-pressed={aiFilter === id}
+            onClick={() => setAiFilter(id)}
+            className={cn(
+              "rounded-lg border px-3 py-1.5 text-sm font-semibold transition-colors",
+              aiFilter === id
+                ? "border-primary bg-primary text-primary-foreground"
+                : "border-border bg-background text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {label}{" "}
+            <span className="tabular-nums">{count}</span>
+          </button>
+        ))}
+      </div>
+
       {filtered.length === 0 ? (
         <StateAlert
           variant="info"
@@ -300,6 +369,20 @@ export function QuotesPanel() {
                     <Badge variant={statusBadgeVariant(quote.status)}>
                       {STATUS_FILTER_LABELS[quote.status]}
                     </Badge>
+                    {emailAiBadgeLabel(quote) ? (
+                      <Badge
+                        variant={
+                          quote.aiReviewStatus === "needs_info"
+                            ? "warning"
+                            : quote.aiReviewStatus === "needs_review"
+                              ? "accent"
+                              : "muted"
+                        }
+                        className="mt-1"
+                      >
+                        {emailAiBadgeLabel(quote)}
+                      </Badge>
+                    ) : null}
                   </td>
                   <td className="px-4 py-3">{quote.quotedAmount ?? "—"}</td>
                   <td className="px-4 py-3 whitespace-nowrap text-muted-foreground">

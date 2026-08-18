@@ -22,13 +22,18 @@ This document describes how to connect **n8n** to the ExpressWay Command Center 
         └── 📄 general    — General / Other
         │
         ▼
-   AI Information Extraction (structured JSON)
+   POST /api/email-intelligence/ingest  (includes email body)
         │
         ▼
-   POST /api/email-intelligence/ingest  →  Supabase
+   App quote intelligence (Groq / Gemini / OpenAI)
+        │
+        ├── client RFQ complete  → Quotes list · AI draft · needs review
+        ├── client RFQ incomplete → Quotes list · Needs info · sales alert
+        ├── forwarder rate / follow-up → attach to existing quote
+        └── other → Email Intelligence only
         │
         ▼
-   Command Center → /command-center/emails
+   Command Center → /command-center/emails  and  /command-center/quotes
 ```
 
 ## Setup
@@ -39,6 +44,7 @@ In Supabase SQL Editor, run:
 
 ```
 supabase/migrations/004_email_intelligence.sql
+supabase/migrations/006_email_quote_intelligence.sql
 ```
 
 ### 2. Configure environment variables
@@ -163,6 +169,7 @@ Pass the email subject, body, and sender to the AI node.
   "urgency": "{{ $('AI').item.json.urgency }}",
   "hasAttachments": "{{ $json.attachments.length > 0 }}",
   "attachmentNames": "{{ $json.attachments.map(a => a.filename) }}",
+  "body": "{{ $json.textPlain || $json.text || '' }}",
   "extractedData": "{{ $('AI').item.json.extractedData }}"
 }
 ```
@@ -205,10 +212,36 @@ Adjust node references (`$('Set')`, `$('AI')`) to match your workflow node names
 **Response:**
 
 ```json
-{ "success": true, "data": { "id": "uuid" }, "message": "Email intelligence stored" }
+{
+  "success": true,
+  "data": {
+    "id": "uuid",
+    "quote": {
+      "id": "QW-XXXX",
+      "action": "created_draft|needs_info|attached|skipped",
+      "subtype": "client_rfq|forwarder_rate|follow_up"
+    }
+  },
+  "message": "Email intelligence stored"
+}
 ```
 
-Duplicate emails (same `sourceAccount` + `externalMessageId`) are upserted.
+`quote` is `null` when the email is not a quotation/RFQ. Duplicate emails (same `sourceAccount` + `externalMessageId`) are skipped and do not create a second quote.
+
+### Quote drafts from email (Option A)
+
+n8n only classifies at a high level and forwards the **body**. The app then:
+
+1. Subtypes quotation mail: client RFQ vs forwarder rate vs follow-up
+2. Extracts lane/cargo fields and checks completeness (origin, destination, and weight/CBM/packages)
+3. Creates a `quote_requests` row with `source = email`
+   - Complete → `ai_review_status = needs_review` (AI draft)
+   - Incomplete → `ai_review_status = needs_info` and a sales notification
+4. Does **not** email the customer or forwarders automatically — staff confirm in Quotes
+
+Staff actions on the quote sheet: **Confirm and take over** or **Not a quote**.
+
+Set `GROQ_API_KEY`, `GEMINI_API_KEY`, or `OPENAI_API_KEY` on the **app** (Vercel), not only n8n. If no key is set, the app still creates a draft from n8n fields + heuristics.
 
 ### `GET /api/email-intelligence`
 
@@ -234,8 +267,10 @@ Open **Command Center → Email Intelligence** at `/command-center/emails`.
 Features:
 - Filter by category and status
 - Search by subject, sender, or account
-- Click any row to view extracted fields and update status
+- Click any row to view extracted fields, email body, and linked quote
 - Auto-refreshes every 60 seconds
+
+Quotation RFQs also appear under **Command Center → Quotes** with **AI draft** or **Needs info** badges. Filter with **Email AI / AI drafts / Needs info**.
 
 ## Testing locally
 

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { emailIngestSchema } from "@/features/email-intelligence/schemas";
 import { logger } from "@/lib/logger";
 import { insertEmailIntelligence } from "@/services/email-intelligence-repository";
+import { processEmailQuoteIntelligence } from "@/services/email-quote-intelligence";
 
 function verifyIngestSecret(request: Request): boolean {
   const secret = process.env.EMAIL_INGEST_SECRET;
@@ -45,11 +46,28 @@ export async function POST(request: Request) {
     }
 
     const saved = await insertEmailIntelligence(parsed.data);
+    const quote =
+      saved.created && saved.email
+        ? await processEmailQuoteIntelligence(saved.email, parsed.data)
+        : null;
 
     return NextResponse.json({
       success: true,
-      data: { id: saved?.id ?? null },
-      message: saved ? "Email intelligence stored" : "Duplicate skipped",
+      data: {
+        id: saved.email?.id ?? null,
+        quote: quote
+          ? {
+              id: quote.quoteId ?? null,
+              action: quote.action,
+              subtype: quote.subtype ?? null,
+            }
+          : null,
+      },
+      message: saved.created
+        ? "Email intelligence stored"
+        : saved.email
+          ? "Duplicate skipped"
+          : "Email intelligence stored",
     });
   } catch (error) {
     logger.error("email_intelligence.ingest.failed", {

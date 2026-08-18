@@ -32,7 +32,14 @@ export type QuoteForwarderRequestStatus =
 export type QuoteRequestSource =
   | "contact_form"
   | "quote_wizard"
-  | "voice_agent";
+  | "voice_agent"
+  | "email";
+
+export type QuoteAiReviewStatus =
+  | "needs_review"
+  | "needs_info"
+  | "confirmed"
+  | "dismissed";
 
 export type AppointmentSource = "form" | "voice_agent";
 
@@ -111,6 +118,11 @@ export interface Database {
           forwarder_cost: number | null;
           margin: number | null;
           selected_forwarder_id: string | null;
+          email_intelligence_id: string | null;
+          ai_review_status: QuoteAiReviewStatus | null;
+          ai_missing_fields: string[];
+          ai_completeness: number | null;
+          ai_suggested_reply: string | null;
         };
         Insert: {
           id: string;
@@ -151,6 +163,11 @@ export interface Database {
           forwarder_cost?: number | null;
           margin?: number | null;
           selected_forwarder_id?: string | null;
+          email_intelligence_id?: string | null;
+          ai_review_status?: QuoteAiReviewStatus | null;
+          ai_missing_fields?: string[];
+          ai_completeness?: number | null;
+          ai_suggested_reply?: string | null;
         };
         Update: Partial<Database["public"]["Tables"]["quote_requests"]["Insert"]>;
         Relationships: [];
@@ -319,6 +336,10 @@ export interface Database {
           processed_at: string;
           created_at: string;
           updated_at: string;
+          body: string | null;
+          quote_request_id: string | null;
+          quote_subtype: string | null;
+          quote_action: string | null;
         };
         Insert: {
           id?: string;
@@ -339,6 +360,10 @@ export interface Database {
           processed_at?: string;
           created_at?: string;
           updated_at?: string;
+          body?: string | null;
+          quote_request_id?: string | null;
+          quote_subtype?: string | null;
+          quote_action?: string | null;
         };
         Update: Partial<Database["public"]["Tables"]["email_intelligence"]["Insert"]>;
         Relationships: [];
@@ -362,6 +387,7 @@ export interface Database {
       email_category: EmailCategory;
       email_urgency: EmailUrgency;
       email_intelligence_status: EmailIntelligenceStatus;
+      quote_ai_review_status: QuoteAiReviewStatus;
     };
     CompositeTypes: Record<string, never>;
   };

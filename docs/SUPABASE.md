@@ -19,7 +19,7 @@ supabase/migrations/001_phase1_leads.sql
 supabase/migrations/002_api_grants.sql
 supabase/migrations/003_staff_auth.sql
 supabase/migrations/004_email_intelligence.sql
-supabase/migrations/005_quote_management.sql
+supabase/migrations/006_email_quote_intelligence.sql
 ```
 
 Or with the Supabase CLI:
@@ -36,6 +36,7 @@ supabase db push
 | `003_staff_auth` | `staff_profiles`, staff RLS policies |
 | `004_email_intelligence` | inbound classified emails |
 | `005_quote_management` | quote statuses, forwarders, forwarder requests, quote activity |
+| `006_email_quote_intelligence` | email-origin quote drafts, AI review status, email body |
 
 ## 3. Configure environment
 

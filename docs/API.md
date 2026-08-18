@@ -60,7 +60,7 @@ See [EMAIL_INTELLIGENCE.md](./EMAIL_INTELLIGENCE.md) for the full n8n workflow s
 
 ### `POST /api/email-intelligence/ingest`
 
-n8n webhook — stores classified email data. Auth: `Authorization: Bearer <EMAIL_INGEST_SECRET>`.
+n8n webhook — stores classified email data, then the app may create an email-origin quote draft. Auth: `Authorization: Bearer <EMAIL_INGEST_SECRET>`. Body should include `body` (email text) so quote completeness can be checked.
 
 ### `GET /api/email-intelligence`
 
@@ -84,7 +84,7 @@ Quote detail including previous quotes, forwarder requests, and activity.
 
 ### `PATCH /api/quotes/:id`
 
-Save status, amounts, notes, validity, margin.
+Save status, amounts, notes, validity, margin, or `aiReviewStatus` (`needs_review` | `needs_info` | `confirmed` | `dismissed`). Confirming an email AI draft moves **New** → **Under Review**.
 
 ### `POST /api/quotes/:id/send`
 

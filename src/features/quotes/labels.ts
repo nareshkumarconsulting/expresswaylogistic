@@ -77,6 +77,23 @@ export function formatDateTime(iso?: string): string {
   });
 }
 
+export function isPendingEmailAiQuote(quote: QuoteRequest): boolean {
+  return (
+    quote.source === "email" &&
+    (quote.aiReviewStatus === "needs_review" ||
+      quote.aiReviewStatus === "needs_info")
+  );
+}
+
+export function emailAiBadgeLabel(quote: QuoteRequest): string | null {
+  if (quote.source !== "email") return null;
+  if (quote.aiReviewStatus === "needs_info") return "Needs info";
+  if (quote.aiReviewStatus === "needs_review") return "AI draft";
+  if (quote.aiReviewStatus === "confirmed") return "Email";
+  if (quote.aiReviewStatus === "dismissed") return "Not a quote";
+  return "Email";
+}
+
 export function formatDate(iso?: string): string {
   if (!iso) return "—";
   return new Date(iso).toLocaleDateString("en-IN", {

@@ -20,11 +20,13 @@ import {
   CONTAINER_TYPE_LABELS,
   PRODUCT_TYPE_LABELS,
 } from "@/features/contact/schemas";
+import { EmailQuoteReviewCard } from "@/features/command-center/components/email-quote-review-card";
 import {
   formatDate,
   formatDateTime,
   SERVICE_TYPE_LABELS,
   STATUS_FILTER_LABELS,
+  emailAiBadgeLabel,
   statusBadgeVariant,
 } from "@/features/quotes/labels";
 import {
@@ -298,7 +300,7 @@ export function QuoteDetailSheet({
   const [discount, setDiscount] = useState("");
   const [quoteValidity, setQuoteValidity] = useState("7 days");
   const [margin, setMargin] = useState("");
-  const [busy, setBusy] = useState<"save" | "send" | "forwarders" | null>(null);
+  const [busy, setBusy] = useState<"save" | "send" | "forwarders" | "review" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [workPath, setWorkPath] = useState<WorkPath>("customer");
   const [detailsOpen, setDetailsOpen] = useState(true);
@@ -392,7 +394,7 @@ export function QuoteDetailSheet({
   async function mutate(
     path: string,
     body: unknown,
-    kind: "save" | "send" | "forwarders",
+    kind: "save" | "send" | "forwarders" | "review",
   ) {
     setBusy(kind);
     setError(null);
@@ -456,6 +458,19 @@ export function QuoteDetailSheet({
             ) : (
               <Badge variant="muted">New customer</Badge>
             )}
+            {emailAiBadgeLabel(quote) ? (
+              <Badge
+                variant={
+                  quote.aiReviewStatus === "needs_info"
+                    ? "warning"
+                    : quote.aiReviewStatus === "needs_review"
+                      ? "accent"
+                      : "muted"
+                }
+              >
+                {emailAiBadgeLabel(quote)}
+              </Badge>
+            ) : null}
             {quote.originPickup ? (
               <ServiceNeedBadge label="Need origin pickup" />
             ) : null}
@@ -466,6 +481,24 @@ export function QuoteDetailSheet({
         </div>
 
         <div className="space-y-5 px-6 py-5">
+          <EmailQuoteReviewCard
+            quote={quote}
+            busy={busy === "review"}
+            onConfirm={() =>
+              void mutate(
+                `/api/quotes/${quote.id}`,
+                { aiReviewStatus: "confirmed", actor: "ops" },
+                "review",
+              )
+            }
+            onDismiss={() =>
+              void mutate(
+                `/api/quotes/${quote.id}`,
+                { aiReviewStatus: "dismissed", actor: "ops" },
+                "review",
+              )
+            }
+          />
           <div>
             <Button
               type="button"

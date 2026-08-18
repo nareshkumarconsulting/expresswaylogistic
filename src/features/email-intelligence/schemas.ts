@@ -96,6 +96,7 @@ export const emailIngestSchema = z.object({
   ),
   hasAttachments: z.boolean().optional(),
   attachmentNames: z.array(z.string()).optional(),
+  body: z.string().max(20_000).optional(),
   extractedData: z
     .union([
       shipmentExtractSchema,

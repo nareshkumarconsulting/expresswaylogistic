@@ -49,6 +49,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | `/login` | Command Center sign-in (Supabase Auth) |
 | `/command-center` | AI Logistics Command Center (auth required) |
 | `/command-center/emails` | AI Email Intelligence board (auth required) |
+| `/command-center/quotes` | Quote requests, including email AI drafts (auth required) |
 | `/command-center/ai` | Natural-language copilot |
 | `/api/health` | Health check |
 
@@ -81,7 +82,7 @@ See `.env.example`:
 - `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` — Postgres + Command Center staff login ([setup guide](docs/SUPABASE.md))
 - `AUTH_EMAIL` / `AUTH_PASSWORD` — credentials used by `scripts/bootstrap-staff.mjs` and demo auth fallback
 - `AUTH_SESSION_SECRET` — optional demo session cookie value
-- `GROQ_API_KEY` — optional; email AI + natural Ava TTS (recommended, free tier)
+- `GROQ_API_KEY` — optional; n8n classify + app quote drafts + Ava TTS (recommended, free tier)
 - `GROQ_TTS_VOICE` — `hannah` (default), `autumn`, `diana`, `austin`, `daniel`, `troy`
 - `OPENAI_API_KEY` — optional fallback for Ava TTS if Groq is unset
 - `OPENAI_TTS_VOICE` — `nova` (default), `shimmer`, `coral`, etc.

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { ArrowLeft, Paperclip, Sparkles } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { Button } from "@/components/atoms/button";
@@ -166,6 +167,15 @@ export function EmailDetailView({
                 {Math.round(email.confidence * 100)}% confidence
               </Badge>
             ) : null}
+            {email.quoteAction === "needs_info" ? (
+              <Badge variant="warning">Quote needs info</Badge>
+            ) : null}
+            {email.quoteAction === "created_draft" ? (
+              <Badge variant="accent">Quote draft created</Badge>
+            ) : null}
+            {email.quoteRequestId ? (
+              <Badge variant="secondary">Linked quote</Badge>
+            ) : null}
           </div>
           <h2 className="font-display text-xl font-bold leading-snug">
             {email.subject}
@@ -226,6 +236,29 @@ export function EmailDetailView({
             <p className="mt-2 text-sm leading-relaxed text-foreground">
               {email.summary}
             </p>
+          </div>
+        ) : null}
+
+        {email.quoteRequestId ? (
+          <div className="rounded-lg border bg-muted/30 p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Linked quote
+            </p>
+            <Link
+              href={`/command-center/quotes?quote=${email.quoteRequestId}`}
+              className="mt-1 inline-block text-sm font-semibold text-accent hover:underline"
+            >
+              Open {email.quoteRequestId} in Quotes
+            </Link>
+          </div>
+        ) : null}
+
+        {email.body ? (
+          <div>
+            <p className="mb-2 text-sm font-semibold">Email body</p>
+            <pre className="whitespace-pre-wrap rounded-lg border bg-muted/30 p-3 text-sm leading-relaxed text-foreground">
+              {email.body}
+            </pre>
           </div>
         ) : null}
 

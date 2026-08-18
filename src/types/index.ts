@@ -103,6 +103,21 @@ export const QUOTE_FORWARDER_REQUEST_STATUSES = [
 export type QuoteForwarderRequestStatus =
   (typeof QUOTE_FORWARDER_REQUEST_STATUSES)[number];
 
+export type QuoteRequestSource =
+  | "contact_form"
+  | "quote_wizard"
+  | "voice_agent"
+  | "email";
+
+export const QUOTE_AI_REVIEW_STATUSES = [
+  "needs_review",
+  "needs_info",
+  "confirmed",
+  "dismissed",
+] as const;
+
+export type QuoteAiReviewStatus = (typeof QUOTE_AI_REVIEW_STATUSES)[number];
+
 export type QuoteServiceType =
   | "air"
   | "ocean-fcl"
@@ -216,6 +231,12 @@ export interface QuoteRequest {
   previousQuotes?: PreviousQuoteSummary[];
   activity?: QuoteActivityEntry[];
   forwarderRequests?: QuoteForwarderRequest[];
+  source?: QuoteRequestSource;
+  emailIntelligenceId?: string;
+  aiReviewStatus?: QuoteAiReviewStatus;
+  aiMissingFields?: string[];
+  aiCompleteness?: number;
+  aiSuggestedReply?: string;
 }
 
 export interface AppointmentPayload {
@@ -343,4 +364,8 @@ export interface EmailIntelligence {
   processedAt: string;
   createdAt: string;
   updatedAt: string;
+  body?: string;
+  quoteRequestId?: string;
+  quoteSubtype?: string;
+  quoteAction?: string;
 }

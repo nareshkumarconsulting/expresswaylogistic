@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Inbox,
@@ -77,11 +78,13 @@ function urgencyBar(urgency?: EmailUrgency): string {
 
 export function EmailIntelligencePanel() {
   const queryClient = useQueryClient();
+  const searchParams = useSearchParams();
+  const idFromUrl = searchParams.get("id");
   const [query, setQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("all");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [accountFilter, setAccountFilter] = useState("all");
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(idFromUrl);
   const autoReadIds = useRef(new Set<string>());
 
   const { data, isLoading, isError, refetch } = useQuery({

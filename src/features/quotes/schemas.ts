@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { QUOTE_FORWARDER_REQUEST_STATUSES, QUOTE_REQUEST_STATUSES } from "@/types";
+import { QUOTE_AI_REVIEW_STATUSES, QUOTE_FORWARDER_REQUEST_STATUSES, QUOTE_REQUEST_STATUSES } from "@/types";
 
 export const quoteUpdateSchema = z.object({
   status: z.enum(QUOTE_REQUEST_STATUSES).optional(),
@@ -16,6 +16,7 @@ export const quoteUpdateSchema = z.object({
   additionalRequirements: z.string().optional(),
   forwarderCost: z.number().nullable().optional(),
   margin: z.number().nullable().optional(),
+  aiReviewStatus: z.enum(QUOTE_AI_REVIEW_STATUSES).optional(),
   actor: z.string().optional(),
 });
 
