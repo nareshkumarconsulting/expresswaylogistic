@@ -806,7 +806,7 @@ export function QuoteWizardForm() {
             <p className="text-xs text-muted-foreground">~5 min · Freight desk</p>
           </div>
 
-          <ol className="grid grid-cols-4 gap-1 sm:gap-2" aria-label="Quote progress">
+          <ol className="grid grid-cols-4 gap-0" aria-label="Quote progress">
             {STEPS.map((s, index) => {
               const done = index < step;
               const current = index === step;

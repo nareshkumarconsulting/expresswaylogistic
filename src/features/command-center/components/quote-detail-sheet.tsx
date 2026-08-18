@@ -20,6 +20,7 @@ import {
   CONTAINER_TYPE_LABELS,
   PRODUCT_TYPE_LABELS,
 } from "@/features/contact/schemas";
+import { EmailAiBadge } from "@/features/command-center/components/email-ai-badge";
 import { EmailQuoteReviewCard } from "@/features/command-center/components/email-quote-review-card";
 import {
   formatDate,
@@ -459,7 +460,7 @@ export function QuoteDetailSheet({
               <Badge variant="muted">New customer</Badge>
             )}
             {emailAiBadgeLabel(quote) ? (
-              <Badge
+              <EmailAiBadge
                 variant={
                   quote.aiReviewStatus === "needs_info"
                     ? "warning"
@@ -469,7 +470,7 @@ export function QuoteDetailSheet({
                 }
               >
                 {emailAiBadgeLabel(quote)}
-              </Badge>
+              </EmailAiBadge>
             ) : null}
             {quote.originPickup ? (
               <ServiceNeedBadge label="Need origin pickup" />
@@ -557,35 +558,39 @@ export function QuoteDetailSheet({
                 </p>
               </div>
 
-              {previous.length > 0 ? (
+              {received.length > 0 ? (
                 <ul className="space-y-2">
-                  {previous.map((item) => (
-                    <li key={item.id}>
+                  {received.map((row) => (
+                    <li key={row.id}>
                       <button
                         type="button"
                         className="flex w-full items-center justify-between gap-2 rounded-lg border border-border px-3 py-2 text-left text-sm hover:bg-muted/50"
                         onClick={() =>
-                          setQuotedAmount(item.quotedAmount ?? quotedAmount)
+                          setQuotedAmount(
+                            row.quotationAmount != null
+                              ? formatMoney(row.quotationAmount, row.currency)
+                              : quotedAmount,
+                          )
                         }
                       >
                         <span>
-                          {item.id}
-                          <span className="ml-2 text-xs text-muted-foreground">
-                            {formatDate(item.submittedAt)}
-                          </span>
+                          {row.forwarderName}
+                          {row.transitTime ? (
+                            <span className="ml-2 text-xs text-muted-foreground">
+                              {row.transitTime}
+                            </span>
+                          ) : null}
                         </span>
                         <span className="font-medium">
-                          {item.quotedAmount ?? "Use"}
+                          {row.quotationAmount != null
+                            ? formatMoney(row.quotationAmount, row.currency)
+                            : "—"}
                         </span>
                       </button>
                     </li>
                   ))}
                 </ul>
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  No previous priced quotes for this email. Enter an amount below.
-                </p>
-              )}
+              ) : null}
 
               <div className="space-y-2">
                 <Label htmlFor="quote-amount">Amount</Label>

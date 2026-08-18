@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Badge } from "@/components/atoms/badge";
+import { Sparkles } from "lucide-react";
 import { Input } from "@/components/atoms/input";
 import { Spinner } from "@/components/atoms/spinner";
 import { StateAlert } from "@/components/molecules/state-alert";
@@ -15,7 +15,7 @@ import {
 import {
   formatDateTime,
   SERVICE_TYPE_LABELS,
-  STATUS_FILTER_LABELS,
+  STATUS_CHIP_LABELS,
   emailAiBadgeLabel,
   statusBadgeVariant,
 } from "@/features/quotes/labels";
@@ -62,6 +62,60 @@ function isAiFilter(value: string | null): value is AiFilter {
     value === "email" ||
     value === "needs_info" ||
     value === "needs_review"
+  );
+}
+
+function statusChipTone(status: QuoteRequest["status"]): string {
+  switch (statusBadgeVariant(status)) {
+    case "success":
+      return "border-success/30 bg-success/10 text-success";
+    case "warning":
+      return "border-warning/35 bg-warning/10 text-warning-foreground";
+    case "accent":
+      return "border-accent/35 bg-accent/10 text-accent";
+    case "destructive":
+      return "border-destructive/30 bg-destructive/10 text-destructive";
+    case "secondary":
+      return "border-secondary/40 bg-secondary/20 text-secondary-foreground";
+    default:
+      return "border-border bg-muted/70 text-muted-foreground";
+  }
+}
+
+function aiChipTone(status: QuoteRequest["aiReviewStatus"]): string {
+  if (status === "needs_info") {
+    return "border-warning/40 bg-warning/15 text-warning-foreground";
+  }
+  if (status === "needs_review") {
+    return "border-accent/40 bg-accent/15 text-accent";
+  }
+  return "border-border bg-muted/70 text-muted-foreground";
+}
+
+function QuoteRowStatus({ quote }: { quote: QuoteRequest }) {
+  const aiLabel = emailAiBadgeLabel(quote);
+  return (
+    <div className="flex flex-wrap items-center gap-1.5">
+      <span
+        className={cn(
+          "inline-flex h-6 items-center rounded-full border px-2 text-[11px] font-semibold leading-none",
+          statusChipTone(quote.status),
+        )}
+      >
+        {STATUS_CHIP_LABELS[quote.status]}
+      </span>
+      {aiLabel ? (
+        <span
+          className={cn(
+            "inline-flex h-6 items-center gap-1 rounded-full border px-2 text-[11px] font-semibold leading-none",
+            aiChipTone(quote.aiReviewStatus),
+          )}
+        >
+          <Sparkles className="size-3 shrink-0" aria-hidden />
+          {aiLabel}
+        </span>
+      ) : null}
+    </div>
   );
 }
 
@@ -294,6 +348,9 @@ export function QuotesPanel() {
                 : "border-border bg-background text-muted-foreground hover:text-foreground",
             )}
           >
+            {id !== "all" ? (
+              <Sparkles className="mr-1 inline size-3.5 align-[-2px]" aria-hidden />
+            ) : null}
             {label}{" "}
             <span className="tabular-nums">{count}</span>
           </button>
@@ -366,23 +423,7 @@ export function QuotesPanel() {
                       : ""}
                   </td>
                   <td className="px-4 py-3">
-                    <Badge variant={statusBadgeVariant(quote.status)}>
-                      {STATUS_FILTER_LABELS[quote.status]}
-                    </Badge>
-                    {emailAiBadgeLabel(quote) ? (
-                      <Badge
-                        variant={
-                          quote.aiReviewStatus === "needs_info"
-                            ? "warning"
-                            : quote.aiReviewStatus === "needs_review"
-                              ? "accent"
-                              : "muted"
-                        }
-                        className="mt-1"
-                      >
-                        {emailAiBadgeLabel(quote)}
-                      </Badge>
-                    ) : null}
+                    <QuoteRowStatus quote={quote} />
                   </td>
                   <td className="px-4 py-3">{quote.quotedAmount ?? "—"}</td>
                   <td className="px-4 py-3 whitespace-nowrap text-muted-foreground">

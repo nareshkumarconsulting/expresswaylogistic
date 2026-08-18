@@ -4,6 +4,11 @@ import Link from "next/link";
 import { ArrowLeft, Paperclip, Sparkles } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { Button } from "@/components/atoms/button";
+import {
+  EmailAiBadge,
+  emailQuoteActionLabel,
+  emailQuoteActionVariant,
+} from "@/features/command-center/components/email-ai-badge";
 import { CATEGORY_UI } from "@/features/command-center/email-category-ui";
 import { EMAIL_CATEGORY_LABELS } from "@/features/email-intelligence/schemas";
 import { cn } from "@/lib/utils";
@@ -167,14 +172,14 @@ export function EmailDetailView({
                 {Math.round(email.confidence * 100)}% confidence
               </Badge>
             ) : null}
-            {email.quoteAction === "needs_info" ? (
-              <Badge variant="warning">Quote needs info</Badge>
-            ) : null}
-            {email.quoteAction === "created_draft" ? (
-              <Badge variant="accent">Quote draft created</Badge>
-            ) : null}
-            {email.quoteRequestId ? (
-              <Badge variant="secondary">Linked quote</Badge>
+            {email.quoteAction === "needs_info" ||
+            email.quoteAction === "created_draft" ||
+            email.quoteAction === "attached" ? (
+              <EmailAiBadge variant={emailQuoteActionVariant(email.quoteAction)}>
+                {emailQuoteActionLabel(email.quoteAction)}
+              </EmailAiBadge>
+            ) : email.quoteRequestId ? (
+              <EmailAiBadge variant="secondary">Linked quote</EmailAiBadge>
             ) : null}
           </div>
           <h2 className="font-display text-xl font-bold leading-snug">
@@ -241,7 +246,8 @@ export function EmailDetailView({
 
         {email.quoteRequestId ? (
           <div className="rounded-lg border bg-muted/30 p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              <Sparkles className="size-3.5" aria-hidden />
               Linked quote
             </p>
             <Link

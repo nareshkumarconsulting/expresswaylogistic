@@ -550,7 +550,7 @@ export function AppointmentForm() {
           </div>
 
           <ol
-            className="grid grid-cols-4 gap-1 sm:gap-2"
+            className="grid grid-cols-4 gap-0"
             aria-label="Booking progress"
           >
             {STEPS.map((s, index) => {

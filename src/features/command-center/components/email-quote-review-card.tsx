@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Sparkles } from "lucide-react";
-import { Badge } from "@/components/atoms/badge";
+import { EmailAiBadge } from "@/features/command-center/components/email-ai-badge";
 import { Button } from "@/components/atoms/button";
 import { RFQ_FIELD_LABELS } from "@/features/quotes/email-rfq";
 import type { QuoteRequest } from "@/types";
@@ -38,13 +38,13 @@ export function EmailQuoteReviewCard({
           <Sparkles className="size-3.5" aria-hidden />
           Email AI
         </p>
-        <Badge variant={needsInfo ? "warning" : "accent"}>
+        <EmailAiBadge variant={needsInfo ? "warning" : "accent"}>
           {needsInfo ? "Needs info" : "Ready for review"}
-        </Badge>
+        </EmailAiBadge>
         {quote.aiCompleteness != null ? (
-          <Badge variant="muted">
+          <EmailAiBadge variant="muted">
             {Math.round(quote.aiCompleteness * 100)}% complete
-          </Badge>
+          </EmailAiBadge>
         ) : null}
       </div>
       <p className="mt-2 text-sm text-foreground">

@@ -8,10 +8,12 @@ import {
   Mail,
   Paperclip,
   Search,
+  Sparkles,
 } from "lucide-react";
 import { Input } from "@/components/atoms/input";
 import { Spinner } from "@/components/atoms/spinner";
 import { StateAlert } from "@/components/molecules/state-alert";
+import { emailQuoteActionLabel } from "@/features/command-center/components/email-ai-badge";
 import { EmailDetailView } from "@/features/command-center/components/email-detail-view";
 import { CATEGORY_UI } from "@/features/command-center/email-category-ui";
 import { EMAIL_CATEGORIES } from "@/features/email-intelligence/schemas";
@@ -453,6 +455,17 @@ export function EmailIntelligencePanel() {
                               >
                                 {email.subject}
                               </span>
+                              {emailQuoteActionLabel(email.quoteAction) ? (
+                                <span className="inline-flex shrink-0 items-center gap-0.5 text-[10px] font-semibold text-primary">
+                                  <Sparkles className="size-3" aria-hidden />
+                                  {emailQuoteActionLabel(email.quoteAction)}
+                                </span>
+                              ) : email.quoteRequestId ? (
+                                <span className="inline-flex shrink-0 items-center gap-0.5 text-[10px] font-semibold text-primary">
+                                  <Sparkles className="size-3" aria-hidden />
+                                  Linked quote
+                                </span>
+                              ) : null}
                               {isNew ? (
                                 <span className="size-1.5 shrink-0 rounded-full bg-accent" />
                               ) : null}
