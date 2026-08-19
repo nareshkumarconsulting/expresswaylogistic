@@ -1798,7 +1798,7 @@ export function QuoteWizardForm() {
             type="button"
             variant="outline"
             rounded="none"
-            className="h-11"
+            className="h-11 w-full sm:w-auto"
             onClick={goBack}
             disabled={step === 0 || status === "loading"}
           >
@@ -1810,7 +1810,7 @@ export function QuoteWizardForm() {
             <Button
               type="button"
               rounded="none"
-              className="h-11 min-w-40"
+              className="h-11 w-full min-w-40 sm:w-auto"
               onClick={goNext}
             >
               Continue
@@ -1820,7 +1820,7 @@ export function QuoteWizardForm() {
             <Button
               type="button"
               rounded="none"
-              className="h-11 min-w-44"
+              className="h-11 w-full min-w-44 sm:w-auto"
               loading={status === "loading"}
               disabled={!submitReady}
               onClick={submitQuote}

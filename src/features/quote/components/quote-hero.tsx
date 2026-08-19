@@ -33,7 +33,7 @@ export function QuoteHero() {
         <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/70 to-primary/40" />
       </div>
 
-      <div className="container-page relative z-10 pt-40 pb-16 md:pt-44 md:pb-20">
+      <div className="container-page relative z-10 pt-28 pb-12 md:pt-44 md:pb-20">
         <div className="max-w-3xl">
           <motion.p
             {...fade(0)}

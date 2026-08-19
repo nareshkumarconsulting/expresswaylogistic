@@ -61,7 +61,7 @@ export default function HomePage() {
     fetchPriority: "high",
     imageSrcSet:
       "/images/hero-banner-750.webp 750w, /images/hero-banner-1280.webp 1280w",
-    imageSizes: "(min-width: 768px) 62vw, 78vw",
+    imageSizes: "(min-width: 768px) 62vw, 70vw",
   });
 
   return (

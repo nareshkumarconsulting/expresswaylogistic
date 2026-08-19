@@ -115,7 +115,7 @@ export function HelpLauncher() {
 
   return (
     <div
-      className="fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 flex flex-col items-end gap-3 sm:right-5 sm:bottom-5"
+      className="fixed right-4 bottom-[max(1.25rem,env(safe-area-inset-bottom))] z-40 flex flex-col items-end gap-3 sm:right-5 sm:bottom-5"
       aria-live="polite"
     >
       {voiceOpen ? (
@@ -215,7 +215,7 @@ export function HelpLauncher() {
           "group flex h-14 items-center justify-center overflow-hidden rounded-full shadow-lg transition-[width,padding,background-color] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
           expanded
             ? "w-14 px-0"
-            : "w-14 px-0 hover:w-[9.75rem] hover:px-4 hover:pr-5 focus-visible:w-[9.75rem] focus-visible:px-4 focus-visible:pr-5",
+            : "w-auto px-4 pr-5 sm:w-14 sm:px-0 sm:hover:w-[9.75rem] sm:hover:px-4 sm:hover:pr-5 sm:focus-visible:w-[9.75rem] sm:focus-visible:px-4 sm:focus-visible:pr-5",
           voiceOpen
             ? "bg-primary text-primary-foreground"
             : "bg-accent text-accent-foreground hover:bg-accent/90",
@@ -236,7 +236,7 @@ export function HelpLauncher() {
         ) : (
           <>
             <Headset className="size-6 shrink-0" />
-            <span className="max-w-0 overflow-hidden whitespace-nowrap text-sm font-semibold opacity-0 transition-all duration-200 group-hover:max-w-[6.5rem] group-hover:pl-2 group-hover:opacity-100 group-focus-visible:max-w-[6.5rem] group-focus-visible:pl-2 group-focus-visible:opacity-100">
+            <span className="max-w-[6.5rem] overflow-hidden pl-2 text-sm font-semibold whitespace-nowrap opacity-100 transition-all duration-200 sm:max-w-0 sm:pl-0 sm:opacity-0 sm:group-hover:max-w-[6.5rem] sm:group-hover:pl-2 sm:group-hover:opacity-100 sm:group-focus-visible:max-w-[6.5rem] sm:group-focus-visible:pl-2 sm:group-focus-visible:opacity-100">
               Need Help?
             </span>
           </>

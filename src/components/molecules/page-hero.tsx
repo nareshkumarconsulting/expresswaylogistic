@@ -43,7 +43,7 @@ export function PageHero({
   return (
     <section
       className={cn(
-        "relative isolate overflow-hidden bg-brand pt-36 pb-20 text-brand-foreground md:pt-40 md:pb-24",
+        "relative isolate overflow-hidden bg-brand pt-28 pb-14 text-brand-foreground md:pt-40 md:pb-24",
         className,
       )}
     >
@@ -115,13 +115,13 @@ export function PageHero({
                 {description}
               </p>
             ) : null}
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center">
               {primaryCta ? (
                 <Button
                   asChild
                   size="lg"
                   rounded="none"
-                  className="shadow-accent-glow"
+                  className="w-full shadow-accent-glow sm:w-auto"
                 >
                   <Link href={primaryCta.href}>
                     {primaryCta.label}
@@ -135,7 +135,7 @@ export function PageHero({
                   size="lg"
                   variant="outline"
                   rounded="none"
-                  className="border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white"
+                  className="w-full border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white sm:w-auto"
                 >
                   <Link href={secondaryCta.href}>{secondaryCta.label}</Link>
                 </Button>

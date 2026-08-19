@@ -129,7 +129,7 @@ export function IndustriesSection() {
               </p>
             </div>
           </div>
-          <Button asChild rounded="md" className="shadow-accent-glow">
+          <Button asChild rounded="md" className="w-full shadow-accent-glow sm:w-auto">
             <Link href={siteConfig.cta.primary.href}>
               Get a customized quote
               <ArrowRight className="size-4" aria-hidden />

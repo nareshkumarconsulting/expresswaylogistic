@@ -94,7 +94,7 @@ export function ConsultingCtaSection() {
             </div>
           </div>
 
-          <div className="relative order-2 min-w-0 px-5 py-8 sm:px-10 sm:py-10 lg:order-2 lg:flex lg:flex-col lg:justify-center lg:px-14 lg:py-16">
+          <div className="relative order-2 min-w-0 px-5 py-6 sm:px-10 sm:py-10 lg:order-2 lg:flex lg:flex-col lg:justify-center lg:px-14 lg:py-16">
             <p className="mb-4 inline-flex w-fit items-center gap-2 rounded-full border border-accent/40 bg-accent/10 px-3 py-1.5 text-[11px] font-semibold tracking-[0.16em] text-accent uppercase">
               <Sparkles className="size-3.5" aria-hidden />
               EXIM Consulting
@@ -130,7 +130,7 @@ export function ConsultingCtaSection() {
                 href="/appointment"
                 className={cn(
                   buttonVariants({ size: "lg", rounded: "full" }),
-                  "w-full shrink-0 text-white sm:w-auto",
+                  "h-12 w-full shrink-0 text-white sm:h-14 sm:w-auto",
                 )}
               >
                 Get Started

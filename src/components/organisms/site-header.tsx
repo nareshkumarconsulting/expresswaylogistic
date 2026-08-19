@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
-import { ChevronDown, Menu } from "lucide-react";
+import { ChevronDown, Menu, Phone } from "lucide-react";
 import { BrandLogo } from "@/components/atoms/brand-logo";
 import { Button } from "@/components/atoms/button";
 import {
@@ -164,21 +164,52 @@ export function SiteHeader() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
+  const [hiddenOnScroll, setHiddenOnScroll] = useState(false);
+  const lastScrollY = useRef(0);
 
   useEffect(() => {
     setOpen(false);
     setMobileServicesOpen(false);
+    setHiddenOnScroll(false);
   }, [pathname]);
 
+  useEffect(() => {
+    lastScrollY.current = window.scrollY;
+
+    const onScroll = () => {
+      const y = Math.max(0, window.scrollY);
+      const delta = y - lastScrollY.current;
+      lastScrollY.current = y;
+
+      setHiddenOnScroll((currentlyHidden) => {
+        if (y < 24) return false;
+        if (delta > 8) return true;
+        if (delta < -8) return false;
+        return currentlyHidden;
+      });
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   const otherNav = siteConfig.nav.filter((link) => link.name !== "Services");
+  const hideHeader = hiddenOnScroll && !open;
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 bg-white/90 py-2 shadow-sm backdrop-blur-md transition-all duration-300 dark:bg-background/90">
-      <div className="container-page grid grid-cols-3 items-center lg:flex lg:justify-between">
-        {/* Balances hamburger width so logo stays visually centered on mobile */}
-        <div className="size-10 lg:hidden" aria-hidden />
-
-        <div className="flex justify-center lg:justify-start">
+    <header
+      className={cn(
+        "fixed inset-x-0 top-0 z-50 bg-white/90 py-2 shadow-sm backdrop-blur-md dark:bg-background/90",
+        "transition-transform duration-300 ease-out motion-reduce:transition-none",
+        hideHeader
+          ? "pointer-events-none -translate-y-full"
+          : "translate-y-0",
+      )}
+      aria-hidden={hideHeader || undefined}
+      inert={hideHeader || undefined}
+    >
+      <div className="container-page flex items-center justify-between gap-3">
+        <div className="min-w-0">
           <BrandLogo tone="dark" size="lg" />
         </div>
 
@@ -212,7 +243,18 @@ export function SiteHeader() {
           </Button>
         </nav>
 
-        <div className="flex justify-end lg:hidden">
+        <div className="flex shrink-0 items-center gap-1 lg:hidden">
+          <Button
+            asChild
+            variant="ghost"
+            size="icon"
+            aria-label="Call ExpressWay"
+            className="text-foreground"
+          >
+            <a href={siteConfig.contact.phoneHref}>
+              <Phone className="size-5" />
+            </a>
+          </Button>
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button
@@ -227,7 +269,7 @@ export function SiteHeader() {
             <SheetContent>
               <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
               <BrandLogo tone="dark" size="md" href={null} />
-              <ul className="mt-8 flex flex-col gap-1">
+              <ul className="mt-6 flex flex-col gap-1">
                 <li>
                   <button
                     type="button"
@@ -290,14 +332,23 @@ export function SiteHeader() {
                   </Link>
                 </li>
               </ul>
-              <Button asChild className="mt-6 w-full" rounded="none">
-                <Link
-                  href={siteConfig.cta.primary.href}
+              <div className="mt-auto flex flex-col gap-3 pt-4">
+                <a
+                  href={siteConfig.contact.phoneHref}
+                  className="text-sm font-medium text-foreground/80"
                   onClick={() => setOpen(false)}
                 >
-                  {siteConfig.cta.primary.label}
-                </Link>
-              </Button>
+                  Call {siteConfig.contact.phone}
+                </a>
+                <Button asChild className="w-full" rounded="none">
+                  <Link
+                    href={siteConfig.cta.primary.href}
+                    onClick={() => setOpen(false)}
+                  >
+                    {siteConfig.cta.primary.label}
+                  </Link>
+                </Button>
+              </div>
             </SheetContent>
           </Sheet>
         </div>

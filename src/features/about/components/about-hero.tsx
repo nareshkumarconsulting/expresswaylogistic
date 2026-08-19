@@ -21,7 +21,7 @@ export function AboutHero() {
         };
 
   return (
-    <section className="relative isolate overflow-hidden bg-brand pt-36 pb-16 text-brand-foreground md:pt-40 md:pb-20">
+    <section className="relative isolate overflow-hidden bg-brand pt-28 pb-12 text-brand-foreground md:pt-40 md:pb-20">
       <div className="absolute inset-0 z-0">
         <Image
           src="/images/operations-center.jpg"

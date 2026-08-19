@@ -190,7 +190,7 @@ export function SiteFooter() {
             href="https://www.nareshkumarconsulting.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-3 text-left transition-opacity hover:opacity-90"
+            className="flex max-w-full flex-wrap items-center justify-center gap-3 text-left transition-opacity hover:opacity-90"
             aria-label="Powered by Naresh Kumar Consulting"
           >
             <Image

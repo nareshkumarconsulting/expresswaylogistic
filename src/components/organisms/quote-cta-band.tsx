@@ -25,7 +25,7 @@ export function QuoteCtaBand({
             <h2 className="text-h2 mb-3 text-white">{title}</h2>
             <p className="text-sm leading-relaxed text-white/75">{description}</p>
           </div>
-          <Button asChild rounded="none" className="shadow-accent-glow">
+          <Button asChild rounded="none" className="w-full shadow-accent-glow md:w-auto">
             <Link href={siteConfig.cta.primary.href}>
               Get a Quote
               <ArrowRight className="size-4" aria-hidden />

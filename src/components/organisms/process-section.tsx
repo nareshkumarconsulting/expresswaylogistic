@@ -145,14 +145,14 @@ export function ProcessSection() {
                 <span
                   aria-hidden
                   className={cn(
-                    "mt-3 h-8 w-px border-l border-dashed",
+                    "mt-3 hidden h-8 w-px border-l border-dashed sm:block",
                     isLast ? "border-accent/70" : "border-[#00A3FF]/40",
                   )}
                 />
                 <span
                   aria-hidden
                   className={cn(
-                    "size-2 rounded-full",
+                    "hidden size-2 rounded-full sm:block",
                     isLast ? "bg-accent" : "bg-[#00A3FF]",
                   )}
                 />
@@ -182,7 +182,7 @@ export function ProcessSection() {
               </p>
             </div>
           </div>
-          <Button asChild rounded="md" className="shadow-accent-glow">
+          <Button asChild rounded="md" className="w-full shadow-accent-glow sm:w-auto">
             <Link href={siteConfig.cta.primary.href}>
               Request a Quote
               <ArrowRight className="size-4" aria-hidden />

@@ -9,7 +9,7 @@ export function StatisticsSection() {
 
   return (
     <section className="relative overflow-hidden bg-brand py-section text-brand-foreground">
-      <div className="pointer-events-none absolute top-1/2 left-1/2 z-0 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap font-display text-[15rem] font-bold text-white/5">
+      <div className="pointer-events-none absolute top-1/2 left-1/2 z-0 hidden -translate-x-1/2 -translate-y-1/2 whitespace-nowrap font-display text-[15rem] font-bold text-white/5 md:block">
         GLOBAL LOGISTICS
       </div>
       <div className="container-page relative z-10">

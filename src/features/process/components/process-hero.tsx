@@ -24,7 +24,7 @@ export function ProcessHero() {
         };
 
   return (
-    <section className="relative isolate overflow-hidden bg-brand pt-36 pb-20 text-brand-foreground md:pt-40 md:pb-24">
+    <section className="relative isolate overflow-hidden bg-brand pt-28 pb-14 text-brand-foreground md:pt-40 md:pb-24">
       <div className="absolute inset-0 z-0">
         <Image
           src="/images/hero-port.jpg"

@@ -6,7 +6,7 @@ export function DirectAnswerBlock({
   heading?: string;
 }) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-sky-400/20 bg-[#071e38] p-6 text-white md:p-8">
+    <div className="relative overflow-hidden rounded-2xl border border-sky-400/20 bg-[#071e38] p-5 text-white md:p-8">
       <div
         className="pointer-events-none absolute -right-10 -bottom-12 size-40 rounded-full bg-accent/20 blur-3xl"
         aria-hidden

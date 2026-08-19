@@ -183,7 +183,7 @@ export function GlobalReachSection() {
               </p>
             </div>
           </div>
-          <Button asChild rounded="md" className="shadow-accent-glow">
+          <Button asChild rounded="md" className="w-full shadow-accent-glow sm:w-auto">
             <Link href="/shipping-routes">
               View all routes
               <ArrowRight className="size-4" aria-hidden />

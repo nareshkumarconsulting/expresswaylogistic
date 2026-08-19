@@ -40,7 +40,7 @@ export function ServicesSection() {
               <Link
                 key={service.id}
                 href={service.href}
-                className="group relative overflow-hidden rounded-2xl bg-brand p-8 text-white shadow-[0_24px_60px_-28px_rgba(5,26,48,0.55)] transition hover:-translate-y-0.5"
+                className="group relative overflow-hidden rounded-2xl bg-brand p-6 text-white shadow-[0_24px_60px_-28px_rgba(5,26,48,0.55)] transition hover:-translate-y-0.5 sm:p-8"
               >
                 <p className="absolute top-5 right-6 font-display text-6xl font-bold text-white/[0.06]">
                   {String(index + 1).padStart(2, "0")}
@@ -97,8 +97,8 @@ export function ServicesSection() {
           })}
         </ul>
 
-        <div className="mt-12 flex justify-center">
-          <Button asChild size="lg" rounded="md" className="shadow-accent-glow">
+        <div className="mt-10 flex justify-center md:mt-12">
+          <Button asChild size="lg" rounded="md" className="w-full shadow-accent-glow sm:w-auto">
             <Link href="/services">
               View all services
               <ArrowRight className="size-4" aria-hidden />

@@ -57,9 +57,9 @@
   --type-bold: 700;
 
   /* ── Spacing ─────────────────────────────────────────────── */
-  --space-section: 6rem;
-  --space-section-sm: 4rem;
-  --space-section-lg: 8rem;
+  --space-section: clamp(3.25rem, 8vw, 6rem);
+  --space-section-sm: clamp(2.5rem, 6vw, 4rem);
+  --space-section-lg: clamp(4rem, 10vw, 8rem);
   --space-stack: 1.5rem;
   --space-stack-lg: 2.5rem;
   --container-max: 80rem;

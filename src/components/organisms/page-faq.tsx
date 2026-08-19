@@ -62,7 +62,7 @@ export function PageFaq({
               options.
             </p>
           </div>
-          <Button asChild rounded="md" className="shadow-accent-glow">
+          <Button asChild rounded="md" className="w-full shadow-accent-glow sm:w-auto">
             <Link href={siteConfig.cta.primary.href}>
               Request a Quote
               <ArrowRight className="size-4" aria-hidden />

@@ -22,9 +22,9 @@ const LOGO_WIDTH = 480;
 const LOGO_HEIGHT = 320;
 
 const lockupHeight: Record<LogoSize, string> = {
-  sm: "h-12",
-  md: "h-16",
-  lg: "h-20 sm:h-24",
+  sm: "h-10",
+  md: "h-12 sm:h-16",
+  lg: "h-12 sm:h-16 lg:h-20",
 };
 
 const badgeHeight: Record<LogoSize, string> = {

@@ -17,16 +17,16 @@ export function AboutSection() {
                 alt="ExpressWay Logistic operations center"
                 width={1600}
                 height={1067}
-                className="aspect-[4/5] w-full object-cover object-center"
+                className="aspect-[16/10] w-full object-cover object-center lg:aspect-[4/5]"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-brand/55 via-transparent to-transparent" />
             </div>
 
-            <div className="absolute bottom-5 left-5 rounded-md bg-brand px-6 py-5 text-white shadow-lg">
-              <p className="text-4xl font-bold leading-none tracking-tight text-[#00A3FF]">
+            <div className="absolute bottom-3 left-3 rounded-md bg-brand px-4 py-3 text-white shadow-lg sm:bottom-5 sm:left-5 sm:px-6 sm:py-5">
+              <p className="text-3xl font-bold leading-none tracking-tight text-[#00A3FF] sm:text-4xl">
                 39+
               </p>
-              <p className="mt-2 text-sm font-medium leading-snug text-white/80">
+              <p className="mt-1.5 text-xs font-medium leading-snug text-white/80 sm:mt-2 sm:text-sm">
                 years of international
                 <br />
                 cargo experience

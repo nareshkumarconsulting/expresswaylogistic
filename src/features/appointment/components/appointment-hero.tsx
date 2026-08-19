@@ -41,7 +41,7 @@ export function AppointmentHero() {
         />
       </div>
 
-      <div className="container-page relative z-10 pt-40 pb-20 md:pt-44 md:pb-24">
+      <div className="container-page relative z-10 pt-28 pb-16 md:pt-44 md:pb-24">
         <div className="max-w-2xl">
           <motion.p
             {...fade(0)}
