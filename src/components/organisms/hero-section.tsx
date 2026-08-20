@@ -36,17 +36,17 @@ export function HeroSection() {
         />
 
         <div className="container-page relative z-10 flex min-h-[28rem] items-center pt-24 pb-10 md:min-h-[38rem] md:pt-36 md:pb-16 lg:min-h-[42rem]">
-          <div className="max-w-xl lg:max-w-[34rem]">
+          <div className="max-w-xl lg:max-w-[50rem]">
             <p className="mb-3 text-[11px] font-semibold tracking-[0.18em] text-accent uppercase sm:text-xs sm:tracking-[0.22em]">
               <span className="sm:hidden">Neutral Logistics • Ocean • Air • Customs</span>
-              <span className="hidden sm:inline">
+              <span className="hidden sm:inline lg:whitespace-nowrap">
                 Neutral Logistics Provider • Freight Forwarding • Ocean • Air • Customs
               </span>
             </p>
             <div className="mb-5 h-px w-16 bg-accent sm:mb-7 sm:w-24" aria-hidden />
 
-            <h1 className="text-display mb-4 text-white md:mb-6">
-              PAN India Freight Forwarding
+            <h1 className="text-display mb-4 text-white md:mb-6 lg:text-[65px]">
+              <span className="lg:whitespace-nowrap">PAN India Freight Forwarding</span>
               <span className="mt-1 block text-[#00A3FF]">
                 &amp; Global Logistics
               </span>
