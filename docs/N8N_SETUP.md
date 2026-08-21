@@ -105,8 +105,10 @@ Then restart n8n: `docker compose restart n8n`
 
 1. Use the **4 Gmail** workflow
 2. On each **Gmail — *** trigger → connect **Gmail OAuth2**
-3. Follow n8n’s Google Cloud OAuth setup (Gmail API enabled)
-4. Update `sourceAccount` in each **Account — *** Set node
+3. On each Gmail trigger: turn **Simplify OFF** (required for full body — Simplify ON only returns From/Subject headers)
+4. Follow n8n’s Google Cloud OAuth setup (Gmail API enabled)
+5. Update `sourceAccount` in each **Account — *** Set node (use the full address, e.g. `expressway.logistics@gmail.com`)
+6. If you swapped IMAP → Gmail on the single-inbox workflow, paste `n8n/prepare-email-context.js` into **Prepare Email Context** (handles Gmail `From`/`Subject` + IMAP fields)
 
 **Option C — Microsoft Outlook**
 
@@ -155,6 +157,7 @@ curl -X POST http://localhost:3000/api/email-intelligence/ingest \
 | Ingest returns 503 | Add `EMAIL_INGEST_SECRET` to `.env.local` and restart Next.js |
 | OpenAI node fails | Connect OpenAI credential; check API key and billing |
 | Gmail trigger not firing | Enable Gmail API; use App Password if 2FA; check OAuth scopes |
+| Dashboard shows `unknown@unknown.com` / `(no subject)` / empty body | Gmail **Simplify** is ON, or Prepare still uses IMAP-only fields. Turn Simplify **OFF**, paste `n8n/prepare-email-context.js`, publish, send a **new** test mail |
 | Rediffmail IMAP login fails | Use full email as username; port 993+SSL (or 143 without SSL); enable IMAP in Rediff admin |
 | No data on dashboard | Run Supabase migration `004_email_intelligence.sql` |
 

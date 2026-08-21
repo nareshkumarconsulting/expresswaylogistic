@@ -1,4 +1,5 @@
 import { QUOTE_RESPONSE_STATEMENT } from "@/constants/entity";
+import type { LocationPage } from "@/constants/geography";
 
 export type FaqItem = {
   question: string;
@@ -66,7 +67,7 @@ export const HOME_SUPPORTING_FAQS: FaqItem[] = [
   {
     question: "Which Indian ports can ExpressWay support?",
     answer:
-      "ExpressWay supports cargo moving via commercially used Indian gateways including Nhava Sheva, Mundra, Chennai and Kolkata, with inland pickup arranged through the logistics network. Port pages describe cargo movement, not ExpressWay-owned terminals.",
+      "ExpressWay supports cargo moving via commercially used Indian gateways including Nhava Sheva, Mundra, Chennai and Kolkata, plus inland ICDs, dry ports and airports listed on the locations and PAN India pages. Inland pickup is arranged through the logistics network. Those pages describe cargo movement, not ExpressWay-owned terminals.",
   },
   {
     question: "Can ExpressWay arrange door-to-door delivery?",
@@ -257,16 +258,75 @@ export const PAN_INDIA_FAQS: FaqItem[] = [
   {
     question: "Does ExpressWay have an office in every Indian city?",
     answer:
-      "No. Headquarters are in Noida. Other cities and ports listed on this site are service coverage through the nationwide logistics network, not claimed branch offices.",
+      "No. Headquarters are in Noida. Other cities, ports, ICDs and airports listed on this site are service coverage through the nationwide logistics network, not claimed branch offices.",
   },
   {
     question: "Can you pick up cargo inland, not only at ports?",
     answer:
-      "Yes. Inland pickup is arranged through the logistics network so factory and warehouse cargo can move to the booked port or airport.",
+      "Yes. Inland pickup is arranged through the logistics network so factory and warehouse cargo can move to the booked ICD, coastal port or airport.",
+  },
+  {
+    question: "Does ExpressWay support inland ICDs and dry ports?",
+    answer:
+      "Yes. ExpressWay coordinates freight via commercially used inland container depots and dry ports across North, West, South and East India. Listing an ICD describes network gateway coverage — not an ExpressWay-owned terminal.",
+  },
+  {
+    question: "What do the port codes on ICD and airport pages mean?",
+    answer:
+      "Port codes (for example INTKD6 or INDEL4) identify the customs location used in EXIM documentation. They help match bookings and paperwork to the correct gateway; they do not mean ExpressWay owns that facility.",
   },
 ];
 
 export { getServiceFaqs } from "@/constants/service-faqs";
+
+function gatewayKindLabel(kind: LocationPage["kind"]) {
+  if (kind === "airport") return "airport";
+  if (kind === "icd") return "ICD / dry port";
+  if (kind === "port") return "port gateway";
+  if (kind === "office") return "headquarters location";
+  return "service geography";
+}
+
+/** Location-specific AEO FAQs merged with a shared pan-India subset. */
+export function getLocationFaqs(location: LocationPage): FaqItem[] {
+  const kindLabel = gatewayKindLabel(location.kind);
+  const placeBit = location.place ? ` in ${location.place}` : "";
+  const codeBit = location.portCode
+    ? ` Port code ${location.portCode}.`
+    : location.note
+      ? ` ${location.note}.`
+      : "";
+
+  const localFaqs: FaqItem[] = [
+    {
+      question: `Does ExpressWay support freight via ${location.name}?`,
+      answer: `Yes. ExpressWay supports cargo moving via ${location.name}${placeBit} through the nationwide logistics network.${codeBit} This page describes ${kindLabel} coverage — not an ExpressWay-owned terminal or branch office.`,
+    },
+    {
+      question: `Is ${location.name} an ExpressWay office?`,
+      answer:
+        location.isHeadquarters
+          ? "Yes. Noida is ExpressWay Logistic’s headquarters. Commercial coverage remains PAN India to worldwide destinations, not Noida-only freight."
+          : `No. ${location.name} is listed as ${kindLabel} coverage through the logistics network. Headquarters are in Noida; other locations are origin, destination or gateway points, not claimed branch offices.`,
+    },
+  ];
+
+  if (location.kind === "icd" || location.kind === "airport" || location.kind === "port") {
+    localFaqs.push({
+      question: `Can ExpressWay arrange inland pickup for cargo gating through ${location.name}?`,
+      answer: `Yes. Inland pickup from factories and warehouses can be arranged through the logistics network so cargo can move to or from ${location.name}, then connect to ocean or air main carriage as booked.`,
+    });
+  }
+
+  const shared = [PAN_INDIA_FAQS[0], PAN_INDIA_FAQS[3], PAN_INDIA_FAQS[4]];
+  const seen = new Set(localFaqs.map((item) => item.question));
+  for (const item of shared) {
+    if (seen.has(item.question)) continue;
+    seen.add(item.question);
+    localFaqs.push(item);
+  }
+  return localFaqs;
+}
 
 export const EXPORT_DOCUMENT_POINTS = [
   "Commercial invoice and packing list",

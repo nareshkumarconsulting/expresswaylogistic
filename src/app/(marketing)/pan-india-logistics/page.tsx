@@ -8,14 +8,14 @@ import { RelatedLinks } from "@/components/organisms/related-links";
 import { QuoteCtaBand } from "@/components/organisms/quote-cta-band";
 import { PageAeo } from "@/components/organisms/page-aeo";
 import { COVERAGE_STATEMENT } from "@/constants/entity";
-import { LOCATIONS, REGIONS } from "@/constants/geography";
+import { LOCATIONS, REGIONS, getGatewaysByRegion } from "@/constants/geography";
 import { PAN_INDIA_FAQS } from "@/constants/faqs";
 import { pageSeo } from "@/lib/seo";
 
 export const metadata = pageSeo({
   title: "PAN India Freight Forwarding & Logistics Services | ExpressWay Logistic",
   description:
-    "ExpressWay supports customers across India through a nationwide logistics network, connecting Indian origins with worldwide destinations.",
+    "PAN India freight forwarding through a nationwide logistics network — cities, coastal ports, inland ICDs, dry ports and airports connecting Indian origins with worldwide destinations.",
   path: "/pan-india-logistics",
 });
 
@@ -95,6 +95,59 @@ export default function PanIndiaPage() {
           ))}
         </ul>
       </BrandCatalog>
+
+      <section className="bg-background py-section">
+        <div className="container-page">
+          <p className="mb-3 text-xs font-semibold tracking-[0.22em] text-accent uppercase">
+            Inland gateways
+          </p>
+          <div className="mb-6 h-px w-16 bg-accent" aria-hidden />
+          <h2 className="text-h2 mb-3 text-slate-900">
+            ICDs, dry ports and airports by region
+          </h2>
+          <p className="mb-10 max-w-2xl text-sm leading-relaxed text-slate-600">
+            Network connectivity for inland container depots and related gateways.
+            Port codes identify the customs location — not ExpressWay-owned terminals.
+          </p>
+          <div className="space-y-10">
+            {REGIONS.map((region) => (
+              <div key={region.slug}>
+                <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
+                  <h3 className="text-lg font-semibold text-slate-900">{region.name}</h3>
+                  <Link
+                    href={`/pan-india-logistics/${region.slug}`}
+                    className="text-sm font-semibold text-primary hover:text-accent"
+                  >
+                    Region details
+                  </Link>
+                </div>
+                <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {getGatewaysByRegion(region.slug).map((gateway) => (
+                    <li key={gateway.slug}>
+                      <Link
+                        href={`/locations/${gateway.slug}`}
+                        className="block h-full border border-border bg-card p-4 transition-colors hover:border-accent"
+                      >
+                        <p className="text-sm font-semibold text-foreground">{gateway.name}</p>
+                        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                          {gateway.place}
+                        </p>
+                        {(gateway.portCode || gateway.note) && (
+                          <p className="mt-2 text-[11px] font-medium tracking-wide text-accent uppercase">
+                            {gateway.portCode
+                              ? `Port code: ${gateway.portCode}`
+                              : gateway.note}
+                          </p>
+                        )}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <RelatedLinks
         extra={[

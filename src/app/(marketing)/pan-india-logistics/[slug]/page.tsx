@@ -8,7 +8,7 @@ import { CatalogCard } from "@/components/molecules/catalog-card";
 import { ArticlePanel } from "@/components/molecules/article-panel";
 import { QuoteCtaBand } from "@/components/organisms/quote-cta-band";
 import { PageAeo } from "@/components/organisms/page-aeo";
-import { getRegionBySlug, LOCATIONS, REGIONS } from "@/constants/geography";
+import { getGatewaysByRegion, getRegionBySlug, LOCATIONS, REGIONS } from "@/constants/geography";
 import { PAN_INDIA_FAQS } from "@/constants/faqs";
 import { pageSeo } from "@/lib/seo";
 
@@ -33,7 +33,13 @@ export default async function RegionPage({ params }: Props) {
   const { slug } = await params;
   const region = getRegionBySlug(slug);
   if (!region) notFound();
-  const places = LOCATIONS.filter((location) => location.region === region.slug);
+  const places = LOCATIONS.filter(
+    (location) =>
+      location.region === region.slug &&
+      location.kind !== "icd" &&
+      location.kind !== "airport",
+  );
+  const gateways = getGatewaysByRegion(region.slug);
   const crumbs = [
     { name: "Home", path: "/" },
     { name: "PAN India logistics", path: "/pan-india-logistics" },
@@ -75,6 +81,35 @@ export default async function RegionPage({ params }: Props) {
       <section className="bg-surface py-section">
         <div className="container-page space-y-8">
           <DirectAnswerBlock text={region.directAnswer} />
+          <ArticlePanel title="ICDs and gateways in this region">
+            <p className="mb-6 text-sm leading-relaxed text-slate-600">
+              Inland container depots, dry ports and airports connected through the
+              logistics network. Port codes identify the customs location — not
+              ExpressWay-owned terminals.
+            </p>
+            <ul className="grid gap-3 sm:grid-cols-2">
+              {gateways.map((gateway) => (
+                <li key={gateway.slug}>
+                  <Link
+                    href={`/locations/${gateway.slug}`}
+                    className="block h-full border border-border bg-card p-4 transition-colors hover:border-accent"
+                  >
+                    <p className="text-sm font-semibold text-foreground">{gateway.name}</p>
+                    <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                      {gateway.place}
+                    </p>
+                    {(gateway.portCode || gateway.note) && (
+                      <p className="mt-2 text-[11px] font-medium tracking-wide text-accent uppercase">
+                        {gateway.portCode
+                          ? `Port code: ${gateway.portCode}`
+                          : gateway.note}
+                      </p>
+                    )}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </ArticlePanel>
           <ArticlePanel title="Locations in this region">
             <p className="mb-6 text-sm leading-relaxed text-slate-600">
               Freight forwarding for customers in these places through the logistics

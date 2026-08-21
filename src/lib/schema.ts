@@ -1,6 +1,7 @@
 import { siteConfig } from "@/config/site";
 import { LEADERS } from "@/constants/content";
 import type { FaqItem } from "@/constants/faqs";
+import type { LocationPage } from "@/constants/geography";
 import type { ServiceItem } from "@/constants/services";
 import { SERVICES } from "@/constants/services";
 import {
@@ -189,6 +190,53 @@ export function serviceSchema(service: ServiceItem) {
       "Worldwide",
     ],
     serviceType: service.title,
+    brand: { "@id": ORGANIZATION_ID },
+  };
+}
+
+/** Freight coordination via a city, port, ICD or airport — network coverage, not owned terminal. */
+export function locationServiceSchema(location: LocationPage) {
+  const place: Record<string, unknown> = {
+    "@type": "Place",
+    name: location.name,
+  };
+
+  if (location.place) {
+    place.address = {
+      "@type": "PostalAddress",
+      addressLocality: location.place,
+      addressCountry: "IN",
+    };
+  }
+
+  if (location.portCode || location.note) {
+    place.additionalProperty = {
+      "@type": "PropertyValue",
+      name: location.portCode ? "Port code" : "Gateway note",
+      value: location.portCode ?? location.note,
+    };
+  }
+
+  const serviceType =
+    location.kind === "airport"
+      ? "Airport freight coordination"
+      : location.kind === "icd"
+        ? "ICD / dry port freight coordination"
+        : location.kind === "port"
+          ? "Port freight coordination"
+          : location.kind === "office"
+            ? "Freight forwarding headquarters"
+            : "Regional freight forwarding";
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: `${location.name} freight forwarding`,
+    description: location.directAnswer,
+    url: `${siteConfig.url}/locations/${location.slug}`,
+    provider: { "@id": ORGANIZATION_ID },
+    areaServed: place,
+    serviceType,
     brand: { "@id": ORGANIZATION_ID },
   };
 }

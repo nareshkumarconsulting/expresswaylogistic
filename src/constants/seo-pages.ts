@@ -38,9 +38,27 @@ export const SEARCH_INTENT_PAGES: SearchIntentPage[] = [
     indexable: true,
   },
   {
+    url: "/pan-india-logistics/north-india",
+    primaryKeyword: "North India freight forwarding",
+    searchIntent: "regional geography",
+    indexable: true,
+  },
+  {
+    url: "/locations",
+    primaryKeyword: "freight forwarding locations India",
+    searchIntent: "locations hub",
+    indexable: true,
+  },
+  {
     url: "/locations/mumbai",
     primaryKeyword: "freight forwarding in Mumbai",
     searchIntent: "local service geography",
+    indexable: true,
+  },
+  {
+    url: "/locations/icd-dadri",
+    primaryKeyword: "ICD Dadri freight forwarding",
+    searchIntent: "inland gateway",
     indexable: true,
   },
   {

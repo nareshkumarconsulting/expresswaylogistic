@@ -104,7 +104,7 @@ export const SERVICE_FAQS: Record<string, FaqItem[]> = {
     {
       question: "Which Indian ports can you support?",
       answer:
-        "Cargo is coordinated via commercially used gateways including Nhava Sheva, Mundra, Chennai and Kolkata, with inland pickup through the logistics network. Port pages describe cargo movement, not ExpressWay-owned terminals.",
+        "Cargo is coordinated via commercially used gateways including Nhava Sheva, Mundra, Chennai and Kolkata, plus inland ICDs, dry ports and airports listed on location pages, with inland pickup through the logistics network. Those pages describe cargo movement, not ExpressWay-owned terminals.",
     },
     {
       question: "How long does ocean freight from India take?",

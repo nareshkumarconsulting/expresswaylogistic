@@ -8,7 +8,7 @@ import { pageSeo } from "@/lib/seo";
 export const metadata = pageSeo({
   title: "Freight Forwarding Locations in India | ExpressWay Logistic",
   description:
-    "High-demand Indian cities and ports where ExpressWay coordinates freight forwarding. Coverage through a nationwide logistics network — not a claimed office in every city.",
+    "Indian cities, ports, ICDs, dry ports and airports where ExpressWay coordinates freight forwarding through a nationwide logistics network — not a claimed office in every location.",
   path: "/locations",
 });
 
@@ -20,6 +20,8 @@ const crumbs = [
 function kindLabel(kind: (typeof LOCATIONS)[number]["kind"]) {
   if (kind === "office") return "Headquarters";
   if (kind === "port") return "Port gateway";
+  if (kind === "icd") return "ICD / dry port";
+  if (kind === "airport") return "Airport gateway";
   return "Service geography";
 }
 
@@ -30,14 +32,14 @@ export default function LocationsIndexPage() {
         eyebrow="Locations"
         title="Indian cities and ports"
         accent="we support"
-        description="Freight forwarding for customers in these locations through our logistics network. Only Noida is listed as headquarters."
+        description="Freight forwarding for customers in these locations through our logistics network. Only Noida is listed as headquarters. ICDs and airports are cargo gateways, not ExpressWay-owned terminals."
         image="/images/hero-port.jpg"
         secondaryCta={{ href: "/pan-india-logistics", label: "PAN India network" }}
         breadcrumbs={crumbs}
         note={
           <>
             <Building2 className="size-4 text-accent" aria-hidden />
-            {LOCATIONS.length} high-demand geographies — no thin city farm
+            Cities, ports, ICDs and airports through the logistics network
           </>
         }
         panel={
@@ -56,7 +58,7 @@ export default function LocationsIndexPage() {
               </li>
               <li className="flex gap-3">
                 <Anchor className="mt-0.5 size-4 shrink-0 text-accent" />
-                Port = cargo gateway, not a terminal we own
+                Port / ICD / airport = cargo gateway, not a terminal we own
               </li>
             </ul>
           </div>

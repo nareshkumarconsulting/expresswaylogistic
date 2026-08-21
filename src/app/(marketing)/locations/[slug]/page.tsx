@@ -8,7 +8,8 @@ import { RelatedLinks } from "@/components/organisms/related-links";
 import { QuoteCtaBand } from "@/components/organisms/quote-cta-band";
 import { PageAeo } from "@/components/organisms/page-aeo";
 import { getLocationBySlug, LOCATIONS } from "@/constants/geography";
-import { PAN_INDIA_FAQS } from "@/constants/faqs";
+import { getLocationFaqs } from "@/constants/faqs";
+import { locationServiceSchema } from "@/lib/schema";
 import { pageSeo } from "@/lib/seo";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -42,7 +43,13 @@ export default async function LocationPage({ params }: Props) {
       ? "Headquarters"
       : location.kind === "port"
         ? "Port gateway"
-        : "Service geography";
+        : location.kind === "icd"
+          ? "ICD / dry port"
+          : location.kind === "airport"
+            ? "Airport gateway"
+            : "Service geography";
+
+  const locationFaqs = getLocationFaqs(location);
 
   return (
     <div className="bg-surface">
@@ -67,6 +74,28 @@ export default async function LocationPage({ params }: Props) {
             <p className="text-sm leading-relaxed text-white/85">
               {location.directAnswer}
             </p>
+            {(location.place || location.portCode || location.note) && (
+              <ul className="mt-4 space-y-2 border-t border-white/10 pt-4 text-sm text-white/80">
+                {location.place ? (
+                  <li>
+                    <span className="text-white/50">Place: </span>
+                    {location.place}
+                  </li>
+                ) : null}
+                {location.portCode ? (
+                  <li>
+                    <span className="text-white/50">Port code: </span>
+                    {location.portCode}
+                  </li>
+                ) : null}
+                {location.note ? (
+                  <li>
+                    <span className="text-white/50">Note: </span>
+                    {location.note}
+                  </li>
+                ) : null}
+              </ul>
+            )}
           </div>
         }
       />
@@ -101,7 +130,12 @@ export default async function LocationPage({ params }: Props) {
           },
         ]}
       />
-      <PageAeo answers={PAN_INDIA_FAQS} faqs={PAN_INDIA_FAQS} breadcrumbs={crumbs} />
+      <PageAeo
+        answers={locationFaqs.slice(0, 3)}
+        faqs={locationFaqs}
+        breadcrumbs={crumbs}
+        extraJsonLd={[locationServiceSchema(location)]}
+      />
       <QuoteCtaBand />
     </div>
   );

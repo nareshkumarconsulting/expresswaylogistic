@@ -1,4 +1,4 @@
-export type LocationKind = "office" | "city" | "port";
+export type LocationKind = "office" | "city" | "port" | "icd" | "airport";
 
 export type LocationPage = {
   slug: string;
@@ -11,6 +11,10 @@ export type LocationPage = {
   directAnswer: string;
   body: string;
   isHeadquarters?: boolean;
+  /** City / area label for ICD and airport gateways. */
+  place?: string;
+  portCode?: string;
+  note?: string;
 };
 
 export type RegionPage = {
@@ -98,6 +102,250 @@ export const REGIONS: RegionPage[] = [
     body: "East India cargo may gate through Kolkata or move inland to other Indian ports depending on commodity and sailing. ExpressWay coordinates documentation, pickup and ocean or air booking without listing unverified branch offices.",
     hubs: ["Kolkata"],
   },
+];
+
+function gatewayLocation(input: {
+  slug: string;
+  name: string;
+  kind: "icd" | "airport";
+  region: LocationPage["region"];
+  place: string;
+  portCode?: string;
+  note?: string;
+}): LocationPage {
+  const codeLabel = input.portCode
+    ? `Port code ${input.portCode}`
+    : input.note ?? "Network gateway";
+  const kindLabel = input.kind === "airport" ? "airport" : "ICD / dry port";
+  return {
+    slug: input.slug,
+    name: input.name,
+    kind: input.kind,
+    region: input.region,
+    place: input.place,
+    portCode: input.portCode,
+    note: input.note,
+    h1: `${input.name} Freight Coordination`,
+    seoTitle: `Freight Forwarding via ${input.name} | ExpressWay Logistic`,
+    seoDescription: `Freight forwarding coordination for cargo moving via ${input.name} (${input.place}). ${codeLabel}. Inland pickup, documentation and ocean or air booking through ExpressWay’s logistics network.`,
+    directAnswer: `ExpressWay Logistic supports cargo moving via ${input.name} in ${input.place} (${codeLabel}). This page describes ${kindLabel} gateway coverage through the logistics network — not an ExpressWay-owned terminal or branch office.`,
+    body: `${input.name} is a commercially used ${kindLabel} at ${input.place}. ExpressWay coordinates inland pickup, documentation, customs paperwork and main carriage (ocean or air) for shipments that gate through this location. Listing this gateway does not mean ExpressWay owns or operates the facility.`,
+  };
+}
+
+const ICD_AND_AIRPORT_LOCATIONS: LocationPage[] = [
+  // North India
+  gatewayLocation({
+    slug: "icd-dadri",
+    name: "ICD Dadri",
+    kind: "icd",
+    region: "north-india",
+    place: "Greater Noida, Uttar Pradesh",
+    note: "All Port",
+  }),
+  gatewayLocation({
+    slug: "icd-tughlakabad",
+    name: "ICD Tughlakabad (TKD)",
+    kind: "icd",
+    region: "north-india",
+    place: "South Delhi, Delhi",
+    portCode: "INTKD6",
+  }),
+  gatewayLocation({
+    slug: "icd-patparganj",
+    name: "ICD Patparganj",
+    kind: "icd",
+    region: "north-india",
+    place: "Delhi, Delhi",
+    portCode: "INPPG6",
+  }),
+  gatewayLocation({
+    slug: "icd-jalandhar",
+    name: "ICD Jalandhar",
+    kind: "icd",
+    region: "north-india",
+    place: "Jalandhar, Punjab",
+    portCode: "INJUC6",
+  }),
+  gatewayLocation({
+    slug: "adani-icd-kilaraipur",
+    name: "ADANI ICD Kilaraipur",
+    kind: "icd",
+    region: "north-india",
+    place: "Ludhiana, Punjab",
+    portCode: "INQRP6",
+  }),
+  gatewayLocation({
+    slug: "panchi-gujara-icd",
+    name: "Panchi Gujara ICD",
+    kind: "icd",
+    region: "north-india",
+    place: "Sonepat, Haryana",
+    portCode: "INBDM6",
+  }),
+  gatewayLocation({
+    slug: "icd-moradabad",
+    name: "ICD Moradabad",
+    kind: "icd",
+    region: "north-india",
+    place: "Moradabad, Uttar Pradesh",
+    portCode: "INMRD6",
+  }),
+  gatewayLocation({
+    slug: "icd-sahnewal",
+    name: "ICD Sahnewal",
+    kind: "icd",
+    region: "north-india",
+    place: "Sahnewal, Punjab",
+    portCode: "INSHI6",
+  }),
+  gatewayLocation({
+    slug: "icd-garhi",
+    name: "ICD Garhi",
+    kind: "icd",
+    region: "north-india",
+    place: "Garhi Harsaru, Haryana",
+    portCode: "INGRH6",
+  }),
+  gatewayLocation({
+    slug: "igi-airport-new-delhi",
+    name: "IGI Airport New Delhi",
+    kind: "airport",
+    region: "north-india",
+    place: "New Delhi, Delhi",
+    portCode: "INDEL4",
+  }),
+  // South India
+  gatewayLocation({
+    slug: "sattva-bengaluru-icd",
+    name: "Sattva Bengaluru ICD",
+    kind: "icd",
+    region: "south-india",
+    place: "Vemgal Industrial Area, Karnataka",
+    portCode: "INKQZ6",
+  }),
+  gatewayLocation({
+    slug: "icd-kottayam",
+    name: "ICD Kottayam",
+    kind: "icd",
+    region: "south-india",
+    place: "Kottayam, Kerala",
+    portCode: "INKYM6",
+  }),
+  gatewayLocation({
+    slug: "icd-whitefield",
+    name: "ICD Whitefield",
+    kind: "icd",
+    region: "south-india",
+    place: "Bengaluru, Karnataka",
+    portCode: "INWHD6",
+  }),
+  gatewayLocation({
+    slug: "icd-coimbatore",
+    name: "ICD Coimbatore",
+    kind: "icd",
+    region: "south-india",
+    place: "Coimbatore, Tamil Nadu",
+    portCode: "INCOI",
+  }),
+  gatewayLocation({
+    slug: "icd-tuticorin",
+    name: "ICD Tuticorin",
+    kind: "icd",
+    region: "south-india",
+    place: "Thoothukudi, Tamil Nadu",
+    portCode: "INTUT6",
+  }),
+  // West India
+  gatewayLocation({
+    slug: "thar-dry-port",
+    name: "Thar Dry Port",
+    kind: "icd",
+    region: "west-india",
+    place: "Jodhpur, Rajasthan",
+    portCode: "INTHA6",
+  }),
+  gatewayLocation({
+    slug: "icd-viramgam",
+    name: "ICD Viramgam",
+    kind: "icd",
+    region: "west-india",
+    place: "Ahmedabad, Gujarat",
+    portCode: "INVGR6",
+  }),
+  gatewayLocation({
+    slug: "icd-varnama",
+    name: "ICD Varnama",
+    kind: "icd",
+    region: "west-india",
+    place: "Vadodara, Gujarat",
+    portCode: "INBRC6",
+  }),
+  gatewayLocation({
+    slug: "icd-talegaon",
+    name: "ICD Talegaon",
+    kind: "icd",
+    region: "west-india",
+    place: "Pune, Maharashtra",
+    portCode: "INTLG6",
+  }),
+  gatewayLocation({
+    slug: "icd-dighi",
+    name: "ICD Dighi",
+    kind: "icd",
+    region: "west-india",
+    place: "Pune, Maharashtra",
+    portCode: "INDIG6",
+  }),
+  gatewayLocation({
+    slug: "icd-nagpur",
+    name: "ICD Nagpur",
+    kind: "icd",
+    region: "west-india",
+    place: "Nagpur, Maharashtra",
+    portCode: "INNGP6",
+  }),
+  gatewayLocation({
+    slug: "icd-mandideep",
+    name: "ICD Mandideep",
+    kind: "icd",
+    region: "west-india",
+    place: "Mandideep, Madhya Pradesh",
+    portCode: "INMDD6",
+  }),
+  // East India
+  gatewayLocation({
+    slug: "concor-icd-balasore",
+    name: "Concor ICD Balasore",
+    kind: "icd",
+    region: "east-india",
+    place: "Balasore, Odisha",
+    portCode: "INBLE6",
+  }),
+  gatewayLocation({
+    slug: "icd-jamshedpur",
+    name: "ICD Jamshedpur (Adityapur)",
+    kind: "icd",
+    region: "east-india",
+    place: "Jamshedpur, Jharkhand",
+    portCode: "INIXW6",
+  }),
+  gatewayLocation({
+    slug: "icd-durgapur",
+    name: "ICD Durgapur",
+    kind: "icd",
+    region: "east-india",
+    place: "Durgapur, West Bengal",
+    portCode: "INDUR6",
+  }),
+  gatewayLocation({
+    slug: "icd-majerhat",
+    name: "ICD Majerhat",
+    kind: "icd",
+    region: "east-india",
+    place: "Kolkata, West Bengal",
+    portCode: "INCCU6",
+  }),
 ];
 
 export const LOCATIONS: LocationPage[] = [
@@ -232,6 +480,7 @@ export const LOCATIONS: LocationPage[] = [
       "ExpressWay Logistic provides freight forwarding services for customers in Bengaluru through the logistics network. This is origin coverage, not a claimed Bengaluru branch office.",
     body: "Bengaluru is a major inland and air origin. ExpressWay books air or ocean, prepares documents and coordinates customs for import and export from this catchment.",
   },
+  ...ICD_AND_AIRPORT_LOCATIONS,
 ];
 
 export const LOCATION_ALIASES: Record<string, string> = {
@@ -460,6 +709,15 @@ export function getRegionBySlug(slug: string) {
 export function getLocationBySlug(slug: string) {
   const resolved = LOCATION_ALIASES[slug] ?? slug;
   return LOCATIONS.find((location) => location.slug === resolved);
+}
+
+/** ICDs, dry ports and airports listed as inland gateways for a region. */
+export function getGatewaysByRegion(region: LocationPage["region"]) {
+  return LOCATIONS.filter(
+    (location) =>
+      location.region === region &&
+      (location.kind === "icd" || location.kind === "airport"),
+  );
 }
 
 export function getRouteBySlug(slug: string) {

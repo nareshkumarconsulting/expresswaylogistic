@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {
-        "content": "## Setup (read before activating)\n\n1. **Import** this workflow in n8n → Workflows → Import from File\n2. **Credentials** — connect on each Gmail Trigger node (4 accounts)\n3. **OpenAI** — add OpenAI API credential on \"OpenAI Classify & Extract\"\n4. **ExpressWay** — set n8n variables:\n   - `EXPRESSWAY_APP_URL` → e.g. `https://expresswaylogistic.com` or `http://localhost:3000`\n   - `EMAIL_INGEST_SECRET` → same value as `.env.local`\n5. **Supabase** — run `supabase/migrations/004_email_intelligence.sql`\n6. **Rename** source accounts in the 4 \"Account — *\" Set nodes if your inboxes differ\n7. **Activate** workflow\n\n**Not using Gmail?** Replace Gmail Trigger nodes with *Email Trigger (IMAP)* or *Microsoft Outlook Trigger*, then reconnect to the matching Set node.\n\nDashboard: `/command-center/emails`",
+        "content": "## Setup (read before activating)\n\n1. **Import** this workflow in n8n → Workflows → Import from File\n2. **Credentials** — connect on each Gmail Trigger node (4 accounts)\n3. **OpenAI** — add OpenAI API credential on \"OpenAI Classify & Extract\"\n4. **ExpressWay** — set n8n variables:\n   - `EXPRESSWAY_APP_URL` → e.g. `https://expresswaylogistic.com` or `http://localhost:3000`\n   - `EMAIL_INGEST_SECRET` → same value as `.env.local`\n5. **Supabase** — run `supabase/migrations/004_email_intelligence.sql`\n6. **Rename** source accounts in the 4 \"Account — *\" Set nodes if your inboxes differ\n7. On each **Gmail — *** trigger: turn **Simplify OFF** (needed for body text)\n8. **Activate** workflow\n\n**Not using Gmail?** Replace Gmail Trigger nodes with *Email Trigger (IMAP)* or *Microsoft Outlook Trigger*, then reconnect to the matching Set node.\n\nDashboard: `/command-center/emails`",
         "height": 420,
         "width": 520,
         "color": 4
@@ -31,7 +31,8 @@
             "INBOX"
           ]
         },
-        "options": {}
+        "options": {},
+        "simple": false
       },
       "id": "gmail-ops-001",
       "name": "Gmail — ops@",
@@ -83,7 +84,8 @@
             "INBOX"
           ]
         },
-        "options": {}
+        "options": {},
+        "simple": false
       },
       "id": "gmail-quotes-001",
       "name": "Gmail — quotes@",
@@ -135,7 +137,8 @@
             "INBOX"
           ]
         },
-        "options": {}
+        "options": {},
+        "simple": false
       },
       "id": "gmail-alerts-001",
       "name": "Gmail — alerts@",
@@ -187,7 +190,8 @@
             "INBOX"
           ]
         },
-        "options": {}
+        "options": {},
+        "simple": false
       },
       "id": "gmail-info-001",
       "name": "Gmail — info@",
@@ -241,7 +245,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const item = $input.first().json;\n\nconst sourceAccount = item.sourceAccount;\nconst subject = item.subject || item.headers?.subject || '(no subject)';\n\nlet senderEmail = '';\nlet senderName = '';\nif (item.from?.value?.[0]) {\n  senderEmail = item.from.value[0].address || '';\n  senderName = item.from.value[0].name || '';\n} else if (typeof item.from === 'string') {\n  const match = item.from.match(/<([^>]+)>/);\n  senderEmail = match ? match[1] : item.from;\n  senderName = item.from.replace(/<[^>]+>/, '').trim();\n}\n\nconst messageId =\n  item.messageId ||\n  item.id ||\n  item.headers?.['message-id'] ||\n  item.headers?.['Message-ID'] ||\n  `${sourceAccount}-${Date.now()}`;\n\nconst rawDate = item.date || item.internalDate || new Date().toISOString();\nconst receivedAt = new Date(rawDate).toISOString();\n\nconst body = (\n  item.textPlain ||\n  item.text ||\n  item.snippet ||\n  item.html ||\n  ''\n).toString().slice(0, 12000);\n\nconst attachments = item.attachments || [];\nconst attachmentNames = attachments\n  .map((a) => a.filename || a.name)\n  .filter(Boolean);\n\nreturn [\n  {\n    json: {\n      sourceAccount,\n      externalMessageId: messageId,\n      senderEmail: senderEmail || 'unknown@unknown.com',\n      senderName,\n      subject,\n      receivedAt,\n      body,\n      hasAttachments: attachmentNames.length > 0,\n      attachmentNames,\n    },\n  },\n];"
+        "jsCode": "// Paste into the \"Prepare Email Context\" Code node in n8n.\n// Handles IMAP Email Trigger + Gmail Trigger (Simplify on/off).\n//\n// Gmail Trigger: turn Options → Simplify OFF so the full body is included.\n// With Simplify ON you only get From/Subject headers (no body).\n\nfunction pickSubject(item) {\n  return (\n    item.subject ||\n    item.Subject ||\n    item.headers?.subject ||\n    item.headers?.Subject ||\n    '(no subject)'\n  );\n}\n\nfunction pickFrom(item) {\n  let senderEmail = '';\n  let senderName = '';\n\n  // mailparser / Gmail Simplify OFF: { value: [{ address, name }], text }\n  if (item.from?.value?.[0]) {\n    senderEmail = item.from.value[0].address || '';\n    senderName = item.from.value[0].name || '';\n  } else if (typeof item.from?.text === 'string') {\n    const match = item.from.text.match(/^(.*?)\\s*<([^>]+)>/);\n    if (match) {\n      senderName = match[1].trim().replace(/^\"|\"$/g, '');\n      senderEmail = match[2];\n    } else {\n      senderEmail = item.from.text;\n    }\n  } else if (typeof item.from === 'string' && item.from) {\n    const match = item.from.match(/^(.*?)\\s*<([^>]+)>/);\n    if (match) {\n      senderName = match[1].trim().replace(/^\"|\"$/g, '');\n      senderEmail = match[2];\n    } else {\n      senderEmail = item.from;\n    }\n  } else if (typeof item.From === 'string' && item.From) {\n    // Gmail Simplify ON: capitalised header fields\n    const match = item.From.match(/^(.*?)\\s*<([^>]+)>/);\n    if (match) {\n      senderName = match[1].trim().replace(/^\"|\"$/g, '');\n      senderEmail = match[2];\n    } else {\n      senderEmail = item.From;\n    }\n  }\n\n  return {\n    senderEmail: senderEmail || 'unknown@unknown.com',\n    senderName,\n  };\n}\n\nfunction pickBody(item) {\n  const raw =\n    item.textPlain ||\n    item.text ||\n    item.textAsHtml ||\n    item.html ||\n    item.snippet ||\n    '';\n  return String(raw).slice(0, 12000);\n}\n\nfunction pickMessageId(item, sourceAccount) {\n  return (\n    item.messageId ||\n    item.message_id ||\n    item.id ||\n    item.uid ||\n    item.headers?.['message-id'] ||\n    item.headers?.['Message-ID'] ||\n    `${sourceAccount}-${Date.now()}-${item.uid || Math.random().toString(36).slice(2)}`\n  );\n}\n\nfunction pickReceivedAt(item) {\n  const raw = item.date || item.internalDate || item.headers?.date || Date.now();\n  const d = new Date(raw);\n  return Number.isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();\n}\n\nreturn $input.all().map(({ json: item }) => {\n  const sourceAccount = item.sourceAccount;\n  const { senderEmail, senderName } = pickFrom(item);\n  const attachments = item.attachments || [];\n  const attachmentNames = attachments\n    .map((a) => a.filename || a.name)\n    .filter(Boolean);\n\n  return {\n    json: {\n      sourceAccount,\n      externalMessageId: pickMessageId(item, sourceAccount),\n      senderEmail,\n      senderName,\n      subject: pickSubject(item),\n      receivedAt: pickReceivedAt(item),\n      body: pickBody(item),\n      hasAttachments: attachmentNames.length > 0,\n      attachmentNames,\n    },\n  };\n});\n"
       },
       "id": "prepare-001",
       "name": "Prepare Email Context",
