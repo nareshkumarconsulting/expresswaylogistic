@@ -11,6 +11,7 @@ import {
   LogOut,
   Sparkles,
   Mail,
+  PenLine,
   Users,
   X,
 } from "lucide-react";
@@ -24,6 +25,7 @@ const navItems = [
   { name: "Quote Requests", href: "/command-center/quotes", icon: FileText },
   { name: "Forwarders", href: "/command-center/forwarders", icon: Users },
   { name: "Email Intelligence", href: "/command-center/emails", icon: Mail },
+  { name: "Client Email Agent", href: "/command-center/client-email", icon: PenLine },
   { name: "Calendar", href: "/command-center/calendar", icon: CalendarDays },
   { name: "Analytics", href: "/command-center/analytics", icon: BarChart3 },
   { name: "AI Copilot", href: "/command-center/ai", icon: Sparkles },

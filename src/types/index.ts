@@ -369,3 +369,50 @@ export interface EmailIntelligence {
   quoteSubtype?: string;
   quoteAction?: string;
 }
+
+export type ClientEmailStatus = "draft" | "sent" | "failed";
+
+export interface EmailBrandingSettings {
+  id: string;
+  companyName: string;
+  tagline?: string;
+  websiteUrl?: string;
+  contactEmail?: string;
+  contactPhone?: string;
+  contactAddress?: string;
+  logoUrl?: string;
+  signatureHtml?: string;
+  updatedAt?: string;
+  updatedBy?: string;
+}
+
+export interface ClientEmailMessage {
+  id: string;
+  quoteRequestId?: string;
+  clientName?: string;
+  clientCompany?: string;
+  toRecipients: string[];
+  ccRecipients: string[];
+  bccRecipients: string[];
+  subject: string;
+  bodyText: string;
+  bodyHtml: string;
+  prompt?: string;
+  status: ClientEmailStatus;
+  providerMessageId?: string;
+  errorMessage?: string;
+  sentBy?: string;
+  sentAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ClientEmailContact {
+  email: string;
+  name: string;
+  company: string;
+  phone?: string;
+  quoteIds: string[];
+  latestQuoteId?: string;
+  latestStatus?: QuoteRequestStatus;
+}

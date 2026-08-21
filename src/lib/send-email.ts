@@ -3,11 +3,23 @@ import { logger } from "@/lib/logger";
 
 export type SendEmailInput = {
   to: string | string[];
+  cc?: string | string[];
+  bcc?: string | string[];
   subject: string;
   html: string;
   text: string;
   replyTo?: string;
 };
+
+function normalizeRecipients(
+  value?: string | string[],
+): string[] | undefined {
+  if (value == null) return undefined;
+  const list = (Array.isArray(value) ? value : [value])
+    .map((item) => item.trim())
+    .filter(Boolean);
+  return list.length > 0 ? list : undefined;
+}
 
 export type SendEmailResult = {
   ok: boolean;
@@ -35,7 +47,13 @@ export async function sendEmail(
     return { ok: false, error: "RESEND_API_KEY is not configured" };
   }
 
-  const to = Array.isArray(input.to) ? input.to : [input.to];
+  const to = normalizeRecipients(input.to) ?? [];
+  const cc = normalizeRecipients(input.cc);
+  const bcc = normalizeRecipients(input.bcc);
+  if (to.length === 0) {
+    return { ok: false, error: "At least one To recipient is required" };
+  }
+
   const replyTo =
     input.replyTo?.trim() ||
     process.env.QUOTE_EMAIL_REPLY_TO?.trim() ||
@@ -51,6 +69,8 @@ export async function sendEmail(
       body: JSON.stringify({
         from: defaultFromAddress(),
         to,
+        ...(cc ? { cc } : {}),
+        ...(bcc ? { bcc } : {}),
         reply_to: replyTo,
         subject: input.subject,
         html: input.html,

@@ -51,6 +51,7 @@ export const PROTECTED_API_PREFIXES = [
   "/api/calendar",
   "/api/ai",
   "/api/email-intelligence",
+  "/api/client-email",
 ] as const;
 
 export function isProtectedPath(pathname: string): boolean {

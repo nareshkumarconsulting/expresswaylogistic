@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { ChevronDown, Package, Truck } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import { Badge } from "@/components/atoms/badge";
@@ -942,7 +943,7 @@ export function QuoteDetailSheet({
           ) : null}
         </div>
 
-        <div className="sticky bottom-0 mt-auto flex flex-col gap-2 border-t border-border bg-background px-6 py-4 sm:flex-row">
+        <div className="sticky bottom-0 mt-auto flex flex-col gap-2 border-t border-border bg-background px-6 py-4 sm:flex-row sm:flex-wrap">
           <Button
             type="button"
             variant="outline"
@@ -963,6 +964,13 @@ export function QuoteDetailSheet({
             }
           >
             {failedEmail ? "Retry customer email" : "Email customer quote"}
+          </Button>
+          <Button asChild variant="secondary" className="w-full sm:w-auto">
+            <Link
+              href={`/command-center/client-email?quoteId=${encodeURIComponent(quote.id)}&email=${encodeURIComponent(quote.email)}`}
+            >
+              AI client email
+            </Link>
           </Button>
         </div>
       </SheetContent>

@@ -41,6 +41,8 @@ export type QuoteAiReviewStatus =
   | "confirmed"
   | "dismissed";
 
+export type ClientEmailStatus = "draft" | "sent" | "failed";
+
 export type AppointmentSource = "form" | "voice_agent";
 
 export type AppointmentStatus =
@@ -368,6 +370,84 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["email_intelligence"]["Insert"]>;
         Relationships: [];
       };
+      client_email_messages: {
+        Row: {
+          id: string;
+          quote_request_id: string | null;
+          client_name: string | null;
+          client_company: string | null;
+          to_recipients: string[];
+          cc_recipients: string[];
+          bcc_recipients: string[];
+          subject: string;
+          body_text: string;
+          body_html: string;
+          prompt: string | null;
+          status: ClientEmailStatus;
+          provider_message_id: string | null;
+          error_message: string | null;
+          sent_by: string | null;
+          sent_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          quote_request_id?: string | null;
+          client_name?: string | null;
+          client_company?: string | null;
+          to_recipients?: string[];
+          cc_recipients?: string[];
+          bcc_recipients?: string[];
+          subject: string;
+          body_text: string;
+          body_html: string;
+          prompt?: string | null;
+          status?: ClientEmailStatus;
+          provider_message_id?: string | null;
+          error_message?: string | null;
+          sent_by?: string | null;
+          sent_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["client_email_messages"]["Insert"]
+        >;
+        Relationships: [];
+      };
+      email_branding_settings: {
+        Row: {
+          id: string;
+          company_name: string;
+          tagline: string | null;
+          website_url: string | null;
+          contact_email: string | null;
+          contact_phone: string | null;
+          contact_address: string | null;
+          logo_url: string | null;
+          signature_html: string | null;
+          updated_at: string;
+          updated_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          company_name: string;
+          tagline?: string | null;
+          website_url?: string | null;
+          contact_email?: string | null;
+          contact_phone?: string | null;
+          contact_address?: string | null;
+          logo_url?: string | null;
+          signature_html?: string | null;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["email_branding_settings"]["Insert"]
+        >;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -388,6 +468,7 @@ export interface Database {
       email_urgency: EmailUrgency;
       email_intelligence_status: EmailIntelligenceStatus;
       quote_ai_review_status: QuoteAiReviewStatus;
+      client_email_status: ClientEmailStatus;
     };
     CompositeTypes: Record<string, never>;
   };
