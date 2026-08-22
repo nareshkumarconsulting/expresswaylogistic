@@ -8,6 +8,7 @@ import {
   breadcrumbSchema,
   faqPageSchema,
   uniqueFaqs,
+  webPageSchema,
 } from "@/lib/schema";
 
 interface PageAeoProps {
@@ -15,6 +16,7 @@ interface PageAeoProps {
   faqs: readonly FaqItem[];
   breadcrumbs: readonly { name: string; path: string }[];
   extraJsonLd?: unknown[];
+  webPage?: { name: string; description: string; path: string };
   answerTitle?: string;
   answerDescription?: string;
   faqTitle?: string;
@@ -27,6 +29,7 @@ export function PageAeo({
   faqs,
   breadcrumbs,
   extraJsonLd = [],
+  webPage,
   answerTitle,
   answerDescription,
   faqTitle,
@@ -41,6 +44,7 @@ export function PageAeo({
   return (
     <>
       <JsonLd data={breadcrumbSchema(breadcrumbs)} />
+      {webPage ? <JsonLd data={webPageSchema(webPage)} /> : null}
       <JsonLd data={faqPageSchema(schemaFaqs)} />
       {extraJsonLd.map((data, index) => (
         <JsonLd key={index} data={data} />

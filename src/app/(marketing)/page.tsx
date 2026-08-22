@@ -9,6 +9,7 @@ import { JsonLd } from "@/components/molecules/json-ld";
 import { DirectAnswerBlock } from "@/components/molecules/direct-answer-block";
 import { HOME_SUPPORTING_FAQS } from "@/constants/faqs";
 import { ENTITY_STATEMENT } from "@/constants/entity";
+import { siteConfig } from "@/config/site";
 import { personSchema, servicesItemListSchema, websiteSchema } from "@/lib/schema";
 import { pageSeo } from "@/lib/seo";
 
@@ -89,6 +90,11 @@ export default function HomePage() {
         answers={HOME_SUPPORTING_FAQS}
         faqs={HOME_SUPPORTING_FAQS}
         breadcrumbs={[{ name: "Home", path: "/" }]}
+        webPage={{
+          name: "International Freight Forwarding & Neutral Logistics Provider in India",
+          description: siteConfig.description,
+          path: "/",
+        }}
         answerTitle="Answers to Common Freight Questions"
         answerDescription="Visible answers on what ExpressWay does, cargo types, tracking, quotes, EXIM support, PAN India coverage, ports, door-to-door, import/export and pricing."
         faqTitle="More frequently asked questions"

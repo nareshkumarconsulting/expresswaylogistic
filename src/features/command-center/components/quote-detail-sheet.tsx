@@ -41,6 +41,7 @@ import {
   formatCargoItemDimensions,
   formatCargoItemPackageType,
   formatWizardCompanyAddress,
+  incotermLabel,
   insuranceLabel,
   packingLabel,
   projectCargoLabel,
@@ -114,6 +115,7 @@ function ShipmentDetails({ quote }: { quote: QuoteRequest }) {
         />
         <Field label="Pickup" value={pickupValue} />
         <Field label="Delivery" value={deliveryValue} />
+        <Field label="Incoterms" value={wizard ? incotermLabel(wizard) : undefined} />
         {quote.productType ? (
           <Field
             label="Shipment type"

@@ -73,6 +73,7 @@ function validWizardBase(): QuoteWizardValues {
     ],
     origin: "Mumbai",
     destination: "Dubai",
+    incoterm: "FOB",
     firstName: "Priya",
     lastName: "Sharma",
     company: "Acme Exports",
@@ -134,6 +135,19 @@ describe("quoteWizardSchema add-ons", () => {
         result.error.issues.some((issue) =>
           issue.path.includes("packingScope"),
         ),
+      ).toBe(true);
+    }
+  });
+
+  it("requires incoterm on the route step", () => {
+    const result = quoteWizardSchema.safeParse({
+      ...validWizardBase(),
+      incoterm: undefined,
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(
+        result.error.issues.some((issue) => issue.path.includes("incoterm")),
       ).toBe(true);
     }
   });

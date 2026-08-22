@@ -99,6 +99,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <link rel="alternate" type="text/plain" href="/llms.txt" title="LLMs" />
         <link
           rel="preload"
           as="font"

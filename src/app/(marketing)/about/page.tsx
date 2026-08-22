@@ -21,6 +21,7 @@ import { siteConfig } from "@/config/site";
 import { ABOUT_HIGHLIGHTS, INDUSTRIES } from "@/constants/content";
 import { SERVICES } from "@/constants/services";
 import { ABOUT_PAGE_FAQS } from "@/constants/faqs";
+import { EMAIL_DOMAIN_NOTE } from "@/constants/entity";
 import { PageAeo } from "@/components/organisms/page-aeo";
 
 export const metadata = pageSeo({
@@ -353,6 +354,9 @@ export default function AboutPage() {
                   >
                     {siteConfig.contact.email}
                   </a>
+                  <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                    {EMAIL_DOMAIN_NOTE}
+                  </p>
                 </div>
               </div>
               <div className="flex items-start gap-3 border border-border bg-surface p-4">
@@ -382,6 +386,12 @@ export default function AboutPage() {
           { name: "Home", path: "/" },
           { name: "About", path: "/about" },
         ]}
+        webPage={{
+          name: "About ExpressWay Logistic",
+          description:
+            "Indian Neutral Logistics Provider and freight forwarder with 39+ years of international cargo experience, Noida headquarters, PAN India to worldwide coverage.",
+          path: "/about",
+        }}
         answerTitle="Who is ExpressWay Logistic"
         answerDescription="Entity facts: Neutral Logistics Provider, freight forwarding, PAN India coverage, worldwide destinations, and leadership."
       />

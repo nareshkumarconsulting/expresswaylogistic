@@ -1,6 +1,10 @@
 import { Mail, MapPin, Phone } from "lucide-react";
 import { siteConfig } from "@/config/site";
-import { EXPERIENCE_STATEMENT } from "@/constants/entity";
+import {
+  EMAIL_DOMAIN_NOTE,
+  EXPERIENCE_STATEMENT,
+  WEBSITE_DOMAIN,
+} from "@/constants/entity";
 import { SERVICE_COUNT } from "@/constants/services";
 
 export function EntityFacts() {
@@ -55,7 +59,18 @@ export function EntityFacts() {
               Noida, Uttar Pradesh, India
             </dd>
           </div>
+          <div className="border border-border bg-card p-4">
+            <dt className="text-[10px] font-semibold tracking-[0.16em] text-muted-foreground uppercase">
+              Website
+            </dt>
+            <dd className="mt-2 text-sm font-semibold text-foreground">
+              {WEBSITE_DOMAIN}
+            </dd>
+          </div>
         </dl>
+        <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+          {EMAIL_DOMAIN_NOTE}
+        </p>
         <div className="mt-4 flex flex-col gap-3 text-sm sm:flex-row sm:gap-8">
           <a
             href={siteConfig.contact.phoneHref}

@@ -37,8 +37,7 @@ export const CORE_INTENT_FAQS: FaqItem[] = [
 export const HOME_SUPPORTING_FAQS: FaqItem[] = [
   {
     question: "What does ExpressWay Logistic do?",
-    answer:
-      "We are a Neutral Logistics Provider and freight forwarder offering ocean and air freight, consolidation, customs clearance, warehousing, project cargo, cargo insurance arrangement, packing, and door-to-door delivery — plus EXIM guidance such as licence and drawback assistance where offered.",
+    answer: CORE_INTENT_FAQS[0].answer,
   },
   {
     question: "Which cargo types do you specialise in?",
@@ -167,6 +166,11 @@ export const ABOUT_PAGE_FAQS: FaqItem[] = [
     answer:
       "Yes. Primary modes are ocean freight and air freight, including FCL, LCL and consolidation on ocean.",
   },
+  {
+    question: "Why is the website expresswaylogistic.com but email uses expresswaylogistics.com?",
+    answer:
+      "Both domains belong to Expressway Logistic Private Limited. The public website is expresswaylogistic.com; sales correspondence uses sales@expresswaylogistics.com. Phone and address on this site are the official contact points.",
+  },
 ];
 
 export const QUOTE_PAGE_FAQS: FaqItem[] = [
@@ -253,6 +257,26 @@ export const CONTACT_PAGE_FAQS: FaqItem[] = [
   },
 ];
 
+export const RESOURCES_PAGE_FAQS: FaqItem[] = [
+  {
+    question: "What freight resources does ExpressWay Logistic publish?",
+    answer:
+      "ExpressWay publishes practical guides on freight forwarding, Neutral Logistics Provider operations, FCL/LCL, export and import processes, documentation and cost; a glossary of EXIM terms; a consolidated FAQ; and anonymized operational case examples from verified shipment files.",
+  },
+  {
+    question: "Where can I find answers to common freight forwarding questions?",
+    answer:
+      "Start with the resources FAQ at /resources/faq, the guides library at /resources/guides, or the glossary at /resources/glossary. Service, location and route pages also include direct-answer sections for specific intents.",
+  },
+  {
+    question: "Does ExpressWay publish case studies?",
+    answer:
+      "Yes. Anonymized operational examples from verified ExpressWay files are published at /resources/case-studies. Details are summarized for privacy; they illustrate how ExpressWay handles real export, import and project cargo files.",
+  },
+  CORE_INTENT_FAQS[0],
+  CORE_INTENT_FAQS[4],
+];
+
 export const PAN_INDIA_FAQS: FaqItem[] = [
   CORE_INTENT_FAQS[1],
   {
@@ -275,6 +299,38 @@ export const PAN_INDIA_FAQS: FaqItem[] = [
     answer:
       "Port codes (for example INTKD6 or INDEL4) identify the customs location used in EXIM documentation. They help match bookings and paperwork to the correct gateway; they do not mean ExpressWay owns that facility.",
   },
+];
+
+export const LOCATIONS_PAGE_FAQS: FaqItem[] = [
+  PAN_INDIA_FAQS[0],
+  PAN_INDIA_FAQS[1],
+  {
+    question: "Which Indian ports, ICDs and airports does ExpressWay support?",
+    answer:
+      "ExpressWay coordinates cargo via commercially used gateways including Nhava Sheva, Mundra, Chennai and Kolkata, plus inland ICDs, dry ports and airports listed on this site. Each location page describes network coverage — not an ExpressWay-owned terminal or branch office.",
+  },
+  {
+    question: "Where is ExpressWay Logistic headquartered?",
+    answer:
+      "Headquarters are in Noida, Uttar Pradesh (Assotech Business Cresterra, Sector-135). Other cities and gateways on this site are service coverage through the nationwide logistics network.",
+  },
+  CORE_INTENT_FAQS[0],
+];
+
+export const SHIPPING_ROUTES_PAGE_FAQS: FaqItem[] = [
+  {
+    question: "Which shipping routes does ExpressWay support from India?",
+    answer:
+      "ExpressWay quotes ocean and air freight from Indian origins to worldwide destinations. Route pages cover commercially relevant corridors such as India to USA, UAE, Europe and Southeast Asia. Indicative transit varies by carrier, sailing, origin, destination, customs and operational conditions.",
+  },
+  CORE_INTENT_FAQS[2],
+  {
+    question: "How can I ship cargo from India to the USA?",
+    answer:
+      "Request a quote with Indian origin, US destination, cargo type and volume. ExpressWay can book ocean FCL/LCL or air freight, prepare export documents, coordinate pickup and customs, and arrange destination clearance and delivery when in scope. See the India to USA route page and the guide on shipping from India to the USA.",
+  },
+  CORE_INTENT_FAQS[4],
+  CORE_INTENT_FAQS[0],
 ];
 
 export { getServiceFaqs } from "@/constants/service-faqs";

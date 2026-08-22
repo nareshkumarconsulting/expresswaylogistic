@@ -13,6 +13,7 @@ import { siteConfig } from "@/config/site";
 import {
   formatQuoteAddOns,
   formatCargoTotals,
+  INCOTERM_LABELS,
   TRANSPORT_MODE_LABELS,
   type QuoteWizardValues,
   type TransportMode,
@@ -117,6 +118,7 @@ export function buildQuoteWizardMessage(data: QuoteWizardValues): string {
   return [
     `Transport: ${TRANSPORT_MODE_LABELS[data.transportMode]}`,
     `Cargo ready: ${data.cargoReadyDate}`,
+    `Incoterms: ${data.incoterm} (${INCOTERM_LABELS[data.incoterm]})`,
     `Line items: ${data.cargoItems.length} · ${totals.weightKg} kg · ${totals.cbm} CBM`,
     data.originPickup ? "Need origin pickup" : null,
     data.destinationDelivery ? "Need destination delivery" : null,

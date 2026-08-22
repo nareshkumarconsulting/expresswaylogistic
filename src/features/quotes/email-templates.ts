@@ -5,6 +5,7 @@ import { formatMoney } from "@/features/quotes/money";
 import {
   formatCargoItemDimensions,
   formatCargoItemPackageType,
+  incotermLabel,
   insuranceLabel,
   packingLabel,
   projectCargoLabel,
@@ -102,6 +103,7 @@ function shipmentDetailRows(quote: QuoteRequest): {
       "Destination delivery",
       quote.destinationDelivery ? "Required" : "Not requested",
     ],
+    ["Incoterms", wizard ? incotermLabel(wizard) : null],
     ["Packages", quote.totalPackages],
     ["Weight / volume", quote.approxWeight],
   ];

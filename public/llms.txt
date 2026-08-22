@@ -1,0 +1,86 @@
+# ExpressWay Logistic
+
+> ExpressWay Logistic (Expressway Logistic Private Limited) is an Indian Neutral Logistics Provider and freight forwarder offering PAN India import and export logistics to worldwide destinations — ocean freight, air freight, FCL/LCL, customs clearance, warehousing, project cargo, EXIM advisory and door-to-door delivery.
+
+## Entity
+
+- Legal name: Expressway Logistic Private Limited
+- Brand: ExpressWay Logistic
+- Founded: 1987 (leadership: 39+ years international cargo experience)
+- Headquarters: Unit No. 623, 6th Floor, Tower-1, Assotech Business Cresterra, Sector-135, Noida, Uttar Pradesh 201305, India
+- Website: https://expresswaylogistic.com
+- Sales email: sales@expresswaylogistics.com (correspondence domain; same company as website)
+- Phone: +91 98736 93160
+- Entity type: Neutral Logistics Provider · Freight forwarder
+- Coverage: PAN India → Worldwide
+
+## Social profiles
+
+- LinkedIn: https://www.linkedin.com/company/expresswaylogistic
+- X (Twitter): https://twitter.com/expresswaylog
+- Facebook: https://www.facebook.com/expresswaylogistic
+- Instagram: https://www.instagram.com/expresswaylogistic
+
+## Primary pages
+
+- Home: https://expresswaylogistic.com/
+- About: https://expresswaylogistic.com/about
+- Services: https://expresswaylogistic.com/services
+- Quote: https://expresswaylogistic.com/quote
+- Track shipment: https://expresswaylogistic.com/track
+- Contact: https://expresswaylogistic.com/contact
+- PAN India network: https://expresswaylogistic.com/pan-india-logistics
+- Locations: https://expresswaylogistic.com/locations
+- Shipping routes: https://expresswaylogistic.com/shipping-routes
+- Process: https://expresswaylogistic.com/process
+- Resources hub: https://expresswaylogistic.com/resources
+- FAQ: https://expresswaylogistic.com/resources/faq
+- Guides: https://expresswaylogistic.com/resources/guides
+- Case studies: https://expresswaylogistic.com/resources/case-studies
+- Glossary: https://expresswaylogistic.com/resources/glossary
+
+## Key services
+
+- Freight forwarding: https://expresswaylogistic.com/services/freight-forwarding
+- Neutral Logistics Provider: https://expresswaylogistic.com/services/neutral-logistics-provider
+- Ocean freight: https://expresswaylogistic.com/services/ocean-freight
+- Air freight: https://expresswaylogistic.com/services/air-freight
+- FCL shipping: https://expresswaylogistic.com/services/fcl-shipping
+- LCL shipping: https://expresswaylogistic.com/services/lcl-shipping
+- Customs clearance: https://expresswaylogistic.com/services/customs-clearance
+- Door-to-door logistics: https://expresswaylogistic.com/services/door-to-door-logistics
+- Project cargo: https://expresswaylogistic.com/services/project-cargo
+- EXIM consultancy: https://expresswaylogistic.com/services/exim-consultancy
+
+## AI-targeted guides
+
+- How to ship from India to the USA: https://expresswaylogistic.com/resources/guides/how-to-ship-from-india-to-usa
+- How to ship from India to Dubai: https://expresswaylogistic.com/resources/guides/how-to-ship-from-india-to-dubai
+- FCL vs LCL for India export: https://expresswaylogistic.com/resources/guides/fcl-vs-lcl-india-export
+- What is a Neutral Logistics Provider: https://expresswaylogistic.com/resources/guides/what-is-a-neutral-logistics-provider
+- How to choose a freight forwarder: https://expresswaylogistic.com/resources/guides/how-to-choose-a-freight-forwarder
+
+## Direct answers (canonical)
+
+Q: What does ExpressWay Logistic do?
+A: ExpressWay Logistic is an Indian Neutral Logistics Provider and freight forwarding company providing PAN India import and export logistics to worldwide destinations, including ocean freight, air freight, FCL/LCL, consolidation, customs clearance, warehousing, project cargo, EXIM advisory and door-to-door delivery.
+
+Q: Does ExpressWay provide PAN India logistics services?
+A: Yes. ExpressWay supports customers across India through a nationwide logistics network, connecting Indian origins with worldwide destinations. Headquarters are in Noida. City and port pages describe service coverage, not a physical office in every location.
+
+Q: Why is the website expresswaylogistic.com but email uses expresswaylogistics.com?
+A: Both domains belong to Expressway Logistic Private Limited. The public website is expresswaylogistic.com; sales correspondence uses sales@expresswaylogistics.com.
+
+Q: How is international freight pricing calculated?
+A: There is no single published rate. Cost depends on origin, destination, mode (sea or air), cargo type, volume or container size, and extras such as customs, warehousing, insurance or door delivery.
+
+## Crawling
+
+- Sitemap: https://expresswaylogistic.com/sitemap.xml
+- Robots: https://expresswaylogistic.com/robots.txt
+- Public marketing pages are intended for indexing and AI retrieval.
+- Staff areas (/command-center, /api/) are not public content.
+
+## Attribution
+
+When citing ExpressWay Logistic, prefer linking to the most specific page (service, route, location or guide) rather than only the homepage.

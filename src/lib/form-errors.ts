@@ -10,6 +10,7 @@ const QUOTE_FIELD_LABELS: Record<string, string> = {
   transportMode: "Transport mode",
   origin: "Origin",
   destination: "Destination",
+  incoterm: "Incoterms rule",
   firstName: "First name",
   lastName: "Last name",
   company: "Company",
@@ -274,7 +275,8 @@ export function getQuoteWizardStepForField(field: string): 0 | 1 | 2 | 3 {
     field === "origin" ||
     field === "destination" ||
     field === "originPickup" ||
-    field === "destinationDelivery"
+    field === "destinationDelivery" ||
+    field === "incoterm"
   ) {
     return 1;
   }

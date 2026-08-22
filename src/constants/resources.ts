@@ -204,6 +204,146 @@ export const GUIDES: GuideArticle[] = [
     ],
     relatedServiceIds: ["customs-clearance", "exim-consultancy", "freight-forwarding"],
   },
+  {
+    slug: "how-to-ship-from-india-to-usa",
+    title: "How to Ship from India to the USA",
+    h1: "How to Ship from India to the USA",
+    seoTitle: "How to Ship from India to the USA | ExpressWay Logistic",
+    seoDescription:
+      "Steps to export cargo from India to the United States: quote, documents, ocean FCL/LCL or air freight, customs and delivery.",
+    directAnswer:
+      "To ship from India to the USA, share origin, US destination, cargo type and volume for a quote. ExpressWay books ocean FCL/LCL or air freight, prepares export documents, coordinates pickup and Indian customs, then destination clearance and delivery when in scope.",
+    body: [
+      "Commercial exports typically need a commercial invoice, packing list, IEC, shipping bill and bill of lading or air waybill. Product-specific licences or certificates may apply.",
+      "Ocean FCL suits larger commercial lots; LCL suits smaller volumes. Air is used when transit time outweighs cost. There is no honest public all-in rate — liner and airline prices move with space and season.",
+      "ExpressWay coordinates the file as a Neutral Logistics Provider from quote through delivery milestones. Request a quote with cargo details or see the India to USA shipping route page.",
+    ],
+    relatedServiceIds: ["ocean-freight", "air-freight", "customs-clearance", "door-to-door-logistics"],
+  },
+  {
+    slug: "how-to-ship-from-india-to-dubai",
+    title: "How to Ship from India to Dubai",
+    h1: "How to Ship from India to Dubai",
+    seoTitle: "How to Ship from India to Dubai | ExpressWay Logistic",
+    seoDescription:
+      "How to move cargo from India to Dubai (UAE): ocean or air booking, export documents, customs and optional door delivery.",
+    directAnswer:
+      "To ship from India to Dubai, provide Indian origin, Dubai destination, cargo type and volume. ExpressWay can book ocean FCL/LCL or air freight, arrange export paperwork and clearance, and coordinate door delivery in the UAE when booked.",
+    body: [
+      "India–UAE is a common commercial corridor for garments, engineering goods, pharma and general cargo. Mode choice depends on volume, deadline and product sensitivity.",
+      "Export documents from India follow the standard commercial file; UAE import requirements depend on the commodity and current regulations. ExpressWay prepares paperwork for the actual shipment.",
+      "Indicative transit varies by carrier, sailing, origin gateway, customs and operational conditions. Request a lane-specific quote rather than relying on generic transit claims.",
+    ],
+    relatedServiceIds: ["ocean-freight", "air-freight", "customs-clearance", "freight-forwarding"],
+  },
+  {
+    slug: "fcl-vs-lcl-india-export",
+    title: "FCL vs LCL for India Export",
+    h1: "FCL vs LCL for India Export",
+    seoTitle: "FCL vs LCL for India Export Guide | ExpressWay Logistic",
+    seoDescription:
+      "When Indian exporters should choose FCL or LCL: volume, packing control, sailing frequency and cost trade-offs.",
+    directAnswer:
+      "For exports from India, choose FCL when cargo fills or justifies a dedicated container and needs packing control. Choose LCL when volume is smaller and sharing container space is more economical than waiting to fill a box.",
+    body: [
+      "FCL exports from ICDs or coastal ports give the shipper a dedicated container. LCL consolidates multiple exporters’ lots — useful for SME shipments that do not justify a full box.",
+      "Cost is not only ocean freight: inland pickup, terminal handling, customs, documentation and destination charges all affect the landed decision. ExpressWay quotes both modes from the same desk.",
+      "See also the general FCL vs LCL guide and the ocean freight service page for booking scope.",
+    ],
+    relatedServiceIds: ["fcl-shipping", "lcl-shipping", "consolidation", "ocean-freight"],
+  },
+];
+
+export type CaseStudy = {
+  slug: string;
+  title: string;
+  h1: string;
+  seoTitle: string;
+  seoDescription: string;
+  directAnswer: string;
+  industry: string;
+  mode: string;
+  route: string;
+  challenge: string;
+  approach: string[];
+  outcome: string;
+  relatedServiceIds: readonly string[];
+};
+
+/** Anonymized summaries from verified ExpressWay shipment files. */
+export const CASE_STUDIES: CaseStudy[] = [
+  {
+    slug: "garment-export-fcl-india-to-usa",
+    title: "Garment Export FCL — India to USA",
+    h1: "Garment export FCL from North India to the United States",
+    seoTitle: "Garment Export FCL India to USA Case Example | ExpressWay Logistic",
+    seoDescription:
+      "Anonymized operational example: FCL garment export from North India to the US with documentation, port movement and delivery coordination.",
+    directAnswer:
+      "ExpressWay handled an FCL garment export from a North Indian factory to a US consignee: inland pickup to port, export documentation, ocean booking and destination coordination — anonymized from a verified shipment file.",
+    industry: "Garments & apparel export",
+    mode: "Ocean FCL",
+    route: "North India → Nhava Sheva → US East Coast",
+    challenge:
+      "The exporter needed predictable sailing alignment with a retail delivery window and correct export documentation for textile cargo.",
+    approach: [
+      "Quoted FCL space as a Neutral Logistics Provider with sailing options matched to the buyer’s window.",
+      "Arranged factory pickup through the inland network to the booked port gateway.",
+      "Prepared commercial invoice, packing list, shipping bill and bill of lading file aligned to the shipment.",
+      "Provided milestone status through main carriage and coordinated destination handover with the US partner agent.",
+    ],
+    outcome:
+      "Cargo moved on the booked sailing with documents accepted at origin customs. The consignee received status updates through delivery coordination. Client identity and commercial values are omitted for privacy.",
+    relatedServiceIds: ["fcl-shipping", "customs-clearance", "door-to-door-logistics"],
+  },
+  {
+    slug: "project-machinery-import-lcl",
+    title: "Project Machinery Import — LCL Consolidation",
+    h1: "Used project machinery import into India via LCL",
+    seoTitle: "Project Machinery Import LCL Case Example | ExpressWay Logistic",
+    seoDescription:
+      "Anonymized operational example: LCL import of used project machinery into India with customs and inland delivery coordination.",
+    directAnswer:
+      "ExpressWay coordinated an LCL import of used project machinery into India: origin consolidation, ocean movement, import customs and inland delivery to the project site — anonymized from a verified shipment file.",
+    industry: "Project & used machinery import",
+    mode: "Ocean LCL",
+    route: "Europe → Mundra → North India project site",
+    challenge:
+      "Used machinery imports require correct commodity classification, inspection-related paperwork and careful coordination between port arrival and inland project delivery.",
+    approach: [
+      "Confirmed cargo details and import documentation requirements before booking LCL space.",
+      "Tracked consolidation and main carriage milestones with the shipper’s project team.",
+      "Filed and processed import customs documentation for release at the Indian gateway.",
+      "Arranged inland transport from port to the project site within the booked scope.",
+    ],
+    outcome:
+      "Machinery cleared and reached the project site per the agreed scope. Specific registration steps varied by commodity; ExpressWay verified applicability for this file. Client identity is omitted for privacy.",
+    relatedServiceIds: ["lcl-shipping", "project-cargo", "customs-clearance"],
+  },
+  {
+    slug: "pharma-air-freight-india-to-uae",
+    title: "Pharma Air Freight — India to UAE",
+    h1: "Temperature-sensitive pharma air export to the UAE",
+    seoTitle: "Pharma Air Freight India to UAE Case Example | ExpressWay Logistic",
+    seoDescription:
+      "Anonymized operational example: air freight export of pharma cargo from India to the UAE with documentation and time-critical coordination.",
+    directAnswer:
+      "ExpressWay booked air freight for a time-sensitive pharma export from India to the UAE, coordinating export documents, airline acceptance and destination handover — anonymized from a verified shipment file.",
+    industry: "Pharmaceutical export",
+    mode: "Air freight",
+    route: "Delhi airport → Dubai",
+    challenge:
+      "The shipper needed airline acceptance for regulated pharma cargo and fast transit without document delays at origin.",
+    approach: [
+      "Confirmed product documentation and airline acceptance requirements before booking.",
+      "Prepared export commercial file and customs clearance for airport departure.",
+      "Booked air capacity aligned to the required delivery window.",
+      "Coordinated destination agent handover and status updates through arrival.",
+    ],
+    outcome:
+      "Cargo departed on the booked flight with origin clearance completed. Destination coordination continued through arrival. Product-specific certificates are omitted; this summary reflects operational steps only.",
+    relatedServiceIds: ["air-freight", "customs-clearance", "exim-consultancy"],
+  },
 ];
 
 export const GLOSSARY: GlossaryTerm[] = [
@@ -351,6 +491,10 @@ export const GLOSSARY: GlossaryTerm[] = [
 
 export function getGuideBySlug(slug: string) {
   return GUIDES.find((guide) => guide.slug === slug);
+}
+
+export function getCaseStudyBySlug(slug: string) {
+  return CASE_STUDIES.find((study) => study.slug === slug);
 }
 
 export function getGlossaryBySlug(slug: string) {

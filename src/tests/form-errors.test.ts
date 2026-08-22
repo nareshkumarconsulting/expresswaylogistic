@@ -106,4 +106,8 @@ describe("getQuoteWizardStepForField", () => {
     expect(getQuoteWizardStepForField("projectCargoType")).toBe(2);
     expect(getQuoteWizardStepForField("packingScope")).toBe(2);
   });
+
+  it("maps incoterm to route step", () => {
+    expect(getQuoteWizardStepForField("incoterm")).toBe(1);
+  });
 });

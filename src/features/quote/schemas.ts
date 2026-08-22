@@ -124,6 +124,64 @@ export const PACKING_SCOPE_LABELS: Record<PackingScope, string> = {
   household: "Household goods",
 };
 
+/** Incoterms® 2010 — eleven three-letter trade terms (ICC). */
+export const INCOTERMS = [
+  "EXW",
+  "FCA",
+  "CPT",
+  "CIP",
+  "DAT",
+  "DAP",
+  "DDP",
+  "FAS",
+  "FOB",
+  "CFR",
+  "CIF",
+] as const;
+
+export type Incoterm = (typeof INCOTERMS)[number];
+
+export const INCOTERM_LABELS: Record<Incoterm, string> = {
+  EXW: "Ex Works",
+  FCA: "Free Carrier",
+  CPT: "Carriage Paid To",
+  CIP: "Carriage and Insurance Paid To",
+  DAT: "Delivered at Terminal",
+  DAP: "Delivered at Place",
+  DDP: "Delivered Duty Paid",
+  FAS: "Free Alongside Ship",
+  FOB: "Free On Board",
+  CFR: "Cost and Freight",
+  CIF: "Cost Insurance and Freight",
+};
+
+export const INCOTERM_HINTS: Partial<Record<Incoterm, string>> = {
+  EXW: "Buyer collects from seller's premises",
+  FCA: "Seller delivers to carrier at named place",
+  CPT: "Seller pays freight to named destination",
+  CIP: "Seller pays freight and insurance to destination",
+  DAT: "Seller delivers unloaded at terminal",
+  DAP: "Seller delivers ready for unloading at place",
+  DDP: "Seller delivers cleared for import at place",
+  FAS: "Seller delivers alongside vessel at port",
+  FOB: "Seller delivers on board vessel at port",
+  CFR: "Seller pays cost and freight to port",
+  CIF: "Seller pays cost, insurance, and freight to port",
+};
+
+export const INCOTERM_GROUPS = [
+  {
+    id: "any-mode",
+    label: "Any mode or modes of transport",
+    terms: ["EXW", "FCA", "CPT", "CIP", "DAT", "DAP", "DDP"] as const satisfies readonly Incoterm[],
+  },
+  {
+    id: "sea-inland",
+    label: "Sea and inland waterway transport",
+    terms: ["FAS", "FOB", "CFR", "CIF"] as const satisfies readonly Incoterm[],
+  },
+] as const;
+
 /** Convert a single dimension value to centimeters for CBM calculation. */
 export function dimensionToCm(value: number, unit: DimensionUnit): number {
   switch (unit) {
@@ -180,6 +238,9 @@ export const quoteWizardSchema = z
     originPickup: z.boolean(),
     destination: z.string().min(2, "Destination is required"),
     destinationDelivery: z.boolean(),
+    incoterm: z.enum(INCOTERMS, {
+      message: "Select an Incoterms rule",
+    }),
     insurance: z.boolean(),
     insuranceCargoValueInr: z.coerce
       .number({ message: "Enter insured cargo value" })
@@ -292,6 +353,7 @@ export function createDefaultQuoteWizardValues() {
     originPickup: false,
     destination: "",
     destinationDelivery: false,
+    incoterm: undefined as Incoterm | undefined,
     insurance: false,
     insuranceCargoValueInr: undefined as number | undefined,
     insuranceCoverage: undefined as InsuranceCoverage | undefined,

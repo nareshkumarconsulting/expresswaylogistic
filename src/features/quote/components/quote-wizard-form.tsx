@@ -52,6 +52,9 @@ import {
   DIMENSION_UNIT_SHORT,
   formatCargoTotals,
   formatQuoteAddOns,
+  INCOTERM_GROUPS,
+  INCOTERM_HINTS,
+  INCOTERM_LABELS,
   INSURANCE_COVERAGES,
   INSURANCE_COVERAGE_LABELS,
   PACKAGE_TYPES,
@@ -69,6 +72,7 @@ import {
   TRANSPORT_MODE_LABELS,
   type QuoteWizardValues,
   type TransportMode,
+  type Incoterm,
 } from "@/features/quote/schemas";
 
 const STEPS = [
@@ -82,7 +86,7 @@ type StepIndex = 0 | 1 | 2 | 3;
 
 const STEP_FIELDS: (keyof QuoteWizardValues)[][] = [
   ["cargoReadyDate", "transportMode", "cargoItems"],
-  ["origin", "destination"],
+  ["origin", "destination", "incoterm"],
   [
     "insurance",
     "insuranceCargoValueInr",
@@ -127,7 +131,7 @@ const STEP_COPY: Record<StepIndex, { title: string; description: string }> = {
   1: {
     title: "Where is it moving?",
     description:
-      "Origin and destination locations, plus whether you need pickup or final delivery.",
+      "Origin and destination locations, Incoterms®, and whether you need pickup or final delivery.",
   },
   2: {
     title: "Insurance, project cargo & packing",
@@ -246,6 +250,11 @@ function QuoteManifest({
               ]
                 .filter(Boolean)
                 .join(" · ")}
+            </p>
+          ) : null}
+          {values.incoterm ? (
+            <p className="text-xs text-white/65">
+              {values.incoterm} · {INCOTERM_LABELS[values.incoterm]}
             </p>
           ) : null}
         </div>
@@ -529,6 +538,84 @@ function YesNoField({
           </button>
         ))}
       </div>
+    </fieldset>
+  );
+}
+
+function IncotermRadioGroup({
+  value,
+  onChange,
+  error,
+}: {
+  value?: Incoterm;
+  onChange: (term: Incoterm) => void;
+  error?: string;
+}) {
+  return (
+    <fieldset className="space-y-4">
+      <legend className="text-sm font-semibold text-foreground">
+        Incoterms® rule
+      </legend>
+      <p className="text-sm leading-relaxed text-muted-foreground">
+        Select the trade term that defines cost and risk between buyer and
+        seller. Only one rule applies per shipment.
+      </p>
+      {INCOTERM_GROUPS.map((group) => (
+        <div key={group.id} className="space-y-3">
+          <p className="text-xs font-semibold tracking-[0.14em] text-muted-foreground uppercase">
+            {group.label}
+          </p>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {group.terms.map((term) => {
+              const selected = value === term;
+              const hint = INCOTERM_HINTS[term];
+              return (
+                <label
+                  key={term}
+                  className={cn(
+                    "flex cursor-pointer items-start gap-3 border p-3 transition-all duration-200",
+                    selected
+                      ? "border-accent bg-accent/[0.06] shadow-[0_0_0_1px_hsl(var(--accent))]"
+                      : "border-border bg-card hover:border-primary/20 hover:bg-surface/50",
+                  )}
+                >
+                  <input
+                    type="radio"
+                    name="incoterm"
+                    value={term}
+                    checked={selected}
+                    onChange={() => onChange(term)}
+                    className="mt-1 size-4 accent-accent"
+                  />
+                  <span className="min-w-0 flex-1">
+                    <span className="flex flex-wrap items-center gap-2">
+                      <span className="text-sm font-bold tracking-wide text-foreground">
+                        {term}
+                      </span>
+                      <span className="text-sm font-medium text-foreground">
+                        {INCOTERM_LABELS[term]}
+                      </span>
+                    </span>
+                    {hint ? (
+                      <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
+                        {hint}
+                      </span>
+                    ) : null}
+                  </span>
+                  {selected ? (
+                    <Check className="size-4 shrink-0 text-accent" aria-hidden />
+                  ) : null}
+                </label>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+      {error ? (
+        <p className="text-sm font-medium text-destructive" role="alert">
+          {error}
+        </p>
+      ) : null}
     </fieldset>
   );
 }
@@ -1238,6 +1325,18 @@ export function QuoteWizardForm() {
                         )}
                       />
                     </div>
+
+                    <Controller
+                      control={control}
+                      name="incoterm"
+                      render={({ field }) => (
+                        <IncotermRadioGroup
+                          value={field.value}
+                          onChange={field.onChange}
+                          error={errors.incoterm?.message}
+                        />
+                      )}
+                    />
                   </div>
                 ) : null}
 
@@ -1755,7 +1854,7 @@ export function QuoteWizardForm() {
                             ],
                             [
                               "Route",
-                              `${values.origin || "—"} → ${values.destination || "—"}`,
+                              `${values.origin || "—"} → ${values.destination || "—"}${values.incoterm ? ` · ${values.incoterm}` : ""}`,
                             ],
                             [
                               "Cargo",

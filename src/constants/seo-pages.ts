@@ -79,4 +79,28 @@ export const SEARCH_INTENT_PAGES: SearchIntentPage[] = [
     searchIntent: "conversion",
     indexable: true,
   },
+  {
+    url: "/resources/guides/how-to-ship-from-india-to-usa",
+    primaryKeyword: "how to ship from India to USA",
+    searchIntent: "guide",
+    indexable: true,
+  },
+  {
+    url: "/resources/guides/how-to-ship-from-india-to-dubai",
+    primaryKeyword: "how to ship from India to Dubai",
+    searchIntent: "guide",
+    indexable: true,
+  },
+  {
+    url: "/resources/guides/fcl-vs-lcl-india-export",
+    primaryKeyword: "FCL vs LCL India export",
+    searchIntent: "guide",
+    indexable: true,
+  },
+  {
+    url: "/resources/case-studies",
+    primaryKeyword: "freight forwarding case studies India",
+    searchIntent: "proof",
+    indexable: true,
+  },
 ];

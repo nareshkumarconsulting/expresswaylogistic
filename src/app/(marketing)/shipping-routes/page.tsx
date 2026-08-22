@@ -2,7 +2,9 @@ import { Plane, Ship } from "lucide-react";
 import { PageHero } from "@/components/molecules/page-hero";
 import { CatalogCard, BrandCatalog } from "@/components/molecules/catalog-card";
 import { QuoteCtaBand } from "@/components/organisms/quote-cta-band";
+import { PageAeo } from "@/components/organisms/page-aeo";
 import { getAdditionalRoutes, getFeaturedRoutes } from "@/constants/geography";
+import { SHIPPING_ROUTES_PAGE_FAQS } from "@/constants/faqs";
 import { pageSeo } from "@/lib/seo";
 
 export const metadata = pageSeo({
@@ -97,6 +99,19 @@ export default function ShippingRoutesPage() {
           ))}
         </ul>
       </BrandCatalog>
+      <PageAeo
+        answers={SHIPPING_ROUTES_PAGE_FAQS.slice(0, 3)}
+        faqs={SHIPPING_ROUTES_PAGE_FAQS}
+        breadcrumbs={crumbs}
+        webPage={{
+          name: "India to Worldwide Shipping Routes",
+          description:
+            "Commercially relevant India to worldwide freight corridors — ocean and air forwarding from ExpressWay Logistic.",
+          path: "/shipping-routes",
+        }}
+        answerTitle="Shipping routes from India"
+        answerDescription="Ocean and air corridors to USA, UAE, Europe and worldwide — quoted per cargo file, not from a public tariff."
+      />
       <QuoteCtaBand />
     </div>
   );

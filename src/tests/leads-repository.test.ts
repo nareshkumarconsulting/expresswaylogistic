@@ -88,6 +88,7 @@ describe("leads-repository mappers", () => {
       ],
       originPickup: true,
       destinationDelivery: false,
+      incoterm: "CIF",
       insurance: false,
       projectCargo: false,
       packingRequired: false,
@@ -98,6 +99,7 @@ describe("leads-repository mappers", () => {
 
     expect(message).toContain("Air Freight");
     expect(message).toContain("2026-08-15");
+    expect(message).toContain("CIF");
     expect(message).toContain("Customs brokerage");
     expect(message).toContain("Need origin pickup");
     expect(message).not.toContain("Need destination delivery");
@@ -114,6 +116,7 @@ describe("leads-repository mappers", () => {
       destination: "Ghana",
       originPickup: true,
       destinationDelivery: true,
+      incoterm: "FOB",
       transportMode: "fcl",
       cargoReadyDate: "2026-08-20",
       cargoItems: [
@@ -152,6 +155,7 @@ describe("leads-repository mappers", () => {
     expect(row.company_address).toContain("Greater Noida West");
     expect(parsed?.originPickup).toBe(true);
     expect(parsed?.destinationDelivery).toBe(true);
+    expect(parsed?.incoterm).toBe("FOB");
     expect(parsed?.cargoItems[0]?.hsCode).toBe("8473.30");
     expect(parsed?.insuranceCoverage).toBe("all-risk");
   });

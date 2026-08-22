@@ -5,6 +5,7 @@ import type { LocationPage } from "@/constants/geography";
 import type { ServiceItem } from "@/constants/services";
 import { SERVICES } from "@/constants/services";
 import {
+  FOUNDING_DATE,
   HQ_COUNTRY,
   HQ_LOCALITY,
   HQ_POSTAL_CODE,
@@ -13,6 +14,7 @@ import {
 } from "@/constants/entity";
 
 export const ORGANIZATION_ID = `${siteConfig.url}/#organization`;
+export const WEBSITE_ID = `${siteConfig.url}/#website`;
 
 export function uniqueFaqs(...groups: readonly (readonly FaqItem[])[]): FaqItem[] {
   const seen = new Set<string>();
@@ -51,6 +53,9 @@ export function organizationSchema() {
       { "@type": "Country", name: "India" },
       "Worldwide",
     ],
+    foundingDate: FOUNDING_DATE,
+    alternateName: [siteConfig.legalName, siteConfig.shortName],
+    sameAs: Object.values(siteConfig.social),
     knowsAbout: [
       "Neutral Logistics Provider",
       "Freight forwarding",
@@ -74,9 +79,11 @@ export function websiteSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
+    "@id": WEBSITE_ID,
     name: siteConfig.name,
     url: siteConfig.url,
     publisher: { "@id": ORGANIZATION_ID },
+    inLanguage: siteConfig.locale,
   };
 }
 
@@ -91,7 +98,7 @@ export function webPageSchema(input: {
     name: input.name,
     description: input.description,
     url: `${siteConfig.url}${input.path === "/" ? "/" : input.path}`,
-    isPartOf: { "@id": `${siteConfig.url}/#website` },
+    isPartOf: { "@id": WEBSITE_ID },
     about: { "@id": ORGANIZATION_ID },
   };
 }

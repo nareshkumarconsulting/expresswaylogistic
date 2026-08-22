@@ -1,5 +1,7 @@
 import {
   DIMENSION_UNIT_SHORT,
+  INCOTERM_LABELS,
+  INCOTERMS,
   INSURANCE_COVERAGE_LABELS,
   INSURANCE_COVERAGES,
   PACKAGE_TYPE_LABELS,
@@ -14,6 +16,7 @@ import {
   dimensionToCm,
   type CargoItemValues,
   type DimensionUnit,
+  type Incoterm,
   type InsuranceCoverage,
   type PackageType,
   type PackingScope,
@@ -36,6 +39,7 @@ export type QuoteWizardCargoItem = {
 export type QuoteWizardPayload = {
   originPickup: boolean;
   destinationDelivery: boolean;
+  incoterm?: Incoterm;
   cargoReadyDate?: string;
   cargoItems: QuoteWizardCargoItem[];
   insurance: boolean;
@@ -124,6 +128,13 @@ function isReferralSource(value: unknown): value is ReferralSource {
   );
 }
 
+function isIncoterm(value: unknown): value is Incoterm {
+  return (
+    typeof value === "string" &&
+    (INCOTERMS as readonly string[]).includes(value)
+  );
+}
+
 function parseCargoItem(value: unknown): QuoteWizardCargoItem | null {
   const record = asRecord(value);
   if (!record) return null;
@@ -155,6 +166,7 @@ export function parseQuoteWizardPayload(
   return {
     originPickup: asBoolean(record.originPickup),
     destinationDelivery: asBoolean(record.destinationDelivery),
+    incoterm: isIncoterm(record.incoterm) ? record.incoterm : undefined,
     cargoReadyDate: asString(record.cargoReadyDate),
     cargoItems: record.cargoItems
       .map(parseCargoItem)
@@ -260,5 +272,11 @@ export function packingLabel(wizard: QuoteWizardPayload): string | undefined {
 export function referralLabel(wizard: QuoteWizardPayload): string | undefined {
   return wizard.referralSource
     ? REFERRAL_SOURCE_LABELS[wizard.referralSource]
+    : undefined;
+}
+
+export function incotermLabel(wizard: QuoteWizardPayload): string | undefined {
+  return wizard.incoterm
+    ? `${wizard.incoterm} — ${INCOTERM_LABELS[wizard.incoterm]}`
     : undefined;
 }

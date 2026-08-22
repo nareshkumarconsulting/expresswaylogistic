@@ -2,7 +2,9 @@ import { Anchor, Building2, MapPin } from "lucide-react";
 import { PageHero } from "@/components/molecules/page-hero";
 import { CatalogCard, BrandCatalog } from "@/components/molecules/catalog-card";
 import { QuoteCtaBand } from "@/components/organisms/quote-cta-band";
+import { PageAeo } from "@/components/organisms/page-aeo";
 import { LOCATIONS } from "@/constants/geography";
+import { LOCATIONS_PAGE_FAQS } from "@/constants/faqs";
 import { pageSeo } from "@/lib/seo";
 
 export const metadata = pageSeo({
@@ -84,6 +86,19 @@ export default function LocationsIndexPage() {
           ))}
         </ul>
       </BrandCatalog>
+      <PageAeo
+        answers={LOCATIONS_PAGE_FAQS.slice(0, 3)}
+        faqs={LOCATIONS_PAGE_FAQS}
+        breadcrumbs={crumbs}
+        webPage={{
+          name: "Freight Forwarding Locations in India",
+          description:
+            "Indian cities, ports, ICDs and airports where ExpressWay coordinates freight through a nationwide logistics network.",
+          path: "/locations",
+        }}
+        answerTitle="Where ExpressWay coordinates freight in India"
+        answerDescription="Headquarters in Noida; cities, ports, ICDs and airports are network coverage — not claimed branch offices."
+      />
       <QuoteCtaBand />
     </div>
   );

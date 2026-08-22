@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { siteConfig } from "@/config/site";
 import { INDUSTRIES } from "@/constants/content";
 import { LOCATIONS, REGIONS, ROUTES } from "@/constants/geography";
-import { GLOSSARY, GUIDES } from "@/constants/resources";
+import { GLOSSARY, GUIDES, CASE_STUDIES } from "@/constants/resources";
 import { getServiceIds } from "@/constants/services";
 
 type SitemapEntry = {
@@ -67,6 +67,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/resources/guides", priority: 0.6 },
     ...GUIDES.map((guide) => ({
       path: `/resources/guides/${guide.slug}`,
+      priority: 0.6,
+    })),
+    { path: "/resources/case-studies", priority: 0.6 },
+    ...CASE_STUDIES.map((study) => ({
+      path: `/resources/case-studies/${study.slug}`,
       priority: 0.6,
     })),
     { path: "/resources/faq", priority: 0.6 },
