@@ -39,6 +39,7 @@ export const clientEmailSendSchema = z.object({
   bodyText: z.string().trim().min(1).max(20_000),
   prompt: z.string().trim().max(4000).optional(),
   retryOfId: z.string().uuid().optional(),
+  senderName: z.string().trim().max(120).optional(),
   sentBy: z.string().trim().max(120).optional(),
 });
 

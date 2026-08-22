@@ -118,7 +118,7 @@ export async function POST(request: Request) {
       }
     } else if (turn.lookupTrackingId) {
       skipPolish = true;
-      const tracked = lookupTracking(turn.lookupTrackingId);
+      const tracked = await lookupTracking(turn.lookupTrackingId);
       const href = tracked.found
         ? `/track?id=${encodeURIComponent(tracked.trackingId)}`
         : "/track";

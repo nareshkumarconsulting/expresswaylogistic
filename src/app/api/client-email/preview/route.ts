@@ -6,6 +6,7 @@ import { getEmailBranding } from "@/services/client-email-repository";
 const previewSchema = z.object({
   bodyText: z.string().trim().min(1).max(20_000),
   subject: z.string().trim().min(1).max(300).optional(),
+  senderName: z.string().trim().max(120).optional(),
 });
 
 export async function POST(request: Request) {
@@ -28,6 +29,7 @@ export async function POST(request: Request) {
     const rendered = renderClientEmailFromPlainBody(
       parsed.data.bodyText,
       branding,
+      parsed.data.senderName,
     );
     return NextResponse.json({
       success: true,

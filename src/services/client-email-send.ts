@@ -13,7 +13,12 @@ export async function sendClientEmailMessage(
   input: ClientEmailSendInput,
 ): Promise<{ ok: boolean; message: ClientEmailMessage; error?: string }> {
   const branding = await getEmailBranding();
-  const rendered = renderClientEmailFromPlainBody(input.bodyText, branding);
+  const senderName = input.senderName?.trim() || input.sentBy?.trim();
+  const rendered = renderClientEmailFromPlainBody(
+    input.bodyText,
+    branding,
+    senderName,
+  );
   const to = input.to;
   const cc = input.cc ?? [];
   const bcc = input.bcc ?? [];
@@ -45,7 +50,7 @@ export async function sendClientEmailMessage(
     status,
     providerMessageId: sendResult.id,
     errorMessage: sendResult.ok ? undefined : sendResult.error,
-    sentBy: input.sentBy ?? "Operations",
+    sentBy: senderName || input.sentBy || "Operations",
     sentAt,
   });
 
@@ -56,7 +61,7 @@ export async function sendClientEmailMessage(
       sendResult.ok
         ? `Client email sent: ${input.subject}`
         : `Client email failed: ${sendResult.error ?? "unknown error"}`,
-      input.sentBy ?? "Operations",
+      input.sentBy ?? senderName ?? "Operations",
       {
         messageId: message.id,
         to,

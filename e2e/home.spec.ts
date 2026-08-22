@@ -9,10 +9,10 @@ test.describe("marketing site", () => {
     await expect(page.getByText("ExpressWay").first()).toBeVisible();
   });
 
-  test("track page accepts lookup", async ({ page }) => {
+  test("track page shows not found for unknown id", async ({ page }) => {
     await page.goto("/track");
-    await page.getByLabel(/tracking id/i).fill("EW-10847");
+    await page.getByLabel(/tracking id/i).fill("EW-99999");
     await page.getByRole("button", { name: /track/i }).click();
-    await expect(page.getByText("EW-10847").first()).toBeVisible();
+    await expect(page.getByText(/no shipment found/i)).toBeVisible();
   });
 });

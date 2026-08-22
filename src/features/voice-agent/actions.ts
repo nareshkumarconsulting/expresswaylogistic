@@ -7,7 +7,7 @@ import {
   createAppointmentReferenceId,
   createQuoteReferenceId,
 } from "@/lib/reference-id";
-import { findTracking } from "@/services/logistics-data";
+import { findTrackingById } from "@/services/tracking-repository";
 import {
   insertAppointment,
   insertQuoteRequest,
@@ -167,8 +167,8 @@ export function spokenEta(eta: string): string {
   });
 }
 
-export function lookupTracking(trackingId: string) {
-  const found = findTracking(trackingId);
+export async function lookupTracking(trackingId: string) {
+  const found = await findTrackingById(trackingId);
   if (!found) {
     return {
       found: false as const,

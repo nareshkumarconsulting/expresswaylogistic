@@ -50,6 +50,29 @@ Public shipment tracking lookup.
 
 Command Center shipment board data.
 
+### `GET /api/shipments/:id`
+
+Shipment detail for the ops detail sheet.
+
+### `PATCH /api/shipments/:id`
+
+Update shipment status and operational fields (phone / manual ops).
+
+Body (at least one field):
+
+```json
+{
+  "status": "In Transit",
+  "carrierName": "Maersk",
+  "carrierRef": "MAEU123456",
+  "estimatedEta": "2026-08-25T10:00:00.000Z",
+  "assignedTo": "Ops desk",
+  "internalNotes": "Confirmed on phone — cargo ready Monday"
+}
+```
+
+Status values: `Processing` · `In Transit` · `Customs Hold` · `Delivered` · `Delayed`
+
 ## `GET /api/ai/insights`
 
 Current AI insight feed.

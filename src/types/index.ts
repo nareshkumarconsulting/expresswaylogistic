@@ -7,6 +7,14 @@ export type ShipmentStatus =
   | "Delivered"
   | "Delayed";
 
+export const SHIPMENT_STATUSES = [
+  "Processing",
+  "In Transit",
+  "Customs Hold",
+  "Delivered",
+  "Delayed",
+] as const satisfies readonly ShipmentStatus[];
+
 export type FreightMode = "Air Freight" | "Ocean Freight" | "Road Freight";
 
 export interface Shipment {
@@ -19,6 +27,27 @@ export interface Shipment {
   client: string;
   predictedEtaHours?: number;
   riskScore?: number;
+}
+
+export interface ManagedShipment extends Shipment {
+  contactName: string;
+  contactEmail: string;
+  contactPhone?: string;
+  bookingBasis: string;
+  pickupLocation?: string;
+  deliveryLocation?: string;
+  cargoReadyDate?: string;
+  targetDeliveryDate?: string;
+  productType?: string;
+  totalPackages?: number;
+  approxWeight?: string;
+  carrierName?: string;
+  carrierRef?: string;
+  internalNotes?: string;
+  assignedTo?: string;
+  estimatedEtaIso?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface AiInsight {

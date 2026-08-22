@@ -31,13 +31,36 @@ import { QuoteStatusBoard } from "@/features/command-center/components/quote-sta
 import { QuoteStatusChart } from "@/features/command-center/components/quote-status-chart";
 import { QuoteStatusMixChart } from "@/features/command-center/components/quote-status-mix-chart";
 import { ACTIONABLE_QUOTE_STATUSES } from "@/features/command-center/components/quote-status-overview";
-import {
-  FREIGHT_MIX,
-  MOCK_AI_INSIGHTS,
-  SHIPMENT_VOLUME,
-} from "@/services/logistics-data";
-import type { AiInsight, QuoteRequest, Shipment } from "@/types";
+import type { QuoteRequest, Shipment } from "@/types";
 import { formatNumber } from "@/lib/utils";
+
+const FREIGHT_COLORS = {
+  Air: "hsl(210 78% 18%)",
+  Ocean: "hsl(32 100% 50%)",
+  Road: "hsl(205 90% 60%)",
+} as const;
+
+function buildFreightMix(shipments: Shipment[]) {
+  const air = shipments.filter((s) => s.type === "Air Freight").length;
+  const ocean = shipments.filter((s) => s.type === "Ocean Freight").length;
+  const road = shipments.filter((s) => s.type === "Road Freight").length;
+  const total = air + ocean + road;
+  if (total === 0) return [];
+
+  return [
+    { name: "Air", value: Math.round((air / total) * 100), color: FREIGHT_COLORS.Air },
+    {
+      name: "Ocean",
+      value: Math.round((ocean / total) * 100),
+      color: FREIGHT_COLORS.Ocean,
+    },
+    {
+      name: "Road",
+      value: Math.round((road / total) * 100),
+      color: FREIGHT_COLORS.Road,
+    },
+  ].filter((item) => item.value > 0);
+}
 
 async function fetchShipments(): Promise<Shipment[]> {
   const res = await fetch("/api/shipments");
@@ -68,12 +91,6 @@ function statusBadge(status: string) {
     default:
       return "muted" as const;
   }
-}
-
-function severityBadge(severity: AiInsight["severity"]) {
-  if (severity === "critical") return "destructive" as const;
-  if (severity === "warning") return "warning" as const;
-  return "secondary" as const;
 }
 
 function SectionHeading({
@@ -146,6 +163,8 @@ export function CommandOverview() {
         ? "No quote requests yet"
         : `${formatNumber(quotes.length)} total · ${formatNumber(actionableQuotes)} need action`;
 
+  const freightMix = buildFreightMix(data);
+
   return (
     <div className="space-y-12">
       <section className="space-y-6" aria-labelledby="shipping-heading">
@@ -159,14 +178,14 @@ export function CommandOverview() {
           <StatCard
             label="Active Shipments"
             value={formatNumber(data.length)}
-            delta={isFetching ? "Refreshing…" : "+8.2% vs last week"}
-            trend="up"
+            delta={isFetching ? "Refreshing…" : data.length === 0 ? "No shipments yet" : "Live board"}
+            trend="neutral"
             icon={Package}
           />
           <StatCard
             label="In Transit"
             value={formatNumber(inTransit)}
-            delta="On-network"
+            delta={inTransit === 0 ? "None on network" : "On-network"}
             trend="neutral"
             icon={Plane}
           />
@@ -175,14 +194,14 @@ export function CommandOverview() {
             value={formatNumber(
               data.filter((s) => s.type === "Ocean Freight").length,
             )}
-            delta="Lane utilization 74%"
-            trend="up"
+            delta="From live shipments"
+            trend="neutral"
             icon={Ship}
           />
           <StatCard
             label="Exceptions"
             value={formatNumber(exceptions)}
-            delta="AI monitoring active"
+            delta={exceptions === 0 ? "All clear" : "Needs attention"}
             trend={exceptions > 0 ? "down" : "neutral"}
             icon={AlertTriangle}
           />
@@ -195,64 +214,70 @@ export function CommandOverview() {
               <span className="text-xs text-muted-foreground">Air vs Ocean</span>
             </div>
             <div className="h-72">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={SHIPMENT_VOLUME}>
-                  <defs>
-                    <linearGradient id="air" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="hsl(210 78% 18%)" stopOpacity={0.35} />
-                      <stop offset="95%" stopColor="hsl(210 78% 18%)" stopOpacity={0} />
-                    </linearGradient>
-                    <linearGradient id="ocean" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="hsl(32 100% 50%)" stopOpacity={0.35} />
-                      <stop offset="95%" stopColor="hsl(32 100% 50%)" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                  <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                  <YAxis tick={{ fontSize: 12 }} />
-                  <Tooltip />
-                  <Area
-                    type="monotone"
-                    dataKey="air"
-                    stroke="hsl(210 78% 18%)"
-                    fill="url(#air)"
-                    name="Air"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="ocean"
-                    stroke="hsl(32 100% 50%)"
-                    fill="url(#ocean)"
-                    name="Ocean"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+              {data.length === 0 ? (
+                <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+                  Volume trends appear once shipments are booked.
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart
+                    data={[
+                      {
+                        label: "Air",
+                        count: data.filter((s) => s.type === "Air Freight").length,
+                      },
+                      {
+                        label: "Ocean",
+                        count: data.filter((s) => s.type === "Ocean Freight").length,
+                      },
+                    ]}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                    <XAxis dataKey="label" tick={{ fontSize: 12 }} />
+                    <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+                    <Tooltip />
+                    <Area
+                      type="monotone"
+                      dataKey="count"
+                      stroke="hsl(210 78% 18%)"
+                      fill="hsl(210 78% 18% / 0.35)"
+                      name="Shipments"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              )}
             </div>
           </div>
 
           <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
             <h3 className="font-display mb-4 text-lg font-bold">Freight Mix</h3>
             <div className="h-56">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={FREIGHT_MIX}
-                    dataKey="value"
-                    nameKey="name"
-                    innerRadius={55}
-                    outerRadius={85}
-                    paddingAngle={3}
-                  >
-                    {FREIGHT_MIX.map((entry) => (
-                      <Cell key={entry.name} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
+              {freightMix.length === 0 ? (
+                <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+                  No freight mix yet.
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={freightMix}
+                      dataKey="value"
+                      nameKey="name"
+                      innerRadius={55}
+                      outerRadius={85}
+                      paddingAngle={3}
+                    >
+                      {freightMix.map((entry) => (
+                        <Cell key={entry.name} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
             </div>
             <ul className="mt-2 space-y-2">
-              {FREIGHT_MIX.map((item) => (
+              {freightMix.map((item) => (
                 <li
                   key={item.name}
                   className="flex items-center justify-between text-sm"
@@ -273,11 +298,31 @@ export function CommandOverview() {
 
         <div className="grid gap-6 xl:grid-cols-5">
           <div className="rounded-lg border border-border bg-card p-6 shadow-sm xl:col-span-3">
-            <div className="mb-4 flex items-center gap-2">
-              <Clock className="size-5 text-accent" />
-              <h3 className="font-display text-lg font-bold">Recent Shipments</h3>
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Clock className="size-5 text-accent" />
+                <h3 className="font-display text-lg font-bold">Recent Shipments</h3>
+              </div>
+              <Link
+                href="/command-center/shipments"
+                className="text-sm font-medium text-accent hover:underline"
+              >
+                Open all shipments →
+              </Link>
             </div>
+            <p className="mb-3 text-xs text-muted-foreground">
+              Click a shipment ID (e.g. EW-10001) → use the{" "}
+              <strong className="font-semibold text-foreground">Status</strong> dropdown →{" "}
+              <strong className="font-semibold text-foreground">Save changes</strong>
+            </p>
             <div className="overflow-x-auto">
+              {data.length === 0 ? (
+                <StateAlert
+                  variant="info"
+                  title="No shipments yet"
+                  description="Create a manual booking with + New Shipment to populate this board."
+                />
+              ) : (
               <table className="w-full min-w-[640px] text-left text-sm">
                 <thead className="border-b text-muted-foreground">
                   <tr>
@@ -292,7 +337,14 @@ export function CommandOverview() {
                 <tbody>
                   {data.slice(0, 6).map((shipment) => (
                     <tr key={shipment.id} className="border-b last:border-0">
-                      <td className="py-3 pr-4 font-semibold">{shipment.id}</td>
+                      <td className="py-3 pr-4 font-semibold">
+                        <Link
+                          href={`/command-center/shipments?shipment=${encodeURIComponent(shipment.id)}`}
+                          className="hover:text-accent hover:underline"
+                        >
+                          {shipment.id}
+                        </Link>
+                      </td>
                       <td className="py-3 pr-4">
                         {shipment.origin} → {shipment.destination}
                       </td>
@@ -308,37 +360,17 @@ export function CommandOverview() {
                   ))}
                 </tbody>
               </table>
+              )}
             </div>
           </div>
 
           <div className="rounded-lg border border-border bg-card p-6 shadow-sm xl:col-span-2">
             <h3 className="font-display mb-4 text-lg font-bold">AI Insights</h3>
-            <ul className="space-y-4">
-              {MOCK_AI_INSIGHTS.map((insight) => (
-                <li
-                  key={insight.id}
-                  className="rounded-md border border-border bg-muted/40 p-4"
-                >
-                  <div className="mb-2 flex items-center justify-between gap-2">
-                    <Badge variant={severityBadge(insight.severity)}>
-                      {insight.severity}
-                    </Badge>
-                    {insight.relatedShipmentId ? (
-                      <span className="text-xs text-muted-foreground">
-                        {insight.relatedShipmentId}
-                      </span>
-                    ) : null}
-                  </div>
-                  <p className="font-semibold">{insight.title}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {insight.summary}
-                  </p>
-                  <p className="mt-2 text-sm font-medium text-primary">
-                    {insight.recommendation}
-                  </p>
-                </li>
-              ))}
-            </ul>
+            <StateAlert
+              variant="info"
+              title="No insights yet"
+              description="AI insights will appear when shipments and exceptions are tracked in the system."
+            />
           </div>
         </div>
       </section>

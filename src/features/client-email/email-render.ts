@@ -21,7 +21,10 @@ function paragraphsFromText(body: string): string {
     .join("");
 }
 
-function defaultSignatureHtml(branding: EmailBrandingSettings): string {
+function defaultSignatureHtml(
+  branding: EmailBrandingSettings,
+  senderName?: string,
+): string {
   const website = branding.websiteUrl
     ? `<br/><a href="${escapeHtml(branding.websiteUrl)}" style="color:#0f172a;text-decoration:none;">${escapeHtml(branding.websiteUrl.replace(/^https?:\/\//, ""))}</a>`
     : "";
@@ -31,12 +34,15 @@ function defaultSignatureHtml(branding: EmailBrandingSettings): string {
   const logo = branding.logoUrl
     ? `<p style="margin:0 0 14px;"><img src="${escapeHtml(branding.logoUrl)}" alt="${escapeHtml(branding.companyName)}" width="220" height="147" style="display:block;width:220px;max-width:100%;height:auto;border:0;outline:none;text-decoration:none;" /></p>`
     : "";
+  const signer = senderName?.trim()
+    ? `<strong>${escapeHtml(senderName.trim())}</strong><br/>`
+    : "";
 
   return `
     ${logo}
     <p style="margin:0;line-height:1.55;">
       Regards,<br/>
-      <strong>${escapeHtml(branding.companyName)}</strong>${tagline}<br/>
+      ${signer}<strong>${escapeHtml(branding.companyName)}</strong>${tagline}<br/>
       ${escapeHtml(branding.contactAddress ?? "")}<br/>
       ${escapeHtml(branding.contactPhone ?? "")}<br/>
       <a href="mailto:${escapeHtml(branding.contactEmail ?? "")}" style="color:#0f172a;">${escapeHtml(branding.contactEmail ?? "")}</a>${website}
@@ -44,9 +50,13 @@ function defaultSignatureHtml(branding: EmailBrandingSettings): string {
   `.trim();
 }
 
-function defaultSignatureText(branding: EmailBrandingSettings): string {
+function defaultSignatureText(
+  branding: EmailBrandingSettings,
+  senderName?: string,
+): string {
   return [
     "Regards,",
+    senderName?.trim(),
     branding.companyName,
     branding.tagline,
     branding.contactAddress,
@@ -75,6 +85,7 @@ export function composeClientEmailBodyText(parts: ClientEmailComposeParts): stri
 export function renderClientEmail(
   parts: ClientEmailComposeParts,
   brandingInput?: Partial<EmailBrandingSettings> | null,
+  senderName?: string,
 ): { html: string; text: string } {
   const branding = resolveEmailBranding(brandingInput);
   const bodyHtml = [
@@ -86,10 +97,11 @@ export function renderClientEmail(
   ].join("");
 
   const signatureHtml =
-    branding.signatureHtml?.trim() || defaultSignatureHtml(branding);
+    branding.signatureHtml?.trim() ||
+    defaultSignatureHtml(branding, senderName);
   const signatureText = branding.signatureHtml?.trim()
     ? "\n\n[Company signature]"
-    : `\n\n${defaultSignatureText(branding)}`;
+    : `\n\n${defaultSignatureText(branding, senderName)}`;
 
   const html = `
     <div style="font-family:Arial,Helvetica,sans-serif;color:#0f172a;line-height:1.6;max-width:640px;font-size:15px;">
@@ -108,13 +120,15 @@ export function renderClientEmail(
 export function renderClientEmailFromPlainBody(
   bodyText: string,
   brandingInput?: Partial<EmailBrandingSettings> | null,
+  senderName?: string,
 ): { html: string; text: string } {
   const branding = resolveEmailBranding(brandingInput);
   const signatureHtml =
-    branding.signatureHtml?.trim() || defaultSignatureHtml(branding);
+    branding.signatureHtml?.trim() ||
+    defaultSignatureHtml(branding, senderName);
   const signatureText = branding.signatureHtml?.trim()
     ? "\n\n[Company signature]"
-    : `\n\n${defaultSignatureText(branding)}`;
+    : `\n\n${defaultSignatureText(branding, senderName)}`;
 
   const html = `
     <div style="font-family:Arial,Helvetica,sans-serif;color:#0f172a;line-height:1.6;max-width:640px;font-size:15px;">

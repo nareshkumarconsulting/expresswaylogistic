@@ -25,8 +25,6 @@ import {
 import type { FreightMode, TrackingResult } from "@/types";
 import { cn } from "@/lib/utils";
 
-const DEMO_IDS = ["EW-10847", "EW-10846", "EW-10845", "EW-10844"] as const;
-
 function statusVariant(status: string) {
   switch (status) {
     case "Delivered":
@@ -100,11 +98,6 @@ export function TrackingForm({ initialTrackingId = "" }: TrackingFormProps) {
     await lookup(values.trackingId);
   };
 
-  const applyDemoId = (id: string) => {
-    setValue("trackingId", id, { shouldValidate: true });
-    void lookup(id);
-  };
-
   useEffect(() => {
     if (!initialTrackingId) return;
     void lookup(initialTrackingId);
@@ -128,7 +121,7 @@ export function TrackingForm({ initialTrackingId = "" }: TrackingFormProps) {
         >
           <Input
             {...register("trackingId")}
-            placeholder="e.g. EW-10847"
+            placeholder="e.g. EW-10001"
             autoComplete="off"
             className="h-12 rounded-none text-base"
           />
@@ -145,33 +138,11 @@ export function TrackingForm({ initialTrackingId = "" }: TrackingFormProps) {
         </Button>
       </form>
 
-      <div>
-        <p className="mb-3 text-xs font-semibold tracking-[0.16em] text-muted-foreground uppercase">
-          Try a demo shipment
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {DEMO_IDS.map((id) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => applyDemoId(id)}
-              className={cn(
-                "rounded-md border border-border bg-surface px-3 py-1.5 text-sm font-semibold text-foreground transition-colors hover:border-accent hover:text-accent",
-                result?.trackingId === id &&
-                  "border-accent bg-accent/10 text-accent",
-              )}
-            >
-              {id}
-            </button>
-          ))}
-        </div>
-      </div>
-
       {status === "empty" ? (
         <StateAlert
           variant="info"
           title="No shipment found"
-          description="Check the tracking ID and try again. Demo IDs start with EW-."
+          description="Check the tracking ID and try again. Use the ID from your booking confirmation."
         />
       ) : null}
       {status === "error" ? (

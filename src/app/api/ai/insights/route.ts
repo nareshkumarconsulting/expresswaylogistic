@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { aiQuerySchema } from "@/features/contact/schemas";
-import { MOCK_AI_INSIGHTS, MOCK_SHIPMENTS } from "@/services/logistics-data";
+import { listShipments } from "@/services/shipments-repository";
 import { logger } from "@/lib/logger";
 
 export async function GET() {
   return NextResponse.json({
     success: true,
-    data: MOCK_AI_INSIGHTS,
+    data: [],
   });
 }
 
@@ -22,7 +22,8 @@ export async function POST(request: Request) {
     }
 
     const q = parsed.data.query.toLowerCase();
-    const matches = MOCK_SHIPMENTS.filter(
+    const shipments = await listShipments();
+    const matches = shipments.filter(
       (s) =>
         s.id.toLowerCase().includes(q) ||
         s.client.toLowerCase().includes(q) ||
@@ -38,7 +39,7 @@ export async function POST(request: Request) {
               (a, b) => (b.riskScore ?? 0) - (a.riskScore ?? 0),
             )[0]?.id
           }.`
-        : "No direct shipment matches. Review AI insights for lane-level risks and consolidation opportunities.";
+        : "No direct shipment matches. Add shipments or refine your query.";
 
     logger.info("ai.query", { query: parsed.data.query, matches: matches.length });
 
@@ -47,7 +48,7 @@ export async function POST(request: Request) {
       data: {
         answer,
         matches,
-        insights: MOCK_AI_INSIGHTS.slice(0, 2),
+        insights: [],
       },
     });
   } catch (error) {

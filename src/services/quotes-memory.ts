@@ -1,4 +1,3 @@
-import { MOCK_QUOTE_REQUESTS } from "@/services/logistics-data";
 import type {
   Forwarder,
   QuoteActivityEntry,
@@ -6,72 +5,8 @@ import type {
   QuoteRequest,
 } from "@/types";
 
-function cloneQuotes(): QuoteRequest[] {
-  return MOCK_QUOTE_REQUESTS.map((quote) => ({ ...quote }));
-}
-
-export const MOCK_FORWARDERS: Forwarder[] = [
-  {
-    id: "11111111-1111-4111-8111-111111111111",
-    companyName: "DHL Forwarding Partner",
-    contactPerson: "Anita Rao",
-    email: "anita.rao@example.com",
-    phone: "+91 98100 11111",
-    country: "India",
-    serviceTypes: ["air", "ocean-fcl", "door-to-door"],
-    originLocations: ["Delhi", "Mumbai"],
-    destinationLocations: ["London", "Dubai", "Singapore"],
-    preferredRoutes: "India ↔ Europe / GCC",
-    status: "Active",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: "22222222-2222-4222-8222-222222222222",
-    companyName: "ABC Logistics",
-    contactPerson: "Suresh Nair",
-    email: "suresh.nair@example.com",
-    phone: "+91 98200 22222",
-    country: "India",
-    serviceTypes: ["ocean-fcl", "ocean-lcl", "consolidation"],
-    originLocations: ["Mumbai", "Chennai"],
-    destinationLocations: ["Rotterdam", "Hamburg"],
-    preferredRoutes: "West Coast India ↔ North Europe",
-    status: "Active",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: "33333333-3333-4333-8333-333333333333",
-    companyName: "Global Freight Services",
-    contactPerson: "Mei Chen",
-    email: "mei.chen@example.com",
-    country: "Singapore",
-    serviceTypes: ["air", "ocean-lcl"],
-    originLocations: ["Mumbai", "Bengaluru"],
-    destinationLocations: ["Singapore", "Hong Kong"],
-    preferredRoutes: "India ↔ SEA",
-    status: "Active",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: "44444444-4444-4444-8444-444444444444",
-    companyName: "XYZ Shipping Solutions",
-    contactPerson: "Omar Khan",
-    email: "omar.khan@example.com",
-    country: "UAE",
-    serviceTypes: ["ocean-fcl", "warehousing"],
-    originLocations: ["Mundra", "Nhava Sheva"],
-    destinationLocations: ["Jebel Ali"],
-    status: "Inactive",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-];
-
-let quotes = cloneQuotes();
-let forwarders = MOCK_FORWARDERS.map((row) => ({ ...row }));
+let quotes: QuoteRequest[] = [];
+let forwarders: Forwarder[] = [];
 let forwarderRequests: QuoteForwarderRequest[] = [];
 let activity: QuoteActivityEntry[] = [];
 
@@ -84,7 +19,12 @@ export function memoryGetQuote(id: string): QuoteRequest | null {
 }
 
 export function memorySaveQuote(next: QuoteRequest): QuoteRequest {
-  quotes = quotes.map((quote) => (quote.id === next.id ? next : quote));
+  const exists = quotes.some((quote) => quote.id === next.id);
+  if (exists) {
+    quotes = quotes.map((quote) => (quote.id === next.id ? next : quote));
+  } else {
+    quotes = [next, ...quotes];
+  }
   return { ...next };
 }
 
@@ -132,7 +72,10 @@ export function memoryUpsertForwarderRequest(
         item.forwarderId === row.forwarderId,
     );
     if (existing >= 0) {
-      forwarderRequests[existing] = { ...row, id: forwarderRequests[existing].id };
+      forwarderRequests[existing] = {
+        ...row,
+        id: forwarderRequests[existing].id,
+      };
       return { ...forwarderRequests[existing] };
     }
     forwarderRequests = [row, ...forwarderRequests];

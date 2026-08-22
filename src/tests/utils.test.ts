@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { cn, formatNumber } from "@/lib/utils";
 import { quoteFormSchema, trackingSchema } from "@/features/contact/schemas";
-import { findTracking } from "@/services/logistics-data";
+import { buildTrackingResult } from "@/services/tracking-repository";
+import type { Shipment } from "@/types";
 
 describe("cn", () => {
   it("merges class names", () => {
@@ -62,14 +63,19 @@ describe("trackingSchema", () => {
   });
 });
 
-describe("findTracking", () => {
+describe("buildTrackingResult", () => {
   it("returns shipment timeline for known ids", () => {
-    const result = findTracking("EW-10847");
-    expect(result?.trackingId).toBe("EW-10847");
-    expect(result?.events.length).toBeGreaterThan(0);
-  });
-
-  it("returns null for unknown ids", () => {
-    expect(findTracking("UNKNOWN")).toBeNull();
+    const shipment: Shipment = {
+      id: "EW-10001",
+      origin: "Mumbai",
+      destination: "Dubai",
+      type: "Air Freight",
+      status: "Processing",
+      eta: "Pending",
+      client: "Acme Corp",
+    };
+    const result = buildTrackingResult(shipment);
+    expect(result.trackingId).toBe("EW-10001");
+    expect(result.events.length).toBeGreaterThan(0);
   });
 });

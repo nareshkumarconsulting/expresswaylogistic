@@ -314,6 +314,7 @@ export function ClientEmailAgentPanel() {
   const [bcc, setBcc] = useState<string[]>([]);
   const [clientName, setClientName] = useState("");
   const [clientCompany, setClientCompany] = useState("");
+  const [senderName, setSenderName] = useState("");
   const [contextNotes, setContextNotes] = useState<string[]>([]);
   const [previewHtml, setPreviewHtml] = useState("");
   const [lastMessage, setLastMessage] = useState<ClientEmailMessage | null>(
@@ -466,7 +467,7 @@ export function ClientEmailAgentPanel() {
       const data = await fetchJson<{ html: string }>("/api/client-email/preview", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bodyText: plainBody, subject }),
+        body: JSON.stringify({ bodyText: plainBody, subject, senderName }),
       });
       setPreviewHtml(data.html);
       setStep("preview");
@@ -497,7 +498,8 @@ export function ClientEmailAgentPanel() {
           bodyText: plainBody,
           prompt: prompt || undefined,
           retryOfId,
-          sentBy: "Operations",
+          senderName: senderName.trim() || undefined,
+          sentBy: senderName.trim() || "Operations",
         }),
       });
       const json = (await res.json()) as {
@@ -535,6 +537,7 @@ export function ClientEmailAgentPanel() {
     setSendError(null);
     setError(null);
     setContextNotes([]);
+    setSenderName("");
   };
 
   const stepIndex = STEPS.findIndex((item) => item.id === step);
@@ -731,6 +734,20 @@ export function ClientEmailAgentPanel() {
                     onChange={(event) => setClientCompany(event.target.value)}
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="sender-name">Your name</Label>
+                <Input
+                  id="sender-name"
+                  value={senderName}
+                  onChange={(event) => setSenderName(event.target.value)}
+                  placeholder="e.g. Priya Sharma"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Shown in the email signature between &ldquo;Regards,&rdquo; and
+                  the company name.
+                </p>
               </div>
 
               <div className="space-y-2">

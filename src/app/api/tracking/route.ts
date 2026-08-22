@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { trackingSchema } from "@/features/contact/schemas";
-import { findTracking } from "@/services/logistics-data";
+import { findTrackingById } from "@/services/tracking-repository";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -15,7 +15,7 @@ export async function GET(request: Request) {
     );
   }
 
-  const data = findTracking(parsed.data.trackingId);
+  const data = await findTrackingById(parsed.data.trackingId);
   if (!data) {
     return NextResponse.json(
       { success: false, error: "Shipment not found" },

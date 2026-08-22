@@ -13,6 +13,7 @@ function greeting() {
 
 export function CommandTopbar() {
   const setSidebarOpen = useUiStore((s) => s.setSidebarOpen);
+  const setNewShipmentOpen = useUiStore((s) => s.setNewShipmentOpen);
   const date = new Date().toLocaleDateString("en-IN", {
     weekday: "long",
     year: "numeric",
@@ -41,7 +42,11 @@ export function CommandTopbar() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Button className="h-10" rounded="none">
+          <Button
+            className="h-10"
+            rounded="none"
+            onClick={() => setNewShipmentOpen(true)}
+          >
             <Plus className="size-4" />
             <span className="hidden sm:inline">New Shipment</span>
             <span className="sm:hidden">New</span>

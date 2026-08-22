@@ -5,6 +5,7 @@ import {
   parseRetellToolCall,
   runRetellTool,
 } from "@/features/voice-agent/retell-tools";
+import { memoryCreateShipment } from "@/services/shipments-memory";
 import { chunkForTts, concatWavBuffers } from "@/features/voice-agent/tts";
 
 describe("voice receptionist", () => {
@@ -200,11 +201,24 @@ describe("Retell web tools", () => {
   });
 
   it("looks up tracking without inventing a status", async () => {
+    const row = memoryCreateShipment({
+      clientCompany: "Acme Corp",
+      contactName: "Test User",
+      contactEmail: "test@example.com",
+      bookingBasis: "email_ok",
+      origin: "Mumbai",
+      destination: "Dubai",
+      freightMode: "Air Freight",
+      cargoReadyDate: "2026-08-22",
+      productType: "other",
+      approxWeight: "100 kg",
+    });
+
     const found = await runRetellTool("track_shipment", {
-      trackingId: "EW-10846",
+      trackingId: row.id,
     });
     expect(found.ok).toBe(true);
-    expect(String(found.spoken)).toMatch(/EW-10846/i);
+    expect(String(found.spoken)).toMatch(new RegExp(row.id, "i"));
 
     const missing = await runRetellTool("track_shipment", {
       trackingId: "EW-00000",

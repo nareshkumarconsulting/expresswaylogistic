@@ -144,6 +144,7 @@ Optimized for **Vercel** (app) + **VPS or n8n Cloud** (email pipeline). See **[P
 
 ## Documentation
 
+- [Product overview](docs/PRODUCT_OVERVIEW.md) — full features, Command Center, tech stack
 - [Architecture](docs/ARCHITECTURE.md)
 - [Supabase setup](docs/SUPABASE.md)
 - [API](docs/API.md)

@@ -43,6 +43,19 @@ export type QuoteAiReviewStatus =
 
 export type ClientEmailStatus = "draft" | "sent" | "failed";
 
+export type ShipmentStatus =
+  | "Processing"
+  | "In Transit"
+  | "Customs Hold"
+  | "Delivered"
+  | "Delayed";
+
+export type BookingBasis =
+  | "po_received"
+  | "email_ok"
+  | "payment_received"
+  | "verbal_ok";
+
 export type AppointmentSource = "form" | "voice_agent";
 
 export type AppointmentStatus =
@@ -448,6 +461,74 @@ export interface Database {
         >;
         Relationships: [];
       };
+      shipments: {
+        Row: {
+          id: string;
+          quote_request_id: string | null;
+          client_company: string;
+          contact_name: string;
+          contact_email: string;
+          contact_phone: string | null;
+          origin: string;
+          destination: string;
+          freight_mode: string;
+          status: ShipmentStatus;
+          booking_basis: BookingBasis;
+          pickup_location: string | null;
+          delivery_location: string | null;
+          cargo_ready_date: string | null;
+          target_delivery_date: string | null;
+          product_type: string | null;
+          total_packages: number | null;
+          approx_weight: string | null;
+          container_size: string | null;
+          container_type: string | null;
+          value_inr: number | null;
+          carrier_name: string | null;
+          carrier_ref: string | null;
+          forwarder_id: string | null;
+          estimated_eta: string | null;
+          internal_notes: string | null;
+          assigned_to: string | null;
+          risk_score: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          quote_request_id?: string | null;
+          client_company: string;
+          contact_name: string;
+          contact_email: string;
+          contact_phone?: string | null;
+          origin: string;
+          destination: string;
+          freight_mode: string;
+          status?: ShipmentStatus;
+          booking_basis: BookingBasis;
+          pickup_location?: string | null;
+          delivery_location?: string | null;
+          cargo_ready_date?: string | null;
+          target_delivery_date?: string | null;
+          product_type?: string | null;
+          total_packages?: number | null;
+          approx_weight?: string | null;
+          container_size?: string | null;
+          container_type?: string | null;
+          value_inr?: number | null;
+          carrier_name?: string | null;
+          carrier_ref?: string | null;
+          forwarder_id?: string | null;
+          estimated_eta?: string | null;
+          internal_notes?: string | null;
+          assigned_to?: string | null;
+          risk_score?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["shipments"]["Insert"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -469,6 +550,8 @@ export interface Database {
       email_intelligence_status: EmailIntelligenceStatus;
       quote_ai_review_status: QuoteAiReviewStatus;
       client_email_status: ClientEmailStatus;
+      shipment_status: ShipmentStatus;
+      booking_basis: BookingBasis;
     };
     CompositeTypes: Record<string, never>;
   };

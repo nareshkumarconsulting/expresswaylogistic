@@ -4,10 +4,14 @@ interface UiState {
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
   toggleSidebar: () => void;
+  newShipmentOpen: boolean;
+  setNewShipmentOpen: (open: boolean) => void;
 }
 
 export const useUiStore = create<UiState>((set) => ({
   sidebarOpen: false,
   setSidebarOpen: (open) => set({ sidebarOpen: open }),
   toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),
+  newShipmentOpen: false,
+  setNewShipmentOpen: (open) => set({ newShipmentOpen: open }),
 }));
