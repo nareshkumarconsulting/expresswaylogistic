@@ -25,6 +25,8 @@ ExpressWay Logistic is a **premium logistics SaaS** with two product surfaces:
 
 ## 2. Architecture at a glance
 
+![System architecture poster](./expressway-system-architecture.png)
+
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                     Public Marketing Site                         │
@@ -144,7 +146,7 @@ Leather Products · Garments & Apparel · Pharma & Bulk Drugs · Handicrafts · 
 | **Contact / short quote** | `/contact` → `POST /api/contact` | Zod `quoteFormSchema`; rate limit **8 / IP / min**; same delivery path |
 | **Appointment booking** | `/appointment` → `POST /api/appointment` | Types: freight planning, customs, project cargo, EXIM advisory, packing, warehouse visit, onboarding; weekday IST slots; rate limit **8 / IP / min** |
 | **Public tracking** | `/track` → `GET /api/tracking?id=` | Lookup by tracking ID (demo example: `EW-10847`) |
-| **WhatsApp** | `wa.me` link | Opens chat to sales number — **manual human reply only** (AI agent proposed, not built) |
+| **WhatsApp** | Meta WhatsApp Cloud API | **Automated** AI agent (quote, FAQs, appointment, tracking, human handoff) — phone number **in review with Meta**; site still has `wa.me` until API goes live |
 | **Ava voice agent** | Help menu / widget | Browser-only call (no phone number) |
 
 ### 3.7 Ava voice agent
@@ -772,7 +774,7 @@ See `.env.example` for the full list.
 | Retell | Optional | Ava web voice |
 | CRM webhook | Optional | Lead fan-out |
 | GA4 / GTM / Clarity / Sentry | Optional hooks | Analytics / errors |
-| WhatsApp Business API | **Not built** | Documented proposal only — see [WHATSAPP_AI_AGENT.md](./WHATSAPP_AI_AGENT.md) |
+| WhatsApp Business API | **In progress** | Number **in review with Meta**; AI agent planned — see [WHATSAPP_AI_AGENT.md](./WHATSAPP_AI_AGENT.md) |
 | Live TMS / ERP | Adapter-ready | Replace `src/services/logistics-data.ts` without rewriting UI |
 
 ---
@@ -812,7 +814,7 @@ Step-by-step go-live: [PRODUCTION_SETUP.md](./PRODUCTION_SETUP.md) · [DEPLOYMEN
 | [N8N_SETUP.md](./N8N_SETUP.md) | Local n8n |
 | [PRODUCTION_SETUP.md](./PRODUCTION_SETUP.md) | Production checklist |
 | [QUOTE_FLOW_DEMO_SCRIPT.md](./QUOTE_FLOW_DEMO_SCRIPT.md) | Live demo click script |
-| [WHATSAPP_AI_AGENT.md](./WHATSAPP_AI_AGENT.md) | Proposed WhatsApp channel |
+| [WHATSAPP_AI_AGENT.md](./WHATSAPP_AI_AGENT.md) | WhatsApp AI channel (Meta number in review) |
 | [BUSINESS_DISCOVERY.md](./BUSINESS_DISCOVERY.md) | Client discovery worksheet |
 | [COMPONENTS.md](./COMPONENTS.md) | UI component notes |
 | [DEPLOYMENT.md](./DEPLOYMENT.md) | Deploy notes |
@@ -822,7 +824,7 @@ Step-by-step go-live: [PRODUCTION_SETUP.md](./PRODUCTION_SETUP.md) · [DEPLOYMEN
 ## 14. Extensibility notes
 
 - **TMS / ERP:** Swap `src/services/logistics-data.ts` for live shipment adapters; UI contracts stay stable.  
-- **WhatsApp AI:** Same lead APIs and Command Center can absorb a Meta/BSP channel (documented, not implemented).  
+- **WhatsApp AI:** Automated channel via Meta Cloud API — phone number in Meta review; same lead APIs and Command Center once live.  
 - **Auth:** Production path is Supabase Auth; demo cookie auth is fallback only.  
 - **Multi-inbox email:** One n8n workflow per mailbox or merged triggers — all post to the same ingest API.
 

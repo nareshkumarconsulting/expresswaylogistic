@@ -6,15 +6,17 @@ Use this document when discussing WhatsApp setup with the client. It covers what
 
 ## Executive summary (for client call)
 
+**Status (Aug 2026):** WhatsApp will be **automated**. Phone number is **in review with Meta**. Website `wa.me` remains until Cloud API goes live.
+
 ExpressWay already has:
 
 - Website quote forms → Command Center
 - **Ava** voice agent (quotes, appointments, tracking)
 - **Email intelligence** (AI reads inboxes, creates quote drafts)
 
-WhatsApp today is **manual only** — the website opens a chat link and a human must reply.
+WhatsApp will be **automated** via Meta WhatsApp Cloud API — phone number is **in review with Meta**. Until approval, the website `wa.me` link still opens chat for human reply.
 
-**Proposal:** Connect WhatsApp to the same backend so an AI agent can:
+**Plan:** Connect WhatsApp to the same backend so an AI agent can:
 
 1. Capture shipping quote requests 24/7
 2. Answer FAQs (services, routes, customs)
