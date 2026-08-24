@@ -320,6 +320,11 @@ export interface TrackingResult {
   mode: FreightMode;
   eta: string;
   lastUpdate: string;
+  /** ISO created timestamp — used for estimated map progress. */
+  createdAt?: string;
+  /** ISO ETA — preferred for estimated map progress. */
+  estimatedEtaIso?: string;
+  predictedEtaHours?: number;
   events: { timestamp: string; location: string; description: string }[];
 }
 

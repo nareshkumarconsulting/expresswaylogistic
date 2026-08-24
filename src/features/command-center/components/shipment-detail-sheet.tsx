@@ -28,6 +28,7 @@ import {
 } from "@/features/shipments/labels";
 import type { ManagedShipment, ShipmentStatus } from "@/types";
 import { SHIPMENT_STATUSES } from "@/types";
+import { EstimatedRouteMapCard } from "@/features/tracking/components/estimated-route-map-card";
 
 type ShipmentDetailSheetProps = {
   shipment: ManagedShipment | null;
@@ -162,6 +163,20 @@ export function ShipmentDetailSheet({
               at /track reflects saved status.
             </p>
           </div>
+
+          <section className="space-y-3 rounded-lg border border-border p-4">
+            <EstimatedRouteMapCard
+              origin={shipment.origin}
+              destination={shipment.destination}
+              status={shipment.status}
+              mode={shipment.type}
+              eta={shipment.eta}
+              estimatedEtaIso={shipment.estimatedEtaIso}
+              createdAt={shipment.createdAt}
+              predictedEtaHours={shipment.predictedEtaHours}
+              theme="light"
+            />
+          </section>
 
           <section className="space-y-4 rounded-lg border-2 border-accent/30 bg-accent/5 p-4">
             <div>

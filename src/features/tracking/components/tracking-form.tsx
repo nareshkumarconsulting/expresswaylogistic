@@ -15,8 +15,8 @@ import {
 import { Badge } from "@/components/atoms/badge";
 import { Button } from "@/components/atoms/button";
 import { Input } from "@/components/atoms/input";
+import { Label } from "@/components/atoms/label";
 import { Typography } from "@/components/atoms/typography";
-import { FormField } from "@/components/molecules/form-field";
 import { StateAlert } from "@/components/molecules/state-alert";
 import {
   trackingSchema,
@@ -24,6 +24,7 @@ import {
 } from "@/features/contact/schemas";
 import type { FreightMode, TrackingResult } from "@/types";
 import { cn } from "@/lib/utils";
+import { EstimatedRouteMapCard } from "@/features/tracking/components/estimated-route-map-card";
 
 function statusVariant(status: string) {
   switch (status) {
@@ -59,7 +60,6 @@ export function TrackingForm({ initialTrackingId = "" }: TrackingFormProps) {
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm<TrackingFormValues>({
     resolver: zodResolver(trackingSchema),
@@ -104,38 +104,53 @@ export function TrackingForm({ initialTrackingId = "" }: TrackingFormProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- run once for deep-linked IDs
   }, [initialTrackingId]);
 
+  const fieldError = errors.trackingId?.message;
+
   return (
     <div className="space-y-8">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col gap-4 sm:flex-row sm:items-end"
-        noValidate
-      >
-        <FormField
-          label="Tracking ID"
-          htmlFor="trackingId"
-          required
-          error={errors.trackingId?.message}
-          className="flex-1"
-          hint="Format: EW-XXXXX"
-        >
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-2" noValidate>
+        <Label htmlFor="trackingId">
+          Tracking ID
+          <span className="text-destructive" aria-hidden>
+            {" "}
+            *
+          </span>
+        </Label>
+        <div className="flex items-stretch gap-3">
           <Input
             {...register("trackingId")}
+            id="trackingId"
             placeholder="e.g. EW-10001"
             autoComplete="off"
-            className="h-12 rounded-none text-base"
+            aria-describedby={
+              fieldError ? "trackingId-error" : "trackingId-hint"
+            }
+            error={Boolean(fieldError)}
+            className="h-12 min-w-0 flex-1 rounded-none text-base"
           />
-        </FormField>
-        <Button
-          type="submit"
-          size="lg"
-          rounded="none"
-          loading={status === "loading"}
-          className="shadow-accent-glow sm:min-w-36"
-        >
-          <Search className="size-4" />
-          Track
-        </Button>
+          <Button
+            type="submit"
+            rounded="none"
+            loading={status === "loading"}
+            className="h-12 shrink-0 px-6 shadow-accent-glow sm:min-w-36"
+          >
+            <Search className="size-4" />
+            Track
+          </Button>
+        </div>
+        {fieldError ? (
+          <p
+            id="trackingId-error"
+            role="alert"
+            className="text-xs font-medium text-destructive"
+          >
+            {fieldError}
+          </p>
+        ) : (
+          <p id="trackingId-hint" className="text-xs text-muted-foreground">
+            Format: EW-XXXXX
+          </p>
+        )}
       </form>
 
       {status === "empty" ? (
@@ -159,54 +174,56 @@ export function TrackingForm({ initialTrackingId = "" }: TrackingFormProps) {
           className="overflow-hidden rounded-2xl border border-sky-400/20 bg-[#071e38] text-white"
           aria-live="polite"
         >
-          <header className="flex flex-wrap items-start justify-between gap-4 border-b border-white/10 px-6 py-5">
-            <div>
+          <header className="flex items-center justify-between gap-4 border-b border-white/10 px-6 py-5">
+            <div className="min-w-0">
               <p className="mb-1 text-[10px] font-semibold tracking-[0.18em] text-white/50 uppercase">
                 Tracking ID
               </p>
-              <Typography as="h2" variant="h3" className="text-white">
+              <Typography as="h2" variant="h3" className="truncate text-white">
                 {result.trackingId}
               </Typography>
             </div>
             <Badge
               variant={statusVariant(result.status)}
-              className="rounded-md"
+              className="shrink-0 rounded-md"
             >
               {result.status}
             </Badge>
           </header>
 
-          <div className="grid gap-4 border-b border-white/10 px-6 py-6 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
-            <div className="min-w-0">
-              <p className="mb-1 text-[10px] font-semibold tracking-[0.18em] text-accent uppercase">
-                Origin
-              </p>
-              <p className="text-h4 truncate text-white">{result.origin}</p>
-            </div>
-            <div className="hidden items-center gap-2 sm:flex">
-              <span className="h-px w-8 bg-sky-400/40" aria-hidden />
-              <span className="flex size-11 items-center justify-center rounded-full border border-sky-400/40 text-[#00A3FF]">
-                <ModeIcon mode={result.mode} />
-              </span>
-              <span className="h-px w-8 bg-sky-400/40" aria-hidden />
-            </div>
-            <div className="flex items-center gap-3 sm:hidden">
-              <span className="flex size-9 items-center justify-center rounded-full border border-sky-400/40 text-[#00A3FF]">
-                <ModeIcon mode={result.mode} />
-              </span>
-              <ArrowRight className="size-4 text-white/40" aria-hidden />
-            </div>
-            <div className="min-w-0 sm:text-right">
-              <p className="mb-1 text-[10px] font-semibold tracking-[0.18em] text-[#00A3FF] uppercase">
-                Destination
-              </p>
-              <p className="text-h4 truncate text-white">
-                {result.destination}
-              </p>
+          <div className="relative border-b border-white/10 px-6 py-6">
+            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 sm:gap-4">
+              <div className="min-w-0">
+                <p className="mb-1 text-[10px] font-semibold tracking-[0.18em] text-accent uppercase">
+                  Origin
+                </p>
+                <p className="text-h4 truncate text-white">{result.origin}</p>
+              </div>
+
+              <div
+                className="flex shrink-0 items-center gap-2"
+                aria-hidden
+              >
+                <span className="hidden h-px w-6 bg-sky-400/40 sm:block sm:w-8" />
+                <span className="flex size-10 items-center justify-center rounded-full border border-sky-400/40 text-[#00A3FF] sm:size-11">
+                  <ModeIcon mode={result.mode} />
+                </span>
+                <span className="hidden h-px w-6 bg-sky-400/40 sm:block sm:w-8" />
+                <ArrowRight className="size-4 text-white/40 sm:hidden" />
+              </div>
+
+              <div className="min-w-0 text-right">
+                <p className="mb-1 text-[10px] font-semibold tracking-[0.18em] text-[#00A3FF] uppercase">
+                  Destination
+                </p>
+                <p className="text-h4 truncate text-white">
+                  {result.destination}
+                </p>
+              </div>
             </div>
           </div>
 
-          <dl className="grid gap-px border-b border-white/10 bg-white/5 sm:grid-cols-3">
+          <dl className="grid grid-cols-1 divide-y divide-white/10 border-b border-white/10 bg-white/5 sm:grid-cols-3 sm:divide-x sm:divide-y-0 sm:divide-white/10">
             <div className="px-6 py-4">
               <dt className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.18em] text-white/50 uppercase">
                 <ModeIcon mode={result.mode} />
@@ -234,6 +251,20 @@ export function TrackingForm({ initialTrackingId = "" }: TrackingFormProps) {
               </dd>
             </div>
           </dl>
+
+          <div className="border-b border-white/10 px-6 py-6">
+            <EstimatedRouteMapCard
+              origin={result.origin}
+              destination={result.destination}
+              status={result.status}
+              mode={result.mode}
+              eta={result.eta}
+              estimatedEtaIso={result.estimatedEtaIso}
+              createdAt={result.createdAt}
+              predictedEtaHours={result.predictedEtaHours}
+              theme="dark"
+            />
+          </div>
 
           <div className="px-6 py-6">
             <Typography as="h3" variant="h4" className="mb-5 text-white">

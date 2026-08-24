@@ -1,7 +1,15 @@
-import type { Shipment, TrackingResult } from "@/types";
-import { listShipments } from "@/services/shipments-repository";
+import type { ManagedShipment, Shipment, TrackingResult } from "@/types";
+import {
+  getShipmentById,
+  listShipments,
+} from "@/services/shipments-repository";
 
-export function buildTrackingResult(shipment: Shipment): TrackingResult {
+type TrackingSource = Shipment & {
+  createdAt?: string;
+  estimatedEtaIso?: string;
+};
+
+export function buildTrackingResult(shipment: TrackingSource): TrackingResult {
   return {
     trackingId: shipment.id,
     status: shipment.status,
@@ -10,6 +18,9 @@ export function buildTrackingResult(shipment: Shipment): TrackingResult {
     mode: shipment.type,
     eta: shipment.eta,
     lastUpdate: new Date().toISOString(),
+    createdAt: shipment.createdAt,
+    estimatedEtaIso: shipment.estimatedEtaIso,
+    predictedEtaHours: shipment.predictedEtaHours,
     events: [
       {
         timestamp: new Date(Date.now() - 1000 * 60 * 60 * 36).toISOString(),
@@ -30,13 +41,27 @@ export function buildTrackingResult(shipment: Shipment): TrackingResult {
   };
 }
 
+function fromManaged(shipment: ManagedShipment): TrackingSource {
+  return {
+    ...shipment,
+    createdAt: shipment.createdAt,
+    estimatedEtaIso: shipment.estimatedEtaIso,
+  };
+}
+
 export async function findTrackingById(
   trackingId: string,
 ): Promise<TrackingResult | null> {
+  const direct = await getShipmentById(trackingId);
+  if (direct) return buildTrackingResult(fromManaged(direct));
+
   const shipments = await listShipments();
-  const shipment = shipments.find(
+  const listed = shipments.find(
     (row) => row.id.toLowerCase() === trackingId.toLowerCase(),
   );
-  if (!shipment) return null;
-  return buildTrackingResult(shipment);
+  if (!listed) return null;
+
+  const managed = await getShipmentById(listed.id);
+  if (managed) return buildTrackingResult(fromManaged(managed));
+  return buildTrackingResult(listed);
 }

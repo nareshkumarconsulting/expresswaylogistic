@@ -30,6 +30,7 @@ import { Spinner } from "@/components/atoms/spinner";
 import { QuoteStatusBoard } from "@/features/command-center/components/quote-status-board";
 import { QuoteStatusChart } from "@/features/command-center/components/quote-status-chart";
 import { QuoteStatusMixChart } from "@/features/command-center/components/quote-status-mix-chart";
+import { ShipmentsOverviewMapCard } from "@/features/command-center/components/shipments-overview-map-card";
 import { ACTIONABLE_QUOTE_STATUSES } from "@/features/command-center/components/quote-status-overview";
 import type { QuoteRequest, Shipment } from "@/types";
 import { formatNumber } from "@/lib/utils";
@@ -206,6 +207,8 @@ export function CommandOverview() {
             icon={AlertTriangle}
           />
         </div>
+
+        <ShipmentsOverviewMapCard shipments={data} />
 
         <div className="grid gap-6 xl:grid-cols-3">
           <div className="rounded-lg border border-border bg-card p-6 shadow-sm xl:col-span-2">
