@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { FREIGHT_MODE_MAP } from "@/lib/geo/shipment-map-marker";
+import { FREIGHT_MODE_MAP } from "@/lib/geo/shipment-map-style";
 import type { FreightMode, Shipment } from "@/types";
 
 const MODE_LEGEND = (

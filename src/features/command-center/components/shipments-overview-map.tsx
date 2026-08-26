@@ -11,13 +11,13 @@ import {
   useMap,
 } from "react-leaflet";
 import { estimateRoutePosition } from "@/lib/geo/estimate-route-position";
+import { createShipmentMapMarkerIcon } from "@/lib/geo/shipment-map-marker";
 import {
-  createShipmentMapMarkerIcon,
   FREIGHT_MODE_MAP,
   MAP_TILE_ATTRIBUTION,
   MAP_TILE_SUBDOMAINS,
   MAP_TILE_URL,
-} from "@/lib/geo/shipment-map-marker";
+} from "@/lib/geo/shipment-map-style";
 import type { FreightMode, Shipment, ShipmentStatus } from "@/types";
 import "@/features/tracking/components/estimated-route-map.css";
 import "leaflet/dist/leaflet.css";
