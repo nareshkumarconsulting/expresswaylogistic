@@ -18,6 +18,7 @@ import {
   type VoiceAgentAction,
   type VoiceAgentResponse,
 } from "@/features/voice-agent/schemas";
+import { getIndianFinancialYear } from "@/lib/reference-id";
 
 type Intent = VoiceAgentResponse["data"]["intent"];
 type TaskMode = "none" | "appointment" | "quote" | "tracking";
@@ -721,17 +722,24 @@ function isCancelTask(message: string): boolean {
 
 export function parseTrackingId(text: string): string | undefined {
   const compact = text.replace(/[\s.]/g, "");
-  const ew = compact.match(/EW-?(\d{4,8})/i);
+  const ewlpl = compact.match(/EWLPL-?(\d{4,8})(?:\/(\d{2}-\d{2}))?/i);
+  if (ewlpl?.[1]) {
+    const fy = ewlpl[2] ?? getIndianFinancialYear();
+    return `EWLPL-${ewlpl[1]}/${fy}`;
+  }
+
+  // Legacy format still accepted for older shipments.
+  const ew = compact.match(/(?<![A-Z])EW-?(\d{4,8})/i);
   if (ew) return `EW-${ew[1]}`;
 
   const labeled = text.match(
-    /\b(?:tracking(?:\s+id)?|awb|container(?:\s+no(?:\.|umber)?)?|id)\s*[:#-]?\s*([A-Za-z0-9-]{4,32})\b/i,
+    /\b(?:tracking(?:\s+id)?|awb|container(?:\s+no(?:\.|umber)?)?|id)\s*[:#-]?\s*([A-Za-z0-9\-/]{4,40})\b/i,
   );
   if (labeled?.[1] && !/^(id|awb|the|my)$/i.test(labeled[1])) {
     return labeled[1].toUpperCase();
   }
 
-  const token = text.match(/\b([A-Z]{2,5}-?\d{4,12})\b/i);
+  const token = text.match(/\b([A-Z]{2,5}-?\d{4,12}(?:\/\d{2}-\d{2})?)\b/i);
   if (token?.[1] && token[1].length >= 6) return token[1].toUpperCase();
   return undefined;
 }
@@ -972,8 +980,8 @@ function answerQuoteStart(hindi: boolean): string {
 
 function answerTrackingAsk(hindi: boolean): string {
   return hindi
-    ? `Main dhoondh sakti hoon. Tracking ID boliye, jaise E W 10846.`
-    : `I can look that up. Please say your tracking ID, for example E W 10846.`;
+    ? `Main dhoondh sakti hoon. Tracking ID boliye, jaise E W L P L 10001 slash 26 dash 27.`
+    : `I can look that up. Please say your tracking ID, for example EWLPL-10001/26-27.`;
 }
 
 function answerUnknown(hindi: boolean): string {

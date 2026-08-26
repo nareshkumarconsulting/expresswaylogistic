@@ -120,7 +120,7 @@ export function TrackingForm({ initialTrackingId = "" }: TrackingFormProps) {
           <Input
             {...register("trackingId")}
             id="trackingId"
-            placeholder="e.g. EW-10001"
+            placeholder="e.g. EWLPL-10001/26-27"
             autoComplete="off"
             aria-describedby={
               fieldError ? "trackingId-error" : "trackingId-hint"
@@ -148,7 +148,7 @@ export function TrackingForm({ initialTrackingId = "" }: TrackingFormProps) {
           </p>
         ) : (
           <p id="trackingId-hint" className="text-xs text-muted-foreground">
-            Format: EW-XXXXX
+            Format: EWLPL-XXXXX/YY-YY
           </p>
         )}
       </form>

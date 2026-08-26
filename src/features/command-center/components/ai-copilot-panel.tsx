@@ -85,7 +85,7 @@ export function AiCopilotPanel() {
           htmlFor="query"
           required
           error={errors.query?.message}
-          hint='Examples: "customs hold", "Mumbai", "EW-10846"'
+          hint='Examples: "customs hold", "Mumbai", "EWLPL-10001/26-27"'
         >
           <Textarea
             {...register("query")}

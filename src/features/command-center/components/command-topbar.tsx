@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { Bell, Menu, Plus } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import { useUiStore } from "@/store/ui-store";
@@ -12,8 +13,10 @@ function greeting() {
 }
 
 export function CommandTopbar() {
+  const pathname = usePathname();
   const setSidebarOpen = useUiStore((s) => s.setSidebarOpen);
   const setNewShipmentOpen = useUiStore((s) => s.setNewShipmentOpen);
+  const showNewShipment = pathname.startsWith("/command-center/shipments");
   const date = new Date().toLocaleDateString("en-IN", {
     weekday: "long",
     year: "numeric",
@@ -42,15 +45,17 @@ export function CommandTopbar() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Button
-            className="h-10"
-            rounded="none"
-            onClick={() => setNewShipmentOpen(true)}
-          >
-            <Plus className="size-4" />
-            <span className="hidden sm:inline">New Shipment</span>
-            <span className="sm:hidden">New</span>
-          </Button>
+          {showNewShipment ? (
+            <Button
+              className="h-10"
+              rounded="none"
+              onClick={() => setNewShipmentOpen(true)}
+            >
+              <Plus className="size-4" />
+              <span className="hidden sm:inline">New Shipment</span>
+              <span className="sm:hidden">New</span>
+            </Button>
+          ) : null}
           <button
             type="button"
             className="relative rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted"

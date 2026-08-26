@@ -152,7 +152,7 @@ export function ShipmentsTable() {
           <StateAlert
             variant="info"
             title="No matching shipments"
-            description="Adjust your filter or use + New Shipment in the header to create a booking."
+            description="Adjust your filter or use + New Shipment to create a booking."
           />
         ) : (
           <div className="overflow-x-auto rounded-lg border border-border bg-card shadow-sm">

@@ -47,7 +47,7 @@ export const HOME_SUPPORTING_FAQS: FaqItem[] = [
   {
     question: "Can I track my shipment in real time?",
     answer:
-      "Yes. Use the public tracking page with an ExpressWay tracking ID (format EW-XXXXX) for operational status, ETA and milestone history. Public lookup does not expose full commercial invoices or client account data.",
+      "Yes. Use the public tracking page with an ExpressWay tracking ID (format EWLPL-XXXXX/YY-YY) for operational status, ETA and milestone history. Public lookup does not expose full commercial invoices or client account data.",
   },
   {
     question: "How quickly can I get a freight quote?",
@@ -196,7 +196,7 @@ export const TRACK_PAGE_FAQS: FaqItem[] = [
   {
     question: "What information is needed to track a shipment?",
     answer:
-      "An ExpressWay tracking, booking or shipment reference (format EW-XXXXX on the public tracker). Enter it on this page. Do not share commercial invoices in the public form.",
+      "An ExpressWay tracking, booking or shipment reference (format EWLPL-XXXXX/YY-YY on the public tracker). Enter it on this page. Do not share commercial invoices in the public form.",
   },
   {
     question: "What do shipment statuses mean?",

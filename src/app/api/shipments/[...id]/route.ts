@@ -5,12 +5,17 @@ import {
   updateShipment,
 } from "@/services/shipments-repository";
 
-type RouteContext = { params: Promise<{ id: string }> };
+type RouteContext = { params: Promise<{ id: string[] }> };
+
+function shipmentIdFromParams(id: string[]): string {
+  return id.map((segment) => decodeURIComponent(segment)).join("/");
+}
 
 export async function GET(_request: Request, context: RouteContext) {
   const { id } = await context.params;
+  const shipmentId = shipmentIdFromParams(id);
   try {
-    const shipment = await getShipmentById(id);
+    const shipment = await getShipmentById(shipmentId);
     if (!shipment) {
       return NextResponse.json(
         { success: false, error: "Shipment not found" },
@@ -32,6 +37,7 @@ export async function GET(_request: Request, context: RouteContext) {
 
 export async function PATCH(request: Request, context: RouteContext) {
   const { id } = await context.params;
+  const shipmentId = shipmentIdFromParams(id);
   const body: unknown = await request.json();
   const parsed = updateShipmentSchema.safeParse(body);
 
@@ -47,7 +53,7 @@ export async function PATCH(request: Request, context: RouteContext) {
   }
 
   try {
-    const updated = await updateShipment(id, parsed.data);
+    const updated = await updateShipment(shipmentId, parsed.data);
     if (!updated) {
       return NextResponse.json(
         { success: false, error: "Shipment not found" },

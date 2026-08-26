@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   Package,
+  Route,
   Plane,
   Ship,
   Clock,
@@ -149,6 +150,8 @@ export function CommandOverview() {
   }
 
   const inTransit = data.filter((s) => s.status === "In Transit").length;
+  const airBookings = data.filter((s) => s.type === "Air Freight").length;
+  const oceanBookings = data.filter((s) => s.type === "Ocean Freight").length;
   const exceptions = data.filter(
     (s) => s.status === "Customs Hold" || s.status === "Delayed",
   ).length;
@@ -175,7 +178,7 @@ export function CommandOverview() {
           description="Live network, volume, and exceptions"
         />
 
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
           <StatCard
             label="Active Shipments"
             value={formatNumber(data.length)}
@@ -188,13 +191,18 @@ export function CommandOverview() {
             value={formatNumber(inTransit)}
             delta={inTransit === 0 ? "None on network" : "On-network"}
             trend="neutral"
+            icon={Route}
+          />
+          <StatCard
+            label="Air Bookings"
+            value={formatNumber(airBookings)}
+            delta="From live shipments"
+            trend="neutral"
             icon={Plane}
           />
           <StatCard
             label="Ocean Bookings"
-            value={formatNumber(
-              data.filter((s) => s.type === "Ocean Freight").length,
-            )}
+            value={formatNumber(oceanBookings)}
             delta="From live shipments"
             trend="neutral"
             icon={Ship}
@@ -314,7 +322,7 @@ export function CommandOverview() {
               </Link>
             </div>
             <p className="mb-3 text-xs text-muted-foreground">
-              Click a shipment ID (e.g. EW-10001) → use the{" "}
+              Click a shipment ID (e.g. EWLPL-10001/26-27) → use the{" "}
               <strong className="font-semibold text-foreground">Status</strong> dropdown →{" "}
               <strong className="font-semibold text-foreground">Save changes</strong>
             </p>
@@ -323,7 +331,7 @@ export function CommandOverview() {
                 <StateAlert
                   variant="info"
                   title="No shipments yet"
-                  description="Create a manual booking with + New Shipment to populate this board."
+                  description="Open Shipments and use + New Shipment to create a booking."
                 />
               ) : (
               <table className="w-full min-w-[640px] text-left text-sm">

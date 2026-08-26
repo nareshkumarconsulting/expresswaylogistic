@@ -50,7 +50,7 @@ export default async function TrackPage({ searchParams }: TrackPageProps) {
                 Enter your tracking ID
               </h2>
               <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-                Format EW-XXXXX. Live status, lane, ETA, and an estimated
+                Format EWLPL-XXXXX/YY-YY. Live status, lane, ETA, and an estimated
                 position on the world map for air and ocean shipments.
               </p>
             </div>

@@ -3,6 +3,7 @@ import type {
   UpdateShipmentInput,
 } from "@/features/shipments/schemas";
 import { riskScoreFromStatus } from "@/features/shipments/labels";
+import { createNextShipmentId } from "@/lib/reference-id";
 import type { ManagedShipment, Shipment } from "@/types";
 
 export type ShipmentRow = CreateShipmentInput & {
@@ -121,11 +122,7 @@ export function mapShipmentRowToManaged(row: ShipmentRow): ManagedShipment {
 }
 
 function nextShipmentId(existing: Shipment[]): string {
-  const numbers = existing
-    .map((item) => Number.parseInt(item.id.replace(/^EW-/i, ""), 10))
-    .filter((value) => !Number.isNaN(value));
-  const max = numbers.length > 0 ? Math.max(...numbers) : 10_000;
-  return `EW-${max + 1}`;
+  return createNextShipmentId(existing.map((item) => item.id));
 }
 
 function formatShipmentEta(iso?: string): string {

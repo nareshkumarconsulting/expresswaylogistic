@@ -108,8 +108,11 @@ export const trackingSchema = z.object({
   trackingId: z
     .string()
     .min(4, "Enter a valid tracking ID")
-    .max(32)
-    .regex(/^[A-Za-z0-9-]+$/, "Tracking ID contains invalid characters"),
+    .max(40)
+    .regex(
+      /^[A-Za-z0-9\-/]+$/,
+      "Tracking ID contains invalid characters",
+    ),
 });
 
 export type TrackingFormValues = z.infer<typeof trackingSchema>;

@@ -56,6 +56,9 @@ describe("quoteFormSchema", () => {
 
 describe("trackingSchema", () => {
   it("validates tracking ids", () => {
+    expect(
+      trackingSchema.safeParse({ trackingId: "EWLPL-10001/26-27" }).success,
+    ).toBe(true);
     expect(trackingSchema.safeParse({ trackingId: "EW-10847" }).success).toBe(
       true,
     );
@@ -66,7 +69,7 @@ describe("trackingSchema", () => {
 describe("buildTrackingResult", () => {
   it("returns shipment timeline for known ids", () => {
     const shipment: Shipment = {
-      id: "EW-10001",
+      id: "EWLPL-10001/26-27",
       origin: "Mumbai",
       destination: "Dubai",
       type: "Air Freight",
@@ -75,7 +78,7 @@ describe("buildTrackingResult", () => {
       client: "Acme Corp",
     };
     const result = buildTrackingResult(shipment);
-    expect(result.trackingId).toBe("EW-10001");
+    expect(result.trackingId).toBe("EWLPL-10001/26-27");
     expect(result.events.length).toBeGreaterThan(0);
   });
 });

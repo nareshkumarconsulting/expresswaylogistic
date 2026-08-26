@@ -9,6 +9,10 @@ import { isMissingRelationError } from "@/lib/supabase/errors";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { logger } from "@/lib/logger";
 import {
+  createNextShipmentId,
+  getIndianFinancialYear,
+} from "@/lib/reference-id";
+import {
   mapShipmentRowToListItem,
   mapShipmentRowToManaged,
   memoryCreateShipment,
@@ -118,19 +122,19 @@ function toUpdatePatch(patch: UpdateShipmentInput) {
 }
 
 async function nextShipmentIdFromDb(): Promise<string> {
+  const financialYear = getIndianFinancialYear();
   const supabase = createSupabaseAdmin();
   const { data, error } = await supabase
     .from("shipments")
     .select("id")
-    .order("id", { ascending: false })
-    .limit(1);
+    .like("id", `EWLPL-%/${financialYear}`);
 
-  if (error || !data?.length) return "EW-10001";
+  if (error) {
+    logger.warn("shipments.next_id.query_failed", { error: error.message });
+    return createNextShipmentId([]);
+  }
 
-  const latest = data[0]?.id ?? "EW-10000";
-  const number = Number.parseInt(latest.replace(/^EW-/i, ""), 10);
-  if (Number.isNaN(number)) return "EW-10001";
-  return `EW-${number + 1}`;
+  return createNextShipmentId((data ?? []).map((row) => row.id));
 }
 
 export async function listShipments(): Promise<Shipment[]> {

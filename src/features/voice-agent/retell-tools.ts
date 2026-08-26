@@ -148,7 +148,7 @@ export async function runRetellTool(
     if (!parsed.success) {
       return {
         ok: false,
-        spoken: "Please share a tracking ID such as EW-10846.",
+        spoken: "Please share a tracking ID such as EWLPL-10001/26-27.",
       };
     }
     const tracked = await lookupTracking(parsed.data.trackingId);

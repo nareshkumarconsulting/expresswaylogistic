@@ -11,7 +11,7 @@ test.describe("marketing site", () => {
 
   test("track page shows not found for unknown id", async ({ page }) => {
     await page.goto("/track");
-    await page.getByLabel(/tracking id/i).fill("EW-99999");
+    await page.getByLabel(/tracking id/i).fill("EWLPL-99999/26-27");
     await page.getByRole("button", { name: /track/i }).click();
     await expect(page.getByText(/no shipment found/i)).toBeVisible();
   });

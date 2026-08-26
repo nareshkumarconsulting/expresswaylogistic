@@ -94,7 +94,15 @@ describe("voice receptionist", () => {
     expect(turn.quoteDraft.approxWeight).toMatch(/200/i);
   });
 
-  it("looks up a tracking id like EW-10846", () => {
+  it("looks up a tracking id like EWLPL-10001/26-27", () => {
+    const turn = runReceptionistTurn({
+      message: "track EWLPL-10001/26-27",
+    });
+    expect(turn.intent).toBe("tracking");
+    expect(turn.lookupTrackingId).toBe("EWLPL-10001/26-27");
+  });
+
+  it("still accepts legacy EW tracking ids", () => {
     const turn = runReceptionistTurn({
       message: "track EW-10846",
     });

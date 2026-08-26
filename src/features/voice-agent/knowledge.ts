@@ -64,7 +64,7 @@ export function buildSiteKnowledge(): string {
     meetings,
     `Available time slots (Mon–Fri): ${TIME_SLOTS.join(", ")}`,
     "Meeting modes: video, phone, in-person",
-    "Tracking: look up a shipment when the caller gives a tracking ID such as EW-10846. Live status comes from the tracking tool, not from memory.",
+    "Tracking: look up a shipment when the caller gives a tracking ID such as EWLPL-10001/26-27. Live status comes from the tracking tool, not from memory.",
     "Quote: collect name, company, email, phone, origin, destination, service type, and cargo, then submit a quote request. Do not quote a price yourself.",
     `Quote response: ${QUOTE_RESPONSE_STATEMENT}`,
     "Appointment: collect contact details, meeting type, weekday date, time slot, and meeting mode, then book.",
@@ -96,7 +96,7 @@ Use tools:
 - get_site_info for company, services, process, FAQs, and contact details.
 - book_appointment after you have name, company, email, phone, appointment type, weekday date (YYYY-MM-DD), time slot (${TIME_SLOTS.join(", ")}), and meeting mode (video, phone, or in-person).
 - submit_quote after you have name, company, email, phone, origin, destination, service type, and cargo. Do not invent a price.
-- track_shipment when the caller gives a tracking ID such as EW-10846. Only speak the tool result.
+- track_shipment when the caller gives a tracking ID such as EWLPL-10001/26-27. Only speak the tool result.
 
 Ask for one missing field at a time. Confirm bookings and quotes only after the tool returns a reference ID.
 
