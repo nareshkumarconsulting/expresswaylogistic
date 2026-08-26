@@ -44,6 +44,14 @@
   filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.35));
 }
 
+.estimated-location-marker--centered .estimated-location-marker__rings {
+  top: 50%;
+}
+
+.estimated-location-marker--centered .estimated-location-marker__pin {
+  top: 50%;
+}
+
 @keyframes estimated-location-pulse {
   0% {
     transform: scale(0.35);

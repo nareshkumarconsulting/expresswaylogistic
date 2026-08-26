@@ -13,22 +13,25 @@ import {
 import { estimateRoutePosition } from "@/lib/geo/estimate-route-position";
 import {
   createShipmentMapMarkerIcon,
+  FREIGHT_MODE_MAP,
   MAP_TILE_ATTRIBUTION,
+  MAP_TILE_SUBDOMAINS,
   MAP_TILE_URL,
 } from "@/lib/geo/shipment-map-marker";
-import type { Shipment, ShipmentStatus } from "@/types";
+import type { FreightMode, Shipment, ShipmentStatus } from "@/types";
 import "@/features/tracking/components/estimated-route-map.css";
 import "leaflet/dist/leaflet.css";
 
-const STATUS_MARKER: Record<
-  ShipmentStatus,
-  { fill: string; pulse: string; animate: boolean }
-> = {
-  Processing: { fill: "#64748b", pulse: "#64748b73", animate: false },
-  "In Transit": { fill: "#0B5CAB", pulse: "#0B5CAB73", animate: true },
-  "Customs Hold": { fill: "#F5A623", pulse: "#F5A62373", animate: true },
-  Delayed: { fill: "#ef4444", pulse: "#ef444473", animate: true },
-  Delivered: { fill: "#16a34a", pulse: "#16a34a73", animate: false },
+const ACTIVE_STATUSES = new Set<ShipmentStatus>([
+  "In Transit",
+  "Customs Hold",
+  "Delayed",
+]);
+
+const ROUTE_DASH: Record<FreightMode, string | undefined> = {
+  "Air Freight": undefined,
+  "Ocean Freight": "8 6",
+  "Road Freight": "3 6",
 };
 
 type MappedShipment = {
@@ -37,6 +40,7 @@ type MappedShipment = {
   estimateLng: number;
   path: [number, number][];
   statusLabel: string;
+  bearing: number;
 };
 
 function buildMappedShipments(shipments: Shipment[]): MappedShipment[] {
@@ -58,6 +62,7 @@ function buildMappedShipments(shipments: Shipment[]): MappedShipment[] {
         estimateLng: route.estimate.lng,
         path: route.path.map((point) => [point.lat, point.lng] as [number, number]),
         statusLabel: route.statusLabel,
+        bearing: route.bearing,
       },
     ];
   });
@@ -84,23 +89,7 @@ export function ShipmentsOverviewMap({
   className,
 }: ShipmentsOverviewMapProps) {
   const mapped = useMemo(() => buildMappedShipments(shipments), [shipments]);
-
-  const markerIcons = useMemo(() => {
-    const icons = new Map<ShipmentStatus, ReturnType<typeof createShipmentMapMarkerIcon>>();
-    for (const status of Object.keys(STATUS_MARKER) as ShipmentStatus[]) {
-      const marker = STATUS_MARKER[status];
-      icons.set(
-        status,
-        createShipmentMapMarkerIcon({
-          color: marker.fill,
-          pulseColor: marker.pulse,
-          animate: marker.animate,
-          compact: true,
-        }),
-      );
-    }
-    return icons;
-  }, []);
+  const unmappedCount = shipments.length - mapped.length;
 
   const boundsPoints = useMemo(
     () =>
@@ -128,13 +117,20 @@ export function ShipmentsOverviewMap({
   if (mapped.length === 0) {
     return (
       <div className="flex h-80 items-center justify-center rounded-md border border-dashed border-border bg-muted/20 text-sm text-muted-foreground">
-        No mappable shipments — use known city or port names (e.g. Mumbai, Dubai).
+        No mappable shipments — use known city or port names (e.g. Mumbai, Dubai,
+        Frankfurt).
       </div>
     );
   }
 
   return (
     <div className={className}>
+      {unmappedCount > 0 ? (
+        <p className="mb-2 text-xs text-muted-foreground">
+          {unmappedCount} shipment{unmappedCount === 1 ? "" : "s"} hidden — origin
+          or destination place not recognized yet.
+        </p>
+      ) : null}
       <MapContainer
         center={defaultCenter}
         zoom={3}
@@ -142,26 +138,38 @@ export function ShipmentsOverviewMap({
         className="h-80 w-full rounded-md md:h-96"
         style={{ background: "#aad3df" }}
       >
-        <TileLayer attribution={MAP_TILE_ATTRIBUTION} url={MAP_TILE_URL} />
+        <TileLayer
+          attribution={MAP_TILE_ATTRIBUTION}
+          url={MAP_TILE_URL}
+          subdomains={MAP_TILE_SUBDOMAINS}
+        />
         <FitAllBounds points={boundsPoints} />
         {mapped.map((item) => {
-          const marker = STATUS_MARKER[item.shipment.status];
-          const icon = markerIcons.get(item.shipment.status)!;
+          const modeStyle = FREIGHT_MODE_MAP[item.shipment.type];
+          const animate = ACTIVE_STATUSES.has(item.shipment.status);
+          const icon = createShipmentMapMarkerIcon({
+            color: modeStyle.color,
+            pulseColor: modeStyle.pulse,
+            animate,
+            compact: true,
+            mode: modeStyle.key,
+            bearing: item.bearing,
+          });
           return (
             <Fragment key={item.shipment.id}>
               <Polyline
                 positions={item.path}
                 pathOptions={{
-                  color: marker.fill,
-                  weight: 2,
-                  opacity: 0.55,
-                  dashArray: "6 5",
+                  color: modeStyle.color,
+                  weight: item.shipment.type === "Air Freight" ? 2.5 : 2,
+                  opacity: 0.7,
+                  dashArray: ROUTE_DASH[item.shipment.type],
                 }}
               />
               <Marker
                 position={[item.estimateLat, item.estimateLng]}
                 icon={icon}
-                zIndexOffset={marker.animate ? 500 : 100}
+                zIndexOffset={animate ? 500 : 100}
               >
                 <Popup minWidth={220}>
                   <div className="space-y-1 text-sm">

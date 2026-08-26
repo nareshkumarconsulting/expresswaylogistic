@@ -24,6 +24,8 @@ export type EstimatedRoutePosition = {
   percentLabel: string;
   statusLabel: string;
   disclaimer: string;
+  /** Bearing of travel at the estimate (degrees, 0 = north). */
+  bearing: number;
 };
 
 const DEFAULT_TRANSIT_HOURS: Record<FreightMode, number> = {
@@ -38,6 +40,18 @@ function toRad(degrees: number): number {
 
 function toDeg(radians: number): number {
   return (radians * 180) / Math.PI;
+}
+
+/** Initial great-circle bearing in degrees (0 = north, clockwise). */
+export function initialBearing(from: LatLng, to: LatLng): number {
+  const lat1 = toRad(from.lat);
+  const lat2 = toRad(to.lat);
+  const dLng = toRad(to.lng - from.lng);
+  const y = Math.sin(dLng) * Math.cos(lat2);
+  const x =
+    Math.cos(lat1) * Math.sin(lat2) -
+    Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng);
+  return (toDeg(Math.atan2(y, x)) + 360) % 360;
 }
 
 /** Spherical linear interpolation between two points (great-circle). */
@@ -178,6 +192,13 @@ export function estimateRoutePosition(
   const progress = estimateProgress(input);
   const estimate = interpolateGreatCircle(origin, destination, progress);
   const path = buildGreatCirclePath(origin, destination);
+  // Look slightly ahead along the lane so the nose follows the arc.
+  const ahead = interpolateGreatCircle(
+    origin,
+    destination,
+    Math.min(1, progress + 0.02),
+  );
+  const bearing = initialBearing(estimate, ahead);
 
   return {
     origin,
@@ -189,5 +210,6 @@ export function estimateRoutePosition(
     statusLabel: statusLabel(input.status, progress),
     disclaimer:
       "Scheduled estimate along the great-circle lane — not live vessel GPS.",
+    bearing,
   };
 }

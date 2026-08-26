@@ -4,8 +4,21 @@ import {
   buildGreatCirclePath,
   estimateProgress,
   estimateRoutePosition,
+  initialBearing,
   interpolateGreatCircle,
 } from "@/lib/geo/estimate-route-position";
+
+describe("initialBearing", () => {
+  it("points roughly northwest from Delhi toward Frankfurt", () => {
+    const bearing = initialBearing(
+      { lat: 28.6139, lng: 77.209 },
+      { lat: 50.1109, lng: 8.6821 },
+    );
+    // Delhi → Frankfurt is west-northwest (~310°).
+    expect(bearing).toBeGreaterThan(280);
+    expect(bearing).toBeLessThan(340);
+  });
+});
 
 describe("resolveLocation", () => {
   it("matches known cities and fuzzy place strings", () => {
@@ -13,6 +26,41 @@ describe("resolveLocation", () => {
     expect(resolveLocation("Dubai, UAE")?.label).toBe("Dubai");
     expect(resolveLocation("Nhava Sheva (JNPA)")?.label).toBe("Nhava Sheva");
     expect(resolveLocation("Somewhere Unknown")).toBeNull();
+  });
+
+  it("resolves air hubs used on the live network map", () => {
+    expect(resolveLocation("Delhi")?.label).toBe("Delhi");
+    expect(resolveLocation("Frankfurt")?.label).toBe("Frankfurt");
+    expect(resolveLocation("Germany")?.label).toBe("Germany");
+    expect(resolveLocation("FRA")?.label).toBe("Frankfurt");
+    expect(resolveLocation("DADRI")?.label).toBe("Dadri");
+    expect(resolveLocation("TAIWAN")?.label).toBe("Taiwan");
+  });
+});
+
+describe("estimateRoutePosition air lanes", () => {
+  it("maps Delhi → Frankfurt air freight", () => {
+    const route = estimateRoutePosition({
+      origin: "Delhi",
+      destination: "Frankfurt",
+      status: "In Transit",
+      mode: "Air Freight",
+      eta: "2 days",
+    });
+    expect(route).not.toBeNull();
+    expect(route?.origin.label).toBe("Delhi");
+    expect(route?.destination.label).toBe("Frankfurt");
+  });
+
+  it("maps Delhi → Germany air freight", () => {
+    const route = estimateRoutePosition({
+      origin: "Delhi",
+      destination: "Germany",
+      status: "Processing",
+      mode: "Air Freight",
+      eta: "2 days",
+    });
+    expect(route).not.toBeNull();
   });
 });
 

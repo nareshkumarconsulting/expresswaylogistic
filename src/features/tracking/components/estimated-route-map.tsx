@@ -13,23 +13,25 @@ import {
 import type { EstimatedRoutePosition } from "@/lib/geo/estimate-route-position";
 import {
   createShipmentMapMarkerIcon,
+  FREIGHT_MODE_MAP,
   MAP_TILE_ATTRIBUTION,
+  MAP_TILE_SUBDOMAINS,
   MAP_TILE_URL,
 } from "@/lib/geo/shipment-map-marker";
 import { cn } from "@/lib/utils";
+import type { FreightMode } from "@/types";
 import "leaflet/dist/leaflet.css";
 import "./estimated-route-map.css";
 
-function createEstimateMarkerIcon(animate: boolean) {
-  return createShipmentMapMarkerIcon({
-    color: "#F5A623",
-    pulseColor: "rgb(245 166 35 / 0.45)",
-    animate,
-  });
-}
+const ROUTE_DASH: Record<FreightMode, string | undefined> = {
+  "Air Freight": undefined,
+  "Ocean Freight": "8 6",
+  "Road Freight": "3 6",
+};
 
 type EstimatedRouteMapProps = {
   route: EstimatedRoutePosition;
+  mode: FreightMode;
   className?: string;
   theme?: "dark" | "light";
   /** Pulse the live estimate pin (e.g. while in transit). */
@@ -53,16 +55,30 @@ function FitBounds({ route }: { route: EstimatedRoutePosition }) {
 
 export function EstimatedRouteMap({
   route,
+  mode,
   className,
   theme = "dark",
   animateEstimate = true,
 }: EstimatedRouteMapProps) {
   const isDark = theme === "dark";
+  const modeStyle = FREIGHT_MODE_MAP[mode];
   const estimateIcon = useMemo(
-    () => createEstimateMarkerIcon(animateEstimate),
-    [animateEstimate],
+    () =>
+      createShipmentMapMarkerIcon({
+        color: modeStyle.color,
+        pulseColor: modeStyle.pulse,
+        animate: animateEstimate,
+        mode: modeStyle.key,
+        bearing: route.bearing,
+      }),
+    [
+      animateEstimate,
+      modeStyle.color,
+      modeStyle.key,
+      modeStyle.pulse,
+      route.bearing,
+    ],
   );
-  const tileUrl = MAP_TILE_URL;
 
   const center = useMemo(
     () =>
@@ -70,13 +86,20 @@ export function EstimatedRouteMap({
         (route.origin.lat + route.destination.lat) / 2,
         (route.origin.lng + route.destination.lng) / 2,
       ] as [number, number],
-    [route.origin.lat, route.origin.lng, route.destination.lat, route.destination.lng],
+    [
+      route.origin.lat,
+      route.origin.lng,
+      route.destination.lat,
+      route.destination.lng,
+    ],
   );
 
   const pathPositions = useMemo(
     () => route.path.map((point) => [point.lat, point.lng] as [number, number]),
     [route.path],
   );
+
+  const mapKey = `${mode}:${route.origin.label}:${route.destination.label}:${route.percentLabel}`;
 
   return (
     <div
@@ -87,21 +110,26 @@ export function EstimatedRouteMap({
       )}
     >
       <MapContainer
+        key={mapKey}
         center={center}
         zoom={3}
         scrollWheelZoom={false}
         className="h-64 w-full md:h-72"
         style={{ background: "#e8eef5" }}
       >
-        <TileLayer attribution={MAP_TILE_ATTRIBUTION} url={tileUrl} />
+        <TileLayer
+          attribution={MAP_TILE_ATTRIBUTION}
+          url={MAP_TILE_URL}
+          subdomains={MAP_TILE_SUBDOMAINS}
+        />
         <FitBounds route={route} />
         <Polyline
           positions={pathPositions}
           pathOptions={{
-            color: isDark ? "#00A3FF" : "#0B5CAB",
-            weight: 2.5,
+            color: modeStyle.color,
+            weight: mode === "Air Freight" ? 3 : 2.5,
             opacity: 0.85,
-            dashArray: "8 6",
+            dashArray: ROUTE_DASH[mode],
           }}
         />
         <CircleMarker
@@ -122,7 +150,7 @@ export function EstimatedRouteMap({
           pathOptions={{
             color: "#fff",
             weight: 2,
-            fillColor: isDark ? "#00A3FF" : "#0B5CAB",
+            fillColor: modeStyle.color,
             fillOpacity: 1,
           }}
         >
@@ -134,6 +162,8 @@ export function EstimatedRouteMap({
           zIndexOffset={1000}
         >
           <Popup>
+            <strong>{modeStyle.label}</strong>
+            <br />
             {route.statusLabel}
             <br />
             {route.estimate.lat.toFixed(2)}°, {route.estimate.lng.toFixed(2)}°

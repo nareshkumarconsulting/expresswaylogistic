@@ -1,14 +1,25 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import type { Shipment } from "@/types";
+import { FREIGHT_MODE_MAP } from "@/lib/geo/shipment-map-marker";
+import type { FreightMode, Shipment } from "@/types";
 
-const SHIPMENT_MAP_LEGEND = [
-  { label: "In transit", color: "#0B5CAB" },
-  { label: "Processing", color: "#64748b" },
-  { label: "Customs / delayed", color: "#F5A623" },
-  { label: "Delivered", color: "#16a34a" },
-] as const;
+const MODE_LEGEND = (
+  Object.entries(FREIGHT_MODE_MAP) as [
+    FreightMode,
+    (typeof FREIGHT_MODE_MAP)[FreightMode],
+  ][]
+).map(([mode, style]) => ({
+  mode,
+  label: style.label,
+  color: style.color,
+  hint:
+    mode === "Air Freight"
+      ? "Plane · solid lane"
+      : mode === "Ocean Freight"
+        ? "Ship · dashed lane"
+        : "Truck · dotted lane",
+}));
 
 const ShipmentsOverviewMap = dynamic(
   () =>
@@ -38,7 +49,7 @@ export function ShipmentsOverviewMapCard({
         <div>
           <h3 className="font-display text-lg font-bold">Live Network Map</h3>
           <p className="text-sm text-muted-foreground">
-            Estimated positions for all shipments on the board
+            Air, ocean, and road cargo by mode — estimated positions on the board
           </p>
         </div>
         <p className="text-xs text-muted-foreground">
@@ -51,21 +62,26 @@ export function ShipmentsOverviewMapCard({
       <ShipmentsOverviewMap shipments={shipments} />
 
       <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
-        {SHIPMENT_MAP_LEGEND.map((item) => (
+        {MODE_LEGEND.map((item) => (
           <li
-            key={item.label}
+            key={item.mode}
             className="flex items-center gap-2 text-xs text-muted-foreground"
           >
             <span
               className="size-2.5 rounded-full border border-white shadow-sm"
               style={{ background: item.color }}
+              aria-hidden
             />
-            {item.label}
+            <span>
+              <span className="font-medium text-foreground">{item.label}</span>
+              <span className="text-muted-foreground"> · {item.hint}</span>
+            </span>
           </li>
         ))}
       </ul>
       <p className="mt-3 text-xs text-muted-foreground">
-        Scheduled estimates along great-circle lanes — not live vessel GPS.
+        Scheduled estimates along great-circle lanes — not live vessel or aircraft
+        GPS. Pulsing markers are in transit, on hold, or delayed.
       </p>
     </div>
   );

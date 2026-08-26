@@ -70,6 +70,18 @@ export function EstimatedRouteMapCard(props: EstimatedRouteMapCardProps) {
   }
 
   const isDark = props.theme !== "light";
+  const modeLabel =
+    props.mode === "Air Freight"
+      ? "Air"
+      : props.mode === "Ocean Freight"
+        ? "Ocean"
+        : "Road";
+  const disclaimer =
+    props.mode === "Air Freight"
+      ? "Scheduled estimate along the great-circle lane — not live aircraft GPS."
+      : props.mode === "Ocean Freight"
+        ? "Scheduled estimate along the great-circle lane — not live vessel GPS."
+        : "Scheduled estimate along the great-circle lane — not live truck GPS.";
 
   return (
     <div className={props.className}>
@@ -82,7 +94,7 @@ export function EstimatedRouteMapCard(props: EstimatedRouteMapCardProps) {
                 : "text-[10px] font-semibold tracking-[0.18em] text-muted-foreground uppercase"
             }
           >
-            Estimated location
+            Estimated location · {modeLabel}
           </p>
           <p
             className={
@@ -106,6 +118,7 @@ export function EstimatedRouteMapCard(props: EstimatedRouteMapCardProps) {
       </div>
       <EstimatedRouteMap
         route={route}
+        mode={props.mode}
         theme={props.theme ?? "dark"}
         animateEstimate={
           props.status !== "Delivered" && props.status !== "Processing"
@@ -118,7 +131,7 @@ export function EstimatedRouteMapCard(props: EstimatedRouteMapCardProps) {
             : "mt-2 text-xs text-muted-foreground"
         }
       >
-        {route.disclaimer}
+        {disclaimer}
       </p>
     </div>
   );
