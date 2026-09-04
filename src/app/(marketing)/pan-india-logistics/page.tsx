@@ -13,9 +13,9 @@ import { PAN_INDIA_FAQS } from "@/constants/faqs";
 import { pageSeo } from "@/lib/seo";
 
 export const metadata = pageSeo({
-  title: "PAN India Freight Forwarding & Logistics Services | ExpressWay Logistic",
+  title: "PAN India Freight Forwarding | ExpressWay Logistic",
   description:
-    "PAN India freight forwarding through a nationwide logistics network — cities, coastal ports, inland ICDs, dry ports and airports connecting Indian origins with worldwide destinations.",
+    "PAN India freight forwarding through a nationwide network of cities, ports, ICDs and airports connecting Indian origins with worldwide destinations.",
   path: "/pan-india-logistics",
 });
 

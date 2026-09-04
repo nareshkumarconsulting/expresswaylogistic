@@ -1,13 +1,13 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Clock3 } from "lucide-react";
 import { Button } from "@/components/atoms/button";
+import { HeroBackdrop } from "@/components/molecules/hero-backdrop";
 import { siteConfig } from "@/config/site";
 import { PROCESS_STEPS } from "@/constants/content";
-import { QUOTE_RESPONSE_STATEMENT } from "@/constants/entity";
+import { QUOTE_RESPONSE_STATEMENT, withDefinitionLead } from "@/constants/entity";
 import { processStepId } from "@/features/process/step-id";
 import { cn } from "@/lib/utils";
 
@@ -26,14 +26,7 @@ export function ProcessHero() {
   return (
     <section className="relative isolate overflow-hidden bg-brand pt-28 pb-14 text-brand-foreground md:pt-40 md:pb-24">
       <div className="absolute inset-0 z-0">
-        <Image
-          src="/images/hero-port.jpg"
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-[72%_center]"
-        />
+        <HeroBackdrop src="/images/hero-port.jpg" className="object-[72%_center]" priority />
         <div className="absolute inset-0 bg-brand/80 mix-blend-multiply" />
         <div className="absolute inset-0 bg-gradient-to-r from-brand via-brand/88 to-brand/50" />
         <div className="absolute inset-0 bg-gradient-to-t from-brand via-transparent to-brand/45" />
@@ -72,8 +65,9 @@ export function ProcessHero() {
               {...fade(0.18)}
               className="text-lead mb-8 max-w-2xl text-white/80"
             >
-              Five steps from quote to door — booking, documents, clearance, and
-              updates handled by one Neutral Logistics Provider desk.
+              {withDefinitionLead(
+                "Five steps from quote to door — booking, documents, clearance, and updates handled by one Neutral Logistics Provider desk.",
+              )}
             </motion.p>
             <motion.div
               {...fade(0.26)}

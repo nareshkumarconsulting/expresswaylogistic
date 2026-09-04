@@ -195,9 +195,10 @@ export function SiteFooter() {
           >
             <Image
               src="/images/nk-mark.png"
-              alt=""
+              alt="Naresh Kumar Consulting"
               width={574}
               height={481}
+              loading="lazy"
               className="h-8 w-auto brightness-0 invert"
             />
             <span className="h-8 w-px shrink-0 bg-white/25" aria-hidden />

@@ -1,9 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowDown } from "lucide-react";
 import { Button } from "@/components/atoms/button";
+import { HeroBackdrop } from "@/components/molecules/hero-backdrop";
+import { withDefinitionLead } from "@/constants/entity";
 
 export function AppointmentHero() {
   const reduceMotion = useReducedMotion();
@@ -20,13 +21,11 @@ export function AppointmentHero() {
   return (
     <section className="relative overflow-hidden">
       <div className="absolute inset-0 z-0">
-        <Image
+        <HeroBackdrop
           src="/images/operations-center.jpg"
           alt="ExpressWay logistics operations floor"
-          fill
+          className="object-center"
           priority
-          sizes="100vw"
-          className="object-cover object-center"
         />
         <div className="absolute inset-0 bg-primary/75 mix-blend-multiply" />
         <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/60 to-primary/30" />
@@ -56,8 +55,9 @@ export function AppointmentHero() {
             {...fade(0.2)}
             className="mb-8 max-w-xl text-base leading-relaxed text-white/80 md:text-lg"
           >
-            Book freight planning, customs advisory, a warehouse visit, or
-            account setup — weekday slots in IST.
+            {withDefinitionLead(
+              "Book freight planning, customs advisory, a warehouse visit, or account setup — weekday slots in IST.",
+            )}
           </motion.p>
           <motion.div {...fade(0.3)}>
             <Button asChild rounded="none" className="h-11 px-6">

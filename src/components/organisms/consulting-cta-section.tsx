@@ -44,6 +44,8 @@ export function ConsultingCtaSection() {
               alt="ExpressWay Logistic EXIM consultant"
               width={1195}
               height={1400}
+              loading="lazy"
+              decoding="async"
               className="h-80 w-full object-cover object-[50%_28%]"
             />
             <div className="absolute bottom-3 left-3 z-10 rounded-xl border border-white/15 bg-[#041526]/80 px-3 py-2 backdrop-blur-md">
@@ -81,6 +83,8 @@ export function ConsultingCtaSection() {
               alt="ExpressWay Logistic EXIM consultant"
               width={876}
               height={1024}
+              loading="lazy"
+              decoding="async"
               className="absolute inset-x-0 bottom-0 z-10 mx-auto h-[92%] w-[86%] object-contain object-bottom drop-shadow-[0_24px_40px_rgba(0,0,0,0.45)]"
             />
             <div className="absolute bottom-6 left-6 z-20 rounded-2xl border border-white/15 bg-[#041526]/80 px-4 py-3 backdrop-blur-md">

@@ -1,10 +1,11 @@
 import type { ReactNode } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import { PageBreadcrumbs } from "@/components/molecules/page-breadcrumbs";
+import { HeroBackdrop } from "@/components/molecules/hero-backdrop";
 import { siteConfig } from "@/config/site";
+import { DEFINITION_LEAD, withDefinitionLead } from "@/constants/entity";
 import { cn } from "@/lib/utils";
 
 type Cta = { href: string; label: string };
@@ -48,14 +49,7 @@ export function PageHero({
       )}
     >
       <div className="absolute inset-0 z-0">
-        <Image
-          src={image}
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className={cn("object-cover", imagePosition)}
-        />
+        <HeroBackdrop src={image} className={imagePosition} priority />
         <div className="absolute inset-0 bg-brand/80 mix-blend-multiply" />
         <div className="absolute inset-0 bg-gradient-to-r from-brand via-brand/88 to-brand/50" />
         <div className="absolute inset-0 bg-gradient-to-t from-brand via-transparent to-brand/45" />
@@ -110,11 +104,9 @@ export function PageHero({
                 </>
               ) : null}
             </h1>
-            {description ? (
-              <p className="text-lead mb-8 max-w-2xl text-white/80">
-                {description}
-              </p>
-            ) : null}
+            <p className="text-lead mb-8 max-w-2xl text-white/80">
+              {description ? withDefinitionLead(description) : DEFINITION_LEAD}
+            </p>
             <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center">
               {primaryCta ? (
                 <Button

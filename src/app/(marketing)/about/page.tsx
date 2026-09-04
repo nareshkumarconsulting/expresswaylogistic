@@ -25,9 +25,9 @@ import { EMAIL_DOMAIN_NOTE } from "@/constants/entity";
 import { PageAeo } from "@/components/organisms/page-aeo";
 
 export const metadata = pageSeo({
-  title: "About ExpressWay Logistic | PAN India Neutral Logistics Provider & Freight Forwarder",
+  title: "About ExpressWay Logistic | Freight Forwarder",
   description:
-    "Who ExpressWay Logistic is: an Indian Neutral Logistics Provider and freight forwarding company with 39+ years of international cargo experience, Noida headquarters, and PAN India to worldwide coverage.",
+    "ExpressWay Logistic is a Neutral Logistics Provider with 39+ years of cargo experience, Noida headquarters, and PAN India to worldwide coverage.",
   path: "/about",
 });
 
@@ -80,9 +80,11 @@ export default function AboutPage() {
                 <Image
                   src="/images/hero-port.jpg"
                   alt="ExpressWay Logistic cargo operations"
-                  fill
+                  width={1200}
+                  height={1500}
+                  loading="lazy"
                   sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-cover"
+                  className="absolute inset-0 h-full w-full object-cover"
                 />
                 <div className="absolute inset-0 bg-primary/10 mix-blend-multiply" />
               </div>

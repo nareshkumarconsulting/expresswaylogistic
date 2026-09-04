@@ -9,7 +9,7 @@ import { siteConfig } from "@/config/site";
 export const metadata = pageSeo({
   title: "Industries We Serve | ExpressWay Logistic",
   description:
-    "Garments, leather, pharma, handicrafts, engineering goods, herbal products, personal effects, project machinery, bulk, coastal cargo and chemicals — PAN India freight forwarding.",
+    "Garments, pharma, engineering, project machinery, bulk and chemicals — PAN India freight forwarding matched to the cargo Indian EXIM actually ships.",
   path: "/industries",
 });
 

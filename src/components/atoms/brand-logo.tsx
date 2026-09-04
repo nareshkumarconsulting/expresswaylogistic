@@ -53,11 +53,11 @@ export function BrandLogo({
   const inner: ReactNode = (
     <Image
       src={LOGO_SRC}
-      alt={variant === "mark" ? "" : siteConfig.name}
+      alt={siteConfig.name}
       width={LOGO_WIDTH}
       height={LOGO_HEIGHT}
       priority={priority}
-      loading={priority ? undefined : "eager"}
+      loading={priority ? undefined : "lazy"}
       sizes="192px"
       className={cn("block w-auto object-contain", heightClass)}
     />

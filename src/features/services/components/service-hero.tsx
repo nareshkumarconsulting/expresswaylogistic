@@ -1,11 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/atoms/button";
+import { HeroBackdrop } from "@/components/molecules/hero-backdrop";
 import { siteConfig } from "@/config/site";
+import { withDefinitionLead } from "@/constants/entity";
 import { getServiceById } from "@/constants/services";
 import { cn } from "@/lib/utils";
 
@@ -34,14 +35,7 @@ export function ServiceHero({ serviceId }: ServiceHeroProps) {
   return (
     <section className="relative isolate overflow-hidden bg-brand pt-28 pb-12 text-brand-foreground md:pt-40 md:pb-20">
       <div className="absolute inset-0 z-0">
-        <Image
-          src="/images/hero-port.jpg"
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-center"
-        />
+        <HeroBackdrop src="/images/hero-port.jpg" className="object-center" priority />
         <div className="absolute inset-0 bg-brand/80 mix-blend-multiply" />
         <div className="absolute inset-0 bg-gradient-to-r from-brand via-brand/85 to-brand/45" />
         <div className="absolute inset-0 bg-gradient-to-t from-brand via-transparent to-brand/40" />
@@ -88,7 +82,7 @@ export function ServiceHero({ serviceId }: ServiceHeroProps) {
               {...fade(0.18)}
               className="text-lead mb-8 max-w-2xl text-white/80"
             >
-              {service.description}
+              {withDefinitionLead(service.description)}
             </motion.p>
 
             <motion.div

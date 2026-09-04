@@ -56,10 +56,12 @@ export function IndustriesCatalog() {
                       {industry.image ? (
                         <Image
                           src={industry.image}
-                          alt=""
-                          fill
+                          alt={`${industry.name} cargo handled by ExpressWay Logistic`}
+                          width={960}
+                          height={540}
+                          loading="lazy"
                           sizes="(max-width: 768px) 100vw, 50vw"
-                          className="object-cover transition duration-500 group-hover:scale-[1.03]"
+                          className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
                         />
                       ) : null}
                       <div className="absolute inset-0 bg-gradient-to-t from-[#071e38] via-brand/30 to-brand/20" />

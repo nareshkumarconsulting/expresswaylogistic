@@ -40,15 +40,16 @@ export function PageAeo({
   const accordionFaqs = uniqueFaqs(faqs).filter(
     (item) => !answers.some((answer) => answer.question === item.question),
   );
+  const jsonLd = [
+    breadcrumbSchema(breadcrumbs),
+    webPage ? webPageSchema(webPage) : null,
+    faqPageSchema(schemaFaqs),
+    ...extraJsonLd,
+  ].filter((item): item is NonNullable<typeof item> => Boolean(item));
 
   return (
     <>
-      <JsonLd data={breadcrumbSchema(breadcrumbs)} />
-      {webPage ? <JsonLd data={webPageSchema(webPage)} /> : null}
-      <JsonLd data={faqPageSchema(schemaFaqs)} />
-      {extraJsonLd.map((data, index) => (
-        <JsonLd key={index} data={data} />
-      ))}
+      <JsonLd data={jsonLd} />
       {showBreadcrumbs ? <PageBreadcrumbs items={breadcrumbs} /> : null}
       <DirectAnswers
         items={answers}

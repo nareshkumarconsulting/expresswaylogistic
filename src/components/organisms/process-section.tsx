@@ -27,7 +27,11 @@ export function ProcessSection() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/images/hero-port-1280.webp"
-          alt=""
+          alt="Port operations for ExpressWay Logistic ocean freight"
+          width={1280}
+          height={720}
+          loading="lazy"
+          decoding="async"
           className="size-full object-cover object-[72%_center] opacity-90"
         />
         <div className="absolute inset-0 bg-gradient-to-l from-transparent from-30% via-brand/20 to-brand" />

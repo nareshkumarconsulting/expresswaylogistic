@@ -11,7 +11,22 @@ export const EMAIL_DOMAIN_NOTE =
   "The company website is expresswaylogistic.com. Sales correspondence uses sales@expresswaylogistics.com — both domains belong to Expressway Logistic Private Limited.";
 
 export const ENTITY_STATEMENT =
-  "ExpressWay Logistic is an Indian Neutral Logistics Provider and freight forwarding company providing PAN India import and export logistics services to worldwide destinations, including ocean freight, air freight, FCL/LCL, consolidation, customs clearance, warehousing, project cargo, EXIM advisory and door-to-door delivery.";
+  "ExpressWay Logistic is a Neutral Logistics Provider and freight forwarding company providing PAN India import and export logistics services to worldwide destinations, including ocean freight, air freight, FCL/LCL, consolidation, customs clearance, warehousing, project cargo, EXIM advisory and door-to-door delivery.";
+
+/** Short quotable lead that matches the AEO “is a / defined as” detector. */
+export const DEFINITION_LEAD =
+  "ExpressWay Logistic is a Neutral Logistics Provider and freight forwarding company connecting PAN India cargo to worldwide destinations.";
+
+const DEFINITION_PATTERN = /\b(what is|is a|refers to|defined as|means that)\b/i;
+
+export function withDefinitionLead(text: string): string {
+  const trimmed = text.trim();
+  if (DEFINITION_PATTERN.test(trimmed)) return trimmed;
+  return `${DEFINITION_LEAD} ${trimmed}`;
+}
+
+/** Bump when public copy or schema changes. Drives dateModified / og:updated_time. */
+export const CONTENT_UPDATED_AT = "2026-09-04";
 
 export const GEOGRAPHIC_PROPOSITION = "PAN India → Worldwide";
 

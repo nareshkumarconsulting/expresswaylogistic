@@ -65,6 +65,11 @@ export async function middleware(request: NextRequest) {
     const response = NextResponse.next();
     if (pathname.startsWith("/api/")) {
       response.headers.set("Cache-Control", "no-store");
+    } else {
+      response.headers.set(
+        "Cache-Control",
+        "public, s-maxage=3600, stale-while-revalidate=86400",
+      );
     }
     return withSecurityHeaders(response);
   }

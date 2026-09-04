@@ -42,7 +42,7 @@ export async function generateMetadata({
   }
 
   return pageSeo({
-    title: `${service.title} in India | PAN India to Worldwide | ExpressWay Logistic`,
+    title: `${service.title} | ExpressWay Logistic`,
     description: service.description,
     path: service.href,
   });

@@ -5,6 +5,7 @@ import type { LocationPage } from "@/constants/geography";
 import type { ServiceItem } from "@/constants/services";
 import { SERVICES } from "@/constants/services";
 import {
+  CONTENT_UPDATED_AT,
   FOUNDING_DATE,
   HQ_COUNTRY,
   HQ_LOCALITY,
@@ -54,6 +55,7 @@ export function organizationSchema() {
       "Worldwide",
     ],
     foundingDate: FOUNDING_DATE,
+    dateModified: CONTENT_UPDATED_AT,
     alternateName: [siteConfig.legalName, siteConfig.shortName],
     sameAs: Object.values(siteConfig.social),
     knowsAbout: [
@@ -84,6 +86,7 @@ export function websiteSchema() {
     url: siteConfig.url,
     publisher: { "@id": ORGANIZATION_ID },
     inLanguage: siteConfig.locale,
+    dateModified: CONTENT_UPDATED_AT,
   };
 }
 
@@ -100,6 +103,8 @@ export function webPageSchema(input: {
     url: `${siteConfig.url}${input.path === "/" ? "/" : input.path}`,
     isPartOf: { "@id": WEBSITE_ID },
     about: { "@id": ORGANIZATION_ID },
+    dateModified: CONTENT_UPDATED_AT,
+    author: { "@type": "Person", name: siteConfig.name },
   };
 }
 

@@ -27,7 +27,11 @@ export function IndustriesSection() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/images/hero-banner-1280.webp"
-          alt=""
+          alt="Cargo moving through ExpressWay Logistic freight lanes"
+          width={1280}
+          height={720}
+          loading="lazy"
+          decoding="async"
           className="size-full object-cover object-right opacity-35"
         />
         <div className="absolute inset-0 bg-gradient-to-l from-transparent via-brand/50 to-brand" />
@@ -87,9 +91,12 @@ export function IndustriesSection() {
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={industry.image}
-                      alt=""
+                      alt={`${industry.name} cargo handled by ExpressWay Logistic`}
+                      width={640}
+                      height={400}
+                      loading="lazy"
+                      decoding="async"
                       className="pointer-events-none absolute inset-0 size-full object-cover opacity-30"
-                      aria-hidden
                     />
                   ) : null}
                   <div

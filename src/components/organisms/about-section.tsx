@@ -17,6 +17,8 @@ export function AboutSection() {
                 alt="ExpressWay Logistic operations center"
                 width={1600}
                 height={1067}
+                loading="lazy"
+                decoding="async"
                 className="aspect-[16/10] w-full object-cover object-center lg:aspect-[4/5]"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-brand/55 via-transparent to-transparent" />
@@ -45,7 +47,7 @@ export function AboutSection() {
             </h2>
 
             <p className="text-lead mb-8 text-slate-600">
-              ExpressWay Logistic is an Indian Neutral Logistics Provider and freight
+              ExpressWay Logistic is a Neutral Logistics Provider and freight
               forwarding company providing PAN India import and export logistics
               to worldwide destinations — ocean freight, air freight, FCL/LCL,
               consolidation, customs clearance, warehousing, project cargo, EXIM

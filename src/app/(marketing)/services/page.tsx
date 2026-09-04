@@ -8,9 +8,9 @@ import { servicesItemListSchema } from "@/lib/schema";
 import { pageSeo } from "@/lib/seo";
 
 export const metadata = pageSeo({
-  title: "Freight Forwarding Services in India | ExpressWay Logistic",
+  title: "Freight Forwarding Services | ExpressWay Logistic",
   description:
-    "PAN India freight forwarding as a Neutral Logistics Provider: ocean and air freight, FCL/LCL, consolidation, customs clearance, warehousing, project cargo, EXIM advisory and door-to-door logistics.",
+    "PAN India freight forwarding as a Neutral Logistics Provider: ocean and air, FCL/LCL, customs, warehousing, project cargo, EXIM advisory and door-to-door.",
   path: "/services",
 });
 

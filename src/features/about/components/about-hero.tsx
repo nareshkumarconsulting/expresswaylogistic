@@ -1,11 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/atoms/button";
+import { HeroBackdrop } from "@/components/molecules/hero-backdrop";
 import { siteConfig } from "@/config/site";
+import { withDefinitionLead } from "@/constants/entity";
 import { ABOUT_HIGHLIGHTS, STATS } from "@/constants/content";
 
 export function AboutHero() {
@@ -23,13 +24,11 @@ export function AboutHero() {
   return (
     <section className="relative isolate overflow-hidden bg-brand pt-28 pb-12 text-brand-foreground md:pt-40 md:pb-20">
       <div className="absolute inset-0 z-0">
-        <Image
+        <HeroBackdrop
           src="/images/operations-center.jpg"
-          alt=""
-          fill
+          alt="ExpressWay Logistic operations center in Noida"
+          className="object-center"
           priority
-          sizes="100vw"
-          className="object-cover object-center"
         />
         <div className="absolute inset-0 bg-brand/80 mix-blend-multiply" />
         <div className="absolute inset-0 bg-gradient-to-r from-brand via-brand/85 to-brand/45" />
@@ -70,9 +69,9 @@ export function AboutHero() {
               {...fade(0.18)}
               className="text-lead mb-8 max-w-2xl text-white/80"
             >
-              {siteConfig.legalName} — 39+ years of international cargo
-              experience, PAN India freight forwarding, and a Noida headquarters
-              connecting Indian origins with worldwide destinations.
+              {withDefinitionLead(
+                `${siteConfig.legalName} — 39+ years of international cargo experience, PAN India freight forwarding, and a Noida headquarters connecting Indian origins with worldwide destinations.`,
+              )}
             </motion.p>
 
             <motion.div

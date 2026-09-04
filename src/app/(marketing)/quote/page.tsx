@@ -6,9 +6,9 @@ import { CORE_INTENT_FAQS, QUOTE_PAGE_FAQS } from "@/constants/faqs";
 import { QUOTE_RESPONSE_STATEMENT } from "@/constants/entity";
 
 export const metadata = pageSeo({
-  title: "International Freight Quote from India | ExpressWay Logistic",
+  title: "International Freight Quote | ExpressWay Logistic",
   description:
-    "Share origin, destination and cargo details. ExpressWay Logistic will evaluate ocean, air, FCL, LCL or consolidation options and respond with available logistics solutions.",
+    "Share origin, destination and cargo details. ExpressWay evaluates ocean, air, FCL, LCL or consolidation and replies with available logistics options.",
   path: "/quote",
 });
 

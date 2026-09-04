@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowDown, Clock } from "lucide-react";
 import { Button } from "@/components/atoms/button";
-import { QUOTE_RESPONSE_STATEMENT } from "@/constants/entity";
+import { HeroBackdrop } from "@/components/molecules/hero-backdrop";
+import { QUOTE_RESPONSE_STATEMENT, withDefinitionLead } from "@/constants/entity";
 
 export function QuoteHero() {
   const reduceMotion = useReducedMotion();
@@ -21,14 +21,7 @@ export function QuoteHero() {
   return (
     <section className="relative overflow-hidden">
       <div className="absolute inset-0 z-0">
-        <Image
-          src="/images/hero-port.jpg"
-          alt="Global freight and port operations"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-center"
-        />
+        <HeroBackdrop src="/images/hero-port.jpg" className="object-center" priority />
         <div className="absolute inset-0 bg-primary/80 mix-blend-multiply" />
         <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/70 to-primary/40" />
       </div>
@@ -48,9 +41,9 @@ export function QuoteHero() {
             {...fade(0.2)}
             className="mb-6 max-w-2xl text-base leading-relaxed text-white/85 md:text-lg"
           >
-            Share your origin, destination and cargo details. ExpressWay Logistic
-            will evaluate the appropriate ocean, air, FCL, LCL or consolidation
-            option and respond with available logistics solutions.
+            {withDefinitionLead(
+              "Share your origin, destination and cargo details. ExpressWay Logistic will evaluate the appropriate ocean, air, FCL, LCL or consolidation option and respond with available logistics solutions.",
+            )}
           </motion.p>
           <motion.div
             {...fade(0.3)}

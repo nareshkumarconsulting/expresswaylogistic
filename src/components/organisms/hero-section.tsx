@@ -17,7 +17,7 @@ export function HeroSection() {
             src="/images/hero-banner-750.webp"
             srcSet="/images/hero-banner-750.webp 750w, /images/hero-banner-1280.webp 1280w"
             sizes="(min-width: 768px) 62vw, 70vw"
-            alt=""
+            alt="Cargo operations for ExpressWay Logistic freight forwarding"
             width={1024}
             height={682}
             fetchPriority="high"
@@ -53,9 +53,9 @@ export function HeroSection() {
             </h1>
 
             <p className="text-lead mb-7 max-w-lg text-white/85 md:mb-10">
-              Connect your cargo from anywhere in India to worldwide destinations
-              as a Neutral Logistics Provider, with ocean freight, air freight, customs clearance
-              and end-to-end logistics support.
+              ExpressWay Logistic is a Neutral Logistics Provider connecting cargo
+              from anywhere in India to worldwide destinations, with ocean freight,
+              air freight, customs clearance and end-to-end logistics support.
             </p>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">

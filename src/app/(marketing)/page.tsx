@@ -10,14 +10,13 @@ import { DirectAnswerBlock } from "@/components/molecules/direct-answer-block";
 import { HOME_SUPPORTING_FAQS } from "@/constants/faqs";
 import { ENTITY_STATEMENT } from "@/constants/entity";
 import { siteConfig } from "@/config/site";
-import { personSchema, servicesItemListSchema, websiteSchema } from "@/lib/schema";
+import { servicesItemListSchema } from "@/lib/schema";
 import { pageSeo } from "@/lib/seo";
 
 export const metadata = pageSeo({
-  title:
-    "International Freight Forwarding & Neutral Logistics Provider in India | ExpressWay Logistic",
+  title: "Freight Forwarding & Neutral Logistics | ExpressWay Logistic",
   description:
-    "ExpressWay Logistic provides PAN India freight forwarding as a Neutral Logistics Provider, with ocean & air freight, customs clearance, EXIM advisory, project cargo and door-to-door logistics to worldwide destinations.",
+    "ExpressWay Logistic is a Neutral Logistics Provider for PAN India freight forwarding — ocean, air, customs, EXIM advisory, and door-to-door worldwide.",
   path: "/",
 });
 
@@ -67,11 +66,7 @@ export default function HomePage() {
 
   return (
     <>
-      <JsonLd data={websiteSchema()} />
       <JsonLd data={servicesItemListSchema()} />
-      {personSchema().map((person) => (
-        <JsonLd key={person.name} data={person} />
-      ))}
       <HeroSection />
       <section className="bg-surface py-10">
         <div className="container-page">

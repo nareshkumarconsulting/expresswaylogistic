@@ -14,6 +14,7 @@ describe("AEO schema helpers", () => {
 
     expect(schema["@id"]).toBe(ORGANIZATION_ID);
     expect(schema.foundingDate).toBe("1987-01-01");
+    expect(schema.dateModified).toBe("2026-09-04");
     expect(schema.sameAs).toEqual(Object.values(siteConfig.social));
     expect(schema.alternateName).toContain(siteConfig.legalName);
     expect(schema.contactPoint.email).toBe(siteConfig.contact.email);
@@ -24,6 +25,7 @@ describe("AEO schema helpers", () => {
 
     expect(schema["@id"]).toBe(WEBSITE_ID);
     expect(schema.publisher).toEqual({ "@id": ORGANIZATION_ID });
+    expect(schema.dateModified).toBe("2026-09-04");
   });
 
   it("webPageSchema references website graph node", () => {
@@ -35,6 +37,8 @@ describe("AEO schema helpers", () => {
 
     expect(schema.isPartOf).toEqual({ "@id": WEBSITE_ID });
     expect(schema.about).toEqual({ "@id": ORGANIZATION_ID });
+    expect(schema.dateModified).toBe("2026-09-04");
+    expect(schema.author).toEqual({ "@type": "Person", name: siteConfig.name });
     expect(schema.url).toBe(`${siteConfig.url}/about`);
   });
 });

@@ -8,9 +8,9 @@ import { LOCATIONS_PAGE_FAQS } from "@/constants/faqs";
 import { pageSeo } from "@/lib/seo";
 
 export const metadata = pageSeo({
-  title: "Freight Forwarding Locations in India | ExpressWay Logistic",
+  title: "Freight Forwarding Locations | ExpressWay Logistic",
   description:
-    "Indian cities, ports, ICDs, dry ports and airports where ExpressWay coordinates freight forwarding through a nationwide logistics network — not a claimed office in every location.",
+    "Indian cities, ports, ICDs and airports where ExpressWay coordinates freight through a nationwide network — not a claimed office in every location.",
   path: "/locations",
 });
 

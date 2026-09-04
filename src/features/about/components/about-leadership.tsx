@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { LEADERS } from "@/constants/content";
+import { cn } from "@/lib/utils";
 
 export function AboutLeadership() {
   return (
@@ -29,11 +30,16 @@ export function AboutLeadership() {
                 <div className="relative aspect-[4/5] overflow-hidden bg-[#041526]">
                   <Image
                     src={leader.image}
-                    alt={leader.name}
-                    fill
+                    alt={`${leader.name}, ${leader.title}`}
+                    width={800}
+                    height={1000}
+                    loading="lazy"
                     unoptimized
                     sizes="(max-width: 640px) 100vw, 28rem"
-                    className={leader.imageClass}
+                    className={cn(
+                      "absolute inset-0 h-full w-full",
+                      leader.imageClass,
+                    )}
                   />
                 </div>
                 <div className="px-5 py-5">

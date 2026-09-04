@@ -30,7 +30,7 @@ export const SERVICES: ServiceItem[] = [
     id: "freight-forwarding",
     title: "Freight Forwarding",
     description:
-      "PAN India freight forwarding for businesses moving cargo to and from worldwide destinations — pickup, booking, documents, customs and delivery.",
+      "ExpressWay Logistic is a Neutral Logistics Provider offering PAN India freight forwarding for businesses moving cargo to and from worldwide destinations — pickup, booking, documents, customs and delivery.",
     details:
       "ExpressWay Logistic coordinates origin pickup, freight booking, documentation, customs, port handling, ocean or air movement, destination coordination and door delivery when required. The commercial proposition is PAN India origins to worldwide destinations, not a single-city operation.",
     highlights: [
