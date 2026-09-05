@@ -1,6 +1,8 @@
 // Paste this into the "AI Classify & Extract" Code node in n8n.
 // Provider priority: Groq (free) → Gemini (free) → OpenAI
 // Groq: llama-3.3-70b-versatile was shut down 16 Aug 2026 → use openai/gpt-oss-20b
+// Groq free gpt-oss-20b: 30 RPM but only 8K tokens/min — burst of 30 emails → 429.
+// This node throttles, retries 429, and falls back so one rate-limit does not kill the batch.
 
 const SYSTEM_PROMPT =
   'You are an email intelligence assistant for ExpressWay Logistics. Classify into ONE category: shipment, quotation, alert, or general. Return JSON: { category, confidence, summary, urgency, extractedData }. confidence MUST be a number 0.0-1.0 (never "high"/"low"). urgency MUST be exactly one of: low, medium, high, critical (never "normal"). Shipment fields: awb, trackingNo, pickup, destination, status, eta. Quotation: quoteNo, origin, destination, carrier, price, validity. Alert: alertType, urgency, requiredAction, deadline. General: sender, subject, date, summary.';
@@ -10,115 +12,91 @@ const geminiKey = $env.GEMINI_API_KEY;
 const openaiKey = $env.OPENAI_API_KEY;
 const http = this.helpers.httpRequest.bind(this.helpers);
 
-async function classifyOne(email) {
-  const userContent = [
-    `From: ${email.senderName || ''} <${email.senderEmail}>`,
-    `Subject: ${email.subject}`,
-    `Date: ${email.receivedAt}`,
-    '',
-    email.body || '',
-  ].join('\n');
+const BODY_CHARS = 2000;
+const GAP_MS = 4000;
+const MAX_429_WAIT_MS = 45000;
 
-  const messages = [
-    { role: 'system', content: SYSTEM_PROMPT },
-    { role: 'user', content: userContent },
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function errorText(error) {
+  const parts = [
+    error?.message,
+    error?.statusCode,
+    error?.status,
+    typeof error?.response === 'string' ? error.response : '',
+    error?.response?.status,
+    error?.response?.body,
+    error?.error?.message,
+    error?.cause?.message,
   ];
+  try {
+    parts.push(JSON.stringify(error));
+  } catch {
+    /* ignore */
+  }
+  return parts.filter(Boolean).join(' ');
+}
 
-  let response;
-  let provider = 'unknown';
+function is429(error) {
+  const text = errorText(error);
+  return (
+    error?.statusCode === 429 ||
+    error?.status === 429 ||
+    error?.response?.status === 429 ||
+    /\b429\b/.test(text) ||
+    /too many requests|rate limit/i.test(text)
+  );
+}
+
+function waitMsFrom429(error) {
+  const text = errorText(error);
+  const minSec = text.match(/try again in (\d+)m\s*([\d.]+)?s/i);
+  if (minSec) {
+    const ms = (Number(minSec[1]) * 60 + Number(minSec[2] || 0)) * 1000 + 500;
+    return Math.min(ms, MAX_429_WAIT_MS);
+  }
+  const sec = text.match(/try again in ([\d.]+)\s*s/i);
+  if (sec) return Math.min(Number(sec[1]) * 1000 + 500, MAX_429_WAIT_MS);
+  return 20000;
+}
+
+async function httpRetry(opts, retries = 4) {
   let lastError;
-
-  if (groqKey) {
+  for (let attempt = 0; attempt < retries; attempt++) {
     try {
-      provider = 'groq';
-      response = await http({
-        method: 'POST',
-        url: 'https://api.groq.com/openai/v1/chat/completions',
-        headers: {
-          Authorization: `Bearer ${groqKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: {
-          model: 'openai/gpt-oss-20b',
-          temperature: 0.1,
-          response_format: { type: 'json_object' },
-          messages,
-        },
-        json: true,
-      });
+      return await http(opts);
     } catch (error) {
       lastError = error;
-      response = null;
+      if (!is429(error) || attempt === retries - 1) throw error;
+      await sleep(waitMsFrom429(error));
     }
   }
+  throw lastError;
+}
 
-  if (!response && geminiKey) {
-    provider = 'gemini';
-    const geminiRes = await http({
-      method: 'POST',
-      url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,
-      headers: { 'Content-Type': 'application/json' },
-      body: {
-        contents: [{ parts: [{ text: `${SYSTEM_PROMPT}\n\n${userContent}` }] }],
-        generationConfig: {
-          temperature: 0.1,
-          responseMimeType: 'application/json',
-        },
-      },
-      json: true,
-    });
-    response = {
-      choices: [
-        {
-          message: {
-            content: geminiRes.candidates?.[0]?.content?.parts?.[0]?.text || '',
-          },
-        },
-      ],
-    };
+function fallbackClassify(email) {
+  const text = `${email.subject || ''} ${email.body || ''}`.toLowerCase();
+  let category = 'general';
+  if (/\b(awb|bl\b|bill of lading|container|eta|tracking|shipment|boe)\b/.test(text)) {
+    category = 'shipment';
+  } else if (/\b(quot(e|ation)|rate request|freight rate|offer)\b/.test(text)) {
+    category = 'quotation';
+  } else if (/\b(urgent|hold|delay|deadline|payment due|alert)\b/.test(text)) {
+    category = 'alert';
   }
+  return {
+    category,
+    confidence: 0.35,
+    summary: String(email.subject || 'Email received').slice(0, 180),
+    urgency: category === 'alert' ? 'high' : 'low',
+    extractedData: {},
+    _aiProvider: 'fallback',
+  };
+}
 
-  if (!response && openaiKey) {
-    provider = 'openai';
-    response = await http({
-      method: 'POST',
-      url: 'https://api.openai.com/v1/chat/completions',
-      headers: {
-        Authorization: `Bearer ${openaiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: {
-        model: 'gpt-4o-mini',
-        temperature: 0.1,
-        response_format: { type: 'json_object' },
-        messages,
-      },
-      json: true,
-    });
-  }
-
-  if (!response) {
-    throw lastError || new Error(
-      'No AI key found. Add GROQ_API_KEY (free — console.groq.com) or GEMINI_API_KEY (free — aistudio.google.com) to n8n env and restart n8n.',
-    );
-  }
-
-  const content = response.choices?.[0]?.message?.content || '';
-  const cleaned = content.replace(/```json\n?/gi, '').replace(/```\n?/g, '').trim();
-
-  let parsed;
-  try {
-    parsed = JSON.parse(cleaned);
-  } catch {
-    parsed = {
-      category: 'general',
-      confidence: 0.4,
-      summary: 'Parse failed',
-      urgency: 'low',
-      extractedData: {},
-    };
-  }
-
+function normalizeParsed(parsed, provider) {
   const allowedUrgency = ['low', 'medium', 'high', 'critical'];
   const rawUrgency = String(parsed.urgency || '').toLowerCase();
   if (rawUrgency === 'normal' || rawUrgency === 'moderate' || rawUrgency === 'info') {
@@ -164,8 +142,138 @@ async function classifyOne(email) {
   return parsed;
 }
 
+async function classifyOne(email) {
+  const userContent = [
+    `From: ${email.senderName || ''} <${email.senderEmail}>`,
+    `Subject: ${email.subject}`,
+    `Date: ${email.receivedAt}`,
+    '',
+    String(email.body || '').slice(0, BODY_CHARS),
+  ].join('\n');
+
+  const messages = [
+    { role: 'system', content: SYSTEM_PROMPT },
+    { role: 'user', content: userContent },
+  ];
+
+  let response;
+  let provider = 'unknown';
+  let lastError;
+
+  if (groqKey) {
+    try {
+      provider = 'groq';
+      response = await httpRetry({
+        method: 'POST',
+        url: 'https://api.groq.com/openai/v1/chat/completions',
+        headers: {
+          Authorization: `Bearer ${groqKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: {
+          model: 'openai/gpt-oss-20b',
+          temperature: 0.1,
+          response_format: { type: 'json_object' },
+          messages,
+        },
+        json: true,
+      });
+    } catch (error) {
+      lastError = error;
+      response = null;
+    }
+  }
+
+  if (!response && geminiKey) {
+    try {
+      provider = 'gemini';
+      const geminiRes = await httpRetry({
+        method: 'POST',
+        url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,
+        headers: { 'Content-Type': 'application/json' },
+        body: {
+          contents: [{ parts: [{ text: `${SYSTEM_PROMPT}\n\n${userContent}` }] }],
+          generationConfig: {
+            temperature: 0.1,
+            responseMimeType: 'application/json',
+          },
+        },
+        json: true,
+      });
+      response = {
+        choices: [
+          {
+            message: {
+              content: geminiRes.candidates?.[0]?.content?.parts?.[0]?.text || '',
+            },
+          },
+        ],
+      };
+    } catch (error) {
+      lastError = error;
+      response = null;
+    }
+  }
+
+  if (!response && openaiKey) {
+    try {
+      provider = 'openai';
+      response = await httpRetry({
+        method: 'POST',
+        url: 'https://api.openai.com/v1/chat/completions',
+        headers: {
+          Authorization: `Bearer ${openaiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: {
+          model: 'gpt-4o-mini',
+          temperature: 0.1,
+          response_format: { type: 'json_object' },
+          messages,
+        },
+        json: true,
+      });
+    } catch (error) {
+      lastError = error;
+      response = null;
+    }
+  }
+
+  if (!response) {
+    const fallback = fallbackClassify(email);
+    fallback._aiError = lastError ? String(lastError.message || lastError).slice(0, 180) : 'no-ai-key';
+    return fallback;
+  }
+
+  const content = response.choices?.[0]?.message?.content || '';
+  const cleaned = content.replace(/```json\n?/gi, '').replace(/```\n?/g, '').trim();
+
+  let parsed;
+  try {
+    parsed = JSON.parse(cleaned);
+  } catch {
+    parsed = {
+      category: 'general',
+      confidence: 0.4,
+      summary: 'Parse failed',
+      urgency: 'low',
+      extractedData: {},
+    };
+  }
+
+  return normalizeParsed(parsed, provider);
+}
+
+const items = $input.all();
 const out = [];
-for (const item of $input.all()) {
-  out.push({ json: await classifyOne(item.json) });
+for (let i = 0; i < items.length; i++) {
+  if (i > 0) await sleep(GAP_MS);
+  try {
+    out.push({ json: await classifyOne(items[i].json) });
+  } catch (error) {
+    const fallback = fallbackClassify(items[i].json || {});
+    fallback._aiError = String(error.message || error).slice(0, 180);
+    out.push({ json: fallback });
+  }
 }
 return out;

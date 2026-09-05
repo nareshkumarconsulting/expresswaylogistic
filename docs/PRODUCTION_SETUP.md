@@ -278,7 +278,8 @@ docker compose -f docker-compose.n8n.prod.yml up -d --force-recreate
 3. Choose one:
    - `n8n/expressway-email-intelligence.workflow.json` (4 Gmail accounts)
    - `n8n/expressway-email-intelligence-imap.workflow.json` (single IMAP inbox)
-   - `n8n/expressway-email-intelligence-rediffmail.workflow.json` (Rediffmail Pro)
+   - `n8n/expressway-email-intelligence-rediffmail.workflow.json` (Rediffmail `support@`)
+   - `n8n/expressway-email-intelligence-sales.workflow.json` (Rediffmail `sales@`)
 
 ### Step 5.2 — Connect OpenAI
 

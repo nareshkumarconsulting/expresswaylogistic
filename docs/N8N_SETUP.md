@@ -57,7 +57,8 @@ Verify in n8n: **Settings → Variables** — you should see `EMAIL_INGEST_SECRE
 2. Choose one:
    - `n8n/expressway-email-intelligence.workflow.json` — **4 Gmail inboxes**
    - `n8n/expressway-email-intelligence-imap.workflow.json` — **single IMAP inbox** (easier to test first)
-   - `n8n/expressway-email-intelligence-rediffmail.workflow.json` — **Rediffmail Pro** (`webmail.rediffmailpro.com`)
+   - `n8n/expressway-email-intelligence-rediffmail.workflow.json` — **Rediffmail** `support@expresswaylogistics.com`
+   - `n8n/expressway-email-intelligence-sales.workflow.json` — **Rediffmail** `sales@expresswaylogistics.com`
 3. Open the imported workflow
 
 If this workflow was imported before email-quote drafts, **re-import** (or edit **Build Ingest Payload** so it sends `body`). The app needs the email text to create Quotes list items.
@@ -92,13 +93,15 @@ Then restart n8n: `docker compose restart n8n`
 
 **Option A2 — Rediffmail Pro / Enterprise**
 
-1. Import `n8n/expressway-email-intelligence-rediffmail.workflow.json` (keep existing Gmail/IMAP workflows running)
-2. On **IMAP Email Trigger** → create a **new IMAP** credential (do not reuse Gmail creds):
+1. Import one Rediff workflow per mailbox (keep Gmail running):
+   - `n8n/expressway-email-intelligence-rediffmail.workflow.json` — `support@expresswaylogistics.com`
+   - `n8n/expressway-email-intelligence-sales.workflow.json` — `sales@expresswaylogistics.com`
+2. On **IMAP Email Trigger** → create a **new IMAP** credential per inbox (do not reuse Gmail or the other Rediff mailbox):
    - User: full email address
    - Password: mailbox password (enter only in n8n)
    - Host: `imap.rediffmailpro.com`
    - Port: `993`, SSL/TLS: on
-3. Edit **Set Source Account** → set `sourceAccount` to that same address
+3. **Set Source Account** must match that inbox (`support@…` or `sales@…`)
 4. If login fails: try port `143` with SSL off, and confirm IMAP is enabled in Rediff admin (Complete Mail Sync / IMAP SYNC FROM date) — [Rediff IMAP settings](https://support.rediffmailpro.com/article/imap-configuration-for-ms-outlook-365/)
 
 **Option B — Gmail OAuth (4-account workflow)**

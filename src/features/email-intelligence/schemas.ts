@@ -7,6 +7,13 @@ export const EMAIL_CATEGORIES = [
   "general",
 ] as const;
 
+/** Inboxes n8n is configured to watch — shown in the dashboard even before the first ingest. */
+export const CONFIGURED_EMAIL_INBOXES = [
+  "expressway.logistics@gmail.com",
+  "support@expresswaylogistics.com",
+  "sales@expresswaylogistics.com",
+] as const;
+
 export const EMAIL_URGENCIES = ["low", "medium", "high", "critical"] as const;
 
 /** LLMs often return "normal" / "urgent" — map those so ingest does not 400. */

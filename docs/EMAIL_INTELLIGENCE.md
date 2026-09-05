@@ -73,7 +73,8 @@ openssl rand -hex 32
 |------|----------|
 | `n8n/expressway-email-intelligence.workflow.json` | **4 Gmail inboxes** (ops, quotes, alerts, info) |
 | `n8n/expressway-email-intelligence-imap.workflow.json` | **Single IMAP inbox** (test or non-Gmail) |
-| `n8n/expressway-email-intelligence-rediffmail.workflow.json` | **Rediffmail Pro / Enterprise** (`imap.rediffmailpro.com`) |
+| `n8n/expressway-email-intelligence-rediffmail.workflow.json` | **Rediffmail Pro** — `support@expresswaylogistics.com` |
+| `n8n/expressway-email-intelligence-sales.workflow.json` | **Rediffmail Pro** — `sales@expresswaylogistics.com` |
 
 **Import:** n8n → Workflows → ⋮ menu → **Import from File**
 

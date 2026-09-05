@@ -292,7 +292,8 @@ Workflow imports:
 | --- | --- |
 | `n8n/expressway-email-intelligence.workflow.json` | 4 Gmail inboxes |
 | `n8n/expressway-email-intelligence-imap.workflow.json` | Single IMAP inbox |
-| `n8n/expressway-email-intelligence-rediffmail.workflow.json` | Rediffmail Pro |
+| `n8n/expressway-email-intelligence-rediffmail.workflow.json` | Rediffmail `support@` |
+| `n8n/expressway-email-intelligence-sales.workflow.json` | Rediffmail `sales@` |
 
 Full setup: [EMAIL_INTELLIGENCE.md](./EMAIL_INTELLIGENCE.md), [N8N_SETUP.md](./N8N_SETUP.md), [PRODUCTION_SETUP.md](./PRODUCTION_SETUP.md).
 

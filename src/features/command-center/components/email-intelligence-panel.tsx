@@ -16,7 +16,10 @@ import { StateAlert } from "@/components/molecules/state-alert";
 import { emailQuoteActionLabel } from "@/features/command-center/components/email-ai-badge";
 import { EmailDetailView } from "@/features/command-center/components/email-detail-view";
 import { CATEGORY_UI } from "@/features/command-center/email-category-ui";
-import { EMAIL_CATEGORIES } from "@/features/email-intelligence/schemas";
+import {
+  CONFIGURED_EMAIL_INBOXES,
+  EMAIL_CATEGORIES,
+} from "@/features/email-intelligence/schemas";
 import { cn } from "@/lib/utils";
 import type {
   EmailCategory,
@@ -101,8 +104,8 @@ export function EmailIntelligencePanel() {
   );
 
   const accounts = useMemo(() => {
-    if (!data) return [];
-    return [...new Set(data.map((e) => e.sourceAccount))].sort();
+    const fromMail = data?.map((e) => e.sourceAccount) ?? [];
+    return [...new Set([...CONFIGURED_EMAIL_INBOXES, ...fromMail])].sort();
   }, [data]);
 
   const counts = useMemo(() => {
@@ -302,7 +305,7 @@ export function EmailIntelligencePanel() {
             ))}
           </div>
           <div className="flex flex-1 flex-col gap-2 sm:flex-row md:max-w-xl md:justify-end">
-            {accounts.length > 1 ? (
+            {accounts.length > 0 ? (
               <select
                 value={accountFilter}
                 onChange={(e) => setAccountFilter(e.target.value)}

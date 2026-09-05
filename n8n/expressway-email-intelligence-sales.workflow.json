@@ -1,15 +1,15 @@
 {
-  "name": "ExpressWay \u2014 AI Email Intelligence (Rediffmail Pro)",
+  "name": "ExpressWay \u2014 AI Email Intelligence (sales@)",
   "nodes": [
     {
       "parameters": {
-        "content": "## Rediffmail Pro / Enterprise inbox\n\nWebmail: https://webmail.rediffmailpro.com/\n\n1. On **IMAP Email Trigger** create **IMAP** credentials:\n   - User: **full email address** (not just the local part)\n   - Password: mailbox password (enter in n8n only \u2014 never commit)\n   - Host: `imap.rediffmailpro.com`\n   - Port: `993`\n   - SSL/TLS: **on**\n2. If 993 fails, retry port `143` with SSL **off** (legacy Rediff setting).\n3. Admin may need IMAP enabled: Admin \u2192 Other Services \u2192 Complete Mail Sync (set IMAP SYNC FROM date).\n4. Set `sourceAccount` in **Set Source Account** to this inbox address.\n5. Publish / activate. Existing Gmail workflows stay unchanged.\n\nDocs: https://support.rediffmailpro.com/article/imap-configuration-for-ms-outlook-365/",
-        "height": 360,
-        "width": 480,
+        "content": "## sales@expresswaylogistics.com (Rediffmail Pro)\n\nKeep the existing Gmail and support@ workflows running. This is a **third** inbox.\n\nWebmail: https://webmail.rediffmailpro.com/\n\n1. On **IMAP Email Trigger** create a **new IMAP credential** (do not reuse support@ or Gmail):\n   - User: **sales@expresswaylogistics.com**\n   - Password: mailbox password (n8n only \u2014 never commit)\n   - Host: `imap.rediffmailpro.com`\n   - Port: `993`, SSL/TLS: **on**\n2. If 993 fails: port `143`, SSL **off**.\n3. Admin may need IMAP enabled: Admin \u2192 Other Services \u2192 Complete Mail Sync.\n4. **Set Source Account** is already `sales@expresswaylogistics.com`.\n5. **Publish**. Test with a new mail to sales@, then check Command Center \u2192 Email Intelligence.\n\nDashboard: `/command-center/emails`",
+        "height": 400,
+        "width": 500,
         "color": 4
       },
-      "id": "sticky-rediff-001",
-      "name": "Rediffmail Setup",
+      "id": "sticky-sales-001",
+      "name": "sales@ Setup",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
@@ -25,7 +25,7 @@
           "forceReconnect": 60
         }
       },
-      "id": "imap-trigger-rediff-001",
+      "id": "imap-trigger-sales-001",
       "name": "IMAP Email Trigger",
       "type": "n8n-nodes-base.emailReadImap",
       "typeVersion": 2,
@@ -41,9 +41,9 @@
         "assignments": {
           "assignments": [
             {
-              "id": "src-rediff",
+              "id": "src-sales",
               "name": "sourceAccount",
-              "value": "REPLACE_WITH_REDIFFMAIL_ADDRESS",
+              "value": "sales@expresswaylogistics.com",
               "type": "string"
             }
           ]
@@ -51,7 +51,7 @@
         "includeOtherFields": true,
         "options": {}
       },
-      "id": "set-rediff-001",
+      "id": "set-sales-001",
       "name": "Set Source Account",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -64,7 +64,7 @@
       "parameters": {
         "jsCode": "// Paste into the \"Prepare Email Context\" Code node in n8n.\n// Handles IMAP Email Trigger + Gmail Trigger (Simplify on/off).\n//\n// Gmail Trigger: turn Options \u2192 Simplify OFF so the full body is included.\n// With Simplify ON you only get From/Subject headers (no body).\n\nfunction pickSubject(item) {\n  return (\n    item.subject ||\n    item.Subject ||\n    item.headers?.subject ||\n    item.headers?.Subject ||\n    '(no subject)'\n  );\n}\n\nfunction pickFrom(item) {\n  let senderEmail = '';\n  let senderName = '';\n\n  // mailparser / Gmail Simplify OFF: { value: [{ address, name }], text }\n  if (item.from?.value?.[0]) {\n    senderEmail = item.from.value[0].address || '';\n    senderName = item.from.value[0].name || '';\n  } else if (typeof item.from?.text === 'string') {\n    const match = item.from.text.match(/^(.*?)\\s*<([^>]+)>/);\n    if (match) {\n      senderName = match[1].trim().replace(/^\"|\"$/g, '');\n      senderEmail = match[2];\n    } else {\n      senderEmail = item.from.text;\n    }\n  } else if (typeof item.from === 'string' && item.from) {\n    const match = item.from.match(/^(.*?)\\s*<([^>]+)>/);\n    if (match) {\n      senderName = match[1].trim().replace(/^\"|\"$/g, '');\n      senderEmail = match[2];\n    } else {\n      senderEmail = item.from;\n    }\n  } else if (typeof item.From === 'string' && item.From) {\n    // Gmail Simplify ON: capitalised header fields\n    const match = item.From.match(/^(.*?)\\s*<([^>]+)>/);\n    if (match) {\n      senderName = match[1].trim().replace(/^\"|\"$/g, '');\n      senderEmail = match[2];\n    } else {\n      senderEmail = item.From;\n    }\n  }\n\n  return {\n    senderEmail: senderEmail || 'unknown@unknown.com',\n    senderName,\n  };\n}\n\nfunction pickBody(item) {\n  const raw =\n    item.textPlain ||\n    item.text ||\n    item.textAsHtml ||\n    item.html ||\n    item.snippet ||\n    '';\n  return String(raw).slice(0, 12000);\n}\n\nfunction pickMessageId(item, sourceAccount) {\n  return (\n    item.messageId ||\n    item.message_id ||\n    item.id ||\n    item.uid ||\n    item.headers?.['message-id'] ||\n    item.headers?.['Message-ID'] ||\n    `${sourceAccount}-${Date.now()}-${item.uid || Math.random().toString(36).slice(2)}`\n  );\n}\n\nfunction pickReceivedAt(item) {\n  const raw = item.date || item.internalDate || item.headers?.date || Date.now();\n  const d = new Date(raw);\n  return Number.isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();\n}\n\nreturn $input.all().map(({ json: item }) => {\n  const sourceAccount = item.sourceAccount;\n  const { senderEmail, senderName } = pickFrom(item);\n  const attachments = item.attachments || [];\n  const attachmentNames = attachments\n    .map((a) => a.filename || a.name)\n    .filter(Boolean);\n\n  return {\n    json: {\n      sourceAccount,\n      externalMessageId: pickMessageId(item, sourceAccount),\n      senderEmail,\n      senderName,\n      subject: pickSubject(item),\n      receivedAt: pickReceivedAt(item),\n      body: pickBody(item),\n      hasAttachments: attachmentNames.length > 0,\n      attachmentNames,\n    },\n  };\n});\n"
       },
-      "id": "prepare-rediff-001",
+      "id": "prepare-sales-001",
       "name": "Prepare Email Context",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -77,7 +77,7 @@
       "parameters": {
         "jsCode": "// Paste this into the \"AI Classify & Extract\" Code node in n8n.\n// Provider priority: Groq (free) \u2192 Gemini (free) \u2192 OpenAI\n// Groq: llama-3.3-70b-versatile was shut down 16 Aug 2026 \u2192 use openai/gpt-oss-20b\n// Groq free gpt-oss-20b: 30 RPM but only 8K tokens/min \u2014 burst of 30 emails \u2192 429.\n// This node throttles, retries 429, and falls back so one rate-limit does not kill the batch.\n\nconst SYSTEM_PROMPT =\n  'You are an email intelligence assistant for ExpressWay Logistics. Classify into ONE category: shipment, quotation, alert, or general. Return JSON: { category, confidence, summary, urgency, extractedData }. confidence MUST be a number 0.0-1.0 (never \"high\"/\"low\"). urgency MUST be exactly one of: low, medium, high, critical (never \"normal\"). Shipment fields: awb, trackingNo, pickup, destination, status, eta. Quotation: quoteNo, origin, destination, carrier, price, validity. Alert: alertType, urgency, requiredAction, deadline. General: sender, subject, date, summary.';\n\nconst groqKey = $env.GROQ_API_KEY;\nconst geminiKey = $env.GEMINI_API_KEY;\nconst openaiKey = $env.OPENAI_API_KEY;\nconst http = this.helpers.httpRequest.bind(this.helpers);\n\nconst BODY_CHARS = 2000;\nconst GAP_MS = 4000;\nconst MAX_429_WAIT_MS = 45000;\n\nfunction sleep(ms) {\n  return new Promise((resolve) => setTimeout(resolve, ms));\n}\n\nfunction errorText(error) {\n  const parts = [\n    error?.message,\n    error?.statusCode,\n    error?.status,\n    typeof error?.response === 'string' ? error.response : '',\n    error?.response?.status,\n    error?.response?.body,\n    error?.error?.message,\n    error?.cause?.message,\n  ];\n  try {\n    parts.push(JSON.stringify(error));\n  } catch {\n    /* ignore */\n  }\n  return parts.filter(Boolean).join(' ');\n}\n\nfunction is429(error) {\n  const text = errorText(error);\n  return (\n    error?.statusCode === 429 ||\n    error?.status === 429 ||\n    error?.response?.status === 429 ||\n    /\\b429\\b/.test(text) ||\n    /too many requests|rate limit/i.test(text)\n  );\n}\n\nfunction waitMsFrom429(error) {\n  const text = errorText(error);\n  const minSec = text.match(/try again in (\\d+)m\\s*([\\d.]+)?s/i);\n  if (minSec) {\n    const ms = (Number(minSec[1]) * 60 + Number(minSec[2] || 0)) * 1000 + 500;\n    return Math.min(ms, MAX_429_WAIT_MS);\n  }\n  const sec = text.match(/try again in ([\\d.]+)\\s*s/i);\n  if (sec) return Math.min(Number(sec[1]) * 1000 + 500, MAX_429_WAIT_MS);\n  return 20000;\n}\n\nasync function httpRetry(opts, retries = 4) {\n  let lastError;\n  for (let attempt = 0; attempt < retries; attempt++) {\n    try {\n      return await http(opts);\n    } catch (error) {\n      lastError = error;\n      if (!is429(error) || attempt === retries - 1) throw error;\n      await sleep(waitMsFrom429(error));\n    }\n  }\n  throw lastError;\n}\n\nfunction fallbackClassify(email) {\n  const text = `${email.subject || ''} ${email.body || ''}`.toLowerCase();\n  let category = 'general';\n  if (/\\b(awb|bl\\b|bill of lading|container|eta|tracking|shipment|boe)\\b/.test(text)) {\n    category = 'shipment';\n  } else if (/\\b(quot(e|ation)|rate request|freight rate|offer)\\b/.test(text)) {\n    category = 'quotation';\n  } else if (/\\b(urgent|hold|delay|deadline|payment due|alert)\\b/.test(text)) {\n    category = 'alert';\n  }\n  return {\n    category,\n    confidence: 0.35,\n    summary: String(email.subject || 'Email received').slice(0, 180),\n    urgency: category === 'alert' ? 'high' : 'low',\n    extractedData: {},\n    _aiProvider: 'fallback',\n  };\n}\n\nfunction normalizeParsed(parsed, provider) {\n  const allowedUrgency = ['low', 'medium', 'high', 'critical'];\n  const rawUrgency = String(parsed.urgency || '').toLowerCase();\n  if (rawUrgency === 'normal' || rawUrgency === 'moderate' || rawUrgency === 'info') {\n    parsed.urgency = 'medium';\n  } else if (rawUrgency === 'urgent' || rawUrgency === 'important') {\n    parsed.urgency = 'high';\n  } else if (!allowedUrgency.includes(rawUrgency)) {\n    parsed.urgency = 'low';\n  } else {\n    parsed.urgency = rawUrgency;\n  }\n\n  const allowedCategory = ['shipment', 'quotation', 'alert', 'general'];\n  if (!allowedCategory.includes(parsed.category)) {\n    parsed.category = 'general';\n  }\n\n  const confidenceLabels = { low: 0.4, medium: 0.6, moderate: 0.6, high: 0.85, critical: 0.95 };\n  const rawConf = parsed.confidence;\n  if (typeof rawConf === 'number' && Number.isFinite(rawConf)) {\n    parsed.confidence = rawConf > 1 ? Math.min(1, rawConf / 100) : Math.min(1, Math.max(0, rawConf));\n  } else {\n    const label = String(rawConf ?? '').toLowerCase().trim();\n    if (confidenceLabels[label] != null) {\n      parsed.confidence = confidenceLabels[label];\n    } else {\n      const n = parseFloat(label);\n      parsed.confidence = Number.isFinite(n)\n        ? (n > 1 ? Math.min(1, n / 100) : Math.min(1, Math.max(0, n)))\n        : 0.5;\n    }\n  }\n\n  if (parsed.extractedData && typeof parsed.extractedData === 'object') {\n    for (const key of Object.keys(parsed.extractedData)) {\n      if (parsed.extractedData[key] == null) delete parsed.extractedData[key];\n    }\n  } else {\n    parsed.extractedData = {};\n  }\n\n  parsed._aiProvider = provider;\n  return parsed;\n}\n\nasync function classifyOne(email) {\n  const userContent = [\n    `From: ${email.senderName || ''} <${email.senderEmail}>`,\n    `Subject: ${email.subject}`,\n    `Date: ${email.receivedAt}`,\n    '',\n    String(email.body || '').slice(0, BODY_CHARS),\n  ].join('\\n');\n\n  const messages = [\n    { role: 'system', content: SYSTEM_PROMPT },\n    { role: 'user', content: userContent },\n  ];\n\n  let response;\n  let provider = 'unknown';\n  let lastError;\n\n  if (groqKey) {\n    try {\n      provider = 'groq';\n      response = await httpRetry({\n        method: 'POST',\n        url: 'https://api.groq.com/openai/v1/chat/completions',\n        headers: {\n          Authorization: `Bearer ${groqKey}`,\n          'Content-Type': 'application/json',\n        },\n        body: {\n          model: 'openai/gpt-oss-20b',\n          temperature: 0.1,\n          response_format: { type: 'json_object' },\n          messages,\n        },\n        json: true,\n      });\n    } catch (error) {\n      lastError = error;\n      response = null;\n    }\n  }\n\n  if (!response && geminiKey) {\n    try {\n      provider = 'gemini';\n      const geminiRes = await httpRetry({\n        method: 'POST',\n        url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,\n        headers: { 'Content-Type': 'application/json' },\n        body: {\n          contents: [{ parts: [{ text: `${SYSTEM_PROMPT}\\n\\n${userContent}` }] }],\n          generationConfig: {\n            temperature: 0.1,\n            responseMimeType: 'application/json',\n          },\n        },\n        json: true,\n      });\n      response = {\n        choices: [\n          {\n            message: {\n              content: geminiRes.candidates?.[0]?.content?.parts?.[0]?.text || '',\n            },\n          },\n        ],\n      };\n    } catch (error) {\n      lastError = error;\n      response = null;\n    }\n  }\n\n  if (!response && openaiKey) {\n    try {\n      provider = 'openai';\n      response = await httpRetry({\n        method: 'POST',\n        url: 'https://api.openai.com/v1/chat/completions',\n        headers: {\n          Authorization: `Bearer ${openaiKey}`,\n          'Content-Type': 'application/json',\n        },\n        body: {\n          model: 'gpt-4o-mini',\n          temperature: 0.1,\n          response_format: { type: 'json_object' },\n          messages,\n        },\n        json: true,\n      });\n    } catch (error) {\n      lastError = error;\n      response = null;\n    }\n  }\n\n  if (!response) {\n    const fallback = fallbackClassify(email);\n    fallback._aiError = lastError ? String(lastError.message || lastError).slice(0, 180) : 'no-ai-key';\n    return fallback;\n  }\n\n  const content = response.choices?.[0]?.message?.content || '';\n  const cleaned = content.replace(/```json\\n?/gi, '').replace(/```\\n?/g, '').trim();\n\n  let parsed;\n  try {\n    parsed = JSON.parse(cleaned);\n  } catch {\n    parsed = {\n      category: 'general',\n      confidence: 0.4,\n      summary: 'Parse failed',\n      urgency: 'low',\n      extractedData: {},\n    };\n  }\n\n  return normalizeParsed(parsed, provider);\n}\n\nconst items = $input.all();\nconst out = [];\nfor (let i = 0; i < items.length; i++) {\n  if (i > 0) await sleep(GAP_MS);\n  try {\n    out.push({ json: await classifyOne(items[i].json) });\n  } catch (error) {\n    const fallback = fallbackClassify(items[i].json || {});\n    fallback._aiError = String(error.message || error).slice(0, 180);\n    out.push({ json: fallback });\n  }\n}\nreturn out;\n"
       },
-      "id": "ai-rediff-001",
+      "id": "ai-sales-001",
       "name": "AI Classify & Extract",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -90,7 +90,7 @@
       "parameters": {
         "jsCode": "const emails = $('Prepare Email Context').all();\n\nreturn $input.all().map((aiItem, i) => {\n  const email = emails[i].json;\n  const ai = aiItem.json;\n\n  const payload = {\n    sourceAccount: email.sourceAccount,\n    externalMessageId: email.externalMessageId,\n    senderEmail: email.senderEmail,\n    subject: email.subject,\n    receivedAt: email.receivedAt,\n    category: ai.category,\n    confidence: ai.confidence,\n    summary: ai.summary,\n    urgency: ai.urgency,\n    hasAttachments: email.hasAttachments,\n    attachmentNames: email.attachmentNames,\n    extractedData: ai.extractedData || {},\n    body: typeof email.body === 'string' ? email.body.slice(0, 20000) : undefined,\n  };\n\n  if (email.senderName) payload.senderName = email.senderName;\n\n  return { json: payload };\n});"
       },
-      "id": "build-rediff-001",
+      "id": "build-sales-001",
       "name": "Build Ingest Payload",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -121,7 +121,7 @@
         "jsonBody": "={{ JSON.stringify($json) }}",
         "options": {}
       },
-      "id": "post-rediff-001",
+      "id": "post-sales-001",
       "name": "POST ExpressWay Ingest",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
