@@ -1,6 +1,7 @@
 import dynamic from "next/dynamic";
 import { preload } from "react-dom";
 import { HeroSection } from "@/components/organisms/hero-section";
+import { LogisticsVideoSection } from "@/components/organisms/logistics-video-section";
 import { ConsultingCtaSection } from "@/components/organisms/consulting-cta-section";
 import { PageAeo } from "@/components/organisms/page-aeo";
 import { PanIndiaNetworkSection } from "@/components/organisms/pan-india-network-section";
@@ -68,6 +69,7 @@ export default function HomePage() {
     <>
       <JsonLd data={servicesItemListSchema()} />
       <HeroSection />
+      <LogisticsVideoSection />
       <section className="bg-surface py-10">
         <div className="container-page">
           <DirectAnswerBlock text={ENTITY_STATEMENT} />
