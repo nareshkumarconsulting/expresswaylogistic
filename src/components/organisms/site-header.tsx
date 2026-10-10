@@ -68,7 +68,7 @@ function ServicesDropdown() {
   return (
     <li
       ref={containerRef}
-      className="relative"
+      className="static"
       onMouseEnter={openMenu}
       onMouseLeave={scheduleClose}
     >
@@ -100,7 +100,7 @@ function ServicesDropdown() {
         role="menu"
         aria-label="Services"
         className={cn(
-          "absolute top-full left-1/2 z-50 mt-3 w-[min(36rem,calc(100vw-2rem))] -translate-x-1/2 border border-border bg-card p-3 shadow-lg transition-all duration-200",
+          "absolute top-full left-1/2 z-50 mt-3 max-h-[calc(100dvh-6.5rem)] w-[min(76rem,calc(100vw-2rem))] -translate-x-1/2 overflow-y-auto border border-border bg-card p-3 shadow-lg transition-all duration-200",
           open
             ? "pointer-events-auto visible translate-y-0 opacity-100"
             : "pointer-events-none invisible -translate-y-1 opacity-0",
@@ -108,7 +108,7 @@ function ServicesDropdown() {
         onMouseEnter={openMenu}
         onMouseLeave={scheduleClose}
       >
-        <div className="grid gap-1 sm:grid-cols-2">
+        <div className="grid grid-cols-3 gap-1 xl:grid-cols-4">
           {SERVICES.map((service) => {
             const Icon = service.icon;
             const active = pathname === service.href;
@@ -125,7 +125,7 @@ function ServicesDropdown() {
               >
                 <span
                   className={cn(
-                    "mt-0.5 flex size-8 shrink-0 items-center justify-center",
+                    "mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-md",
                     active
                       ? "bg-accent text-accent-foreground"
                       : "bg-muted text-primary",

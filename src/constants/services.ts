@@ -1,18 +1,20 @@
 import type { LucideIcon } from "lucide-react";
 import {
-  Plane,
-  Ship,
-  FileCheck,
-  Warehouse,
-  Package,
-  Shield,
+  CalendarCheck,
+  Combine,
+  Compass,
+  Construction,
   Container,
-  Boxes,
-  ScrollText,
-  DoorOpen,
-  ClipboardList,
-  Network,
-  Box,
+  PackageCheck,
+  PackageOpen,
+  PlaneTakeoff,
+  Route,
+  Scale,
+  Ship,
+  Stamp,
+  Truck,
+  Umbrella,
+  Warehouse,
 } from "lucide-react";
 
 export interface ServiceItem {
@@ -39,7 +41,7 @@ export const SERVICES: ServiceItem[] = [
       "Documentation and customs coordination",
       "Destination handling and door delivery when required",
     ],
-    icon: Network,
+    icon: Route,
     href: "/services/freight-forwarding",
   },
   {
@@ -55,7 +57,7 @@ export const SERVICES: ServiceItem[] = [
       "Consolidation for less-than-container volumes",
       "Booking and documentation support through to delivery",
     ],
-    icon: Ship,
+    icon: Scale,
     href: "/services/neutral-logistics-provider",
   },
   {
@@ -87,7 +89,7 @@ export const SERVICES: ServiceItem[] = [
       "Customs coordination",
       "Delivery arranged when required",
     ],
-    icon: Plane,
+    icon: PlaneTakeoff,
     href: "/services/air-freight",
   },
   {
@@ -119,7 +121,7 @@ export const SERVICES: ServiceItem[] = [
       "Documentation aligned to the house shipment",
       "Destination deconsolidation and delivery when required",
     ],
-    icon: Box,
+    icon: PackageOpen,
     href: "/services/lcl-shipping",
   },
   {
@@ -135,7 +137,7 @@ export const SERVICES: ServiceItem[] = [
       "Suitable for SME and multi-SKU exporters",
       "Coordinated pickup and destination handling",
     ],
-    icon: Boxes,
+    icon: Combine,
     href: "/services/consolidation",
   },
   {
@@ -151,7 +153,7 @@ export const SERVICES: ServiceItem[] = [
       "Document accuracy checks for the actual commodity",
       "24×7 shipment detail support when cargo is in process",
     ],
-    icon: FileCheck,
+    icon: Stamp,
     href: "/services/customs-clearance",
   },
   {
@@ -183,7 +185,7 @@ export const SERVICES: ServiceItem[] = [
       "Customs and main-carriage (ocean or air)",
       "Destination clearance and final delivery",
     ],
-    icon: DoorOpen,
+    icon: Truck,
     href: "/services/door-to-door-logistics",
   },
   {
@@ -199,7 +201,7 @@ export const SERVICES: ServiceItem[] = [
       "Project import registration support when required",
       "Delivery coordination through project closure",
     ],
-    icon: ClipboardList,
+    icon: Construction,
     href: "/services/project-cargo",
   },
   {
@@ -215,7 +217,7 @@ export const SERVICES: ServiceItem[] = [
       "Subject to policy terms and eligibility",
       "Support on documents typically required for claims",
     ],
-    icon: Shield,
+    icon: Umbrella,
     href: "/services/cargo-insurance",
   },
   {
@@ -231,7 +233,7 @@ export const SERVICES: ServiceItem[] = [
       "Licence assistance where applicable",
       "Drawback assistance where offered for the shipment",
     ],
-    icon: ScrollText,
+    icon: Compass,
     href: "/services/exim-consultancy",
   },
   {
@@ -247,7 +249,7 @@ export const SERVICES: ServiceItem[] = [
       "Hazardous cargo only where supported",
       "Fumigation arranged when required",
     ],
-    icon: Package,
+    icon: PackageCheck,
     href: "/services/packing-handling",
   },
   {
@@ -263,7 +265,7 @@ export const SERVICES: ServiceItem[] = [
       "Documentation coordination around the booking",
       "Request a quote to start",
     ],
-    icon: Container,
+    icon: CalendarCheck,
     href: "/services/freight-booking",
   },
 ];
