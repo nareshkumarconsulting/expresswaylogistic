@@ -30,7 +30,7 @@ export function LogisticsVideoPlayer() {
     <div className="relative w-full bg-black">
       <video
         ref={videoRef}
-        className="aspect-[4/5] w-full bg-black object-cover sm:aspect-video"
+        className="aspect-video w-full bg-black object-contain"
         poster={POSTER_SRC}
         preload="none"
         playsInline
@@ -56,7 +56,7 @@ export function LogisticsVideoPlayer() {
             height={720}
             loading="lazy"
             decoding="async"
-            className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.02]"
+            className="absolute inset-0 h-full w-full object-cover sm:transition sm:duration-700 sm:group-hover:scale-[1.02]"
           />
           <span
             className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,rgba(4,21,38,0.72)_100%)]"
@@ -84,7 +84,7 @@ export function LogisticsVideoPlayer() {
             </span>
           </span>
 
-          <span className="absolute right-4 bottom-6 left-4 z-10 sm:right-8 sm:bottom-10 sm:left-8 md:left-12">
+          <span className="absolute right-4 bottom-3 left-4 z-10 hidden sm:right-8 sm:bottom-10 sm:left-8 sm:block md:left-12">
             <span className="mb-2 block text-[11px] font-semibold tracking-[0.22em] text-accent uppercase">
               ExpressWay Logistic
             </span>
