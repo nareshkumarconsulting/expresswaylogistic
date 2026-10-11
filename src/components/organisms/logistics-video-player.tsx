@@ -10,40 +10,46 @@ const VIDEO_SRC = "/videos/expressway-logistic.mp4";
 
 export function LogisticsVideoPlayer() {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [playing, setPlaying] = useState(false);
+  const [started, setStarted] = useState(false);
+  const [pending, setPending] = useState(false);
 
   function startPlayback() {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || pending || started) return;
 
     if (!video.getAttribute("src")) {
       video.src = VIDEO_SRC;
     }
 
-    setPlaying(true);
+    setPending(true);
     void video.play().catch(() => {
-      // Native controls stay available if playback cannot start from this gesture.
+      setPending(false);
     });
   }
 
   return (
-    <div className="relative w-full bg-black">
+    <div className="relative aspect-video w-full overflow-hidden bg-black">
       <video
         ref={videoRef}
-        className="aspect-video w-full bg-black object-contain"
-        poster={POSTER_SRC}
+        className="absolute inset-0 h-full w-full bg-black object-cover"
         preload="none"
         playsInline
-        controls={playing}
+        controls={started}
+        onPlaying={() => {
+          setStarted(true);
+          setPending(false);
+        }}
         aria-label="ExpressWay Logistic film: freight quotes and shipment tracking"
-        aria-hidden={!playing}
+        aria-hidden={!started}
       />
 
-      {playing ? null : (
+      {started ? null : (
         <button
           type="button"
           onClick={startPlayback}
-          className="group absolute inset-0 cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
+          disabled={pending}
+          aria-busy={pending}
+          className="group absolute inset-0 cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset disabled:cursor-wait"
           aria-label="Play the ExpressWay Logistic film"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -53,7 +59,7 @@ export function LogisticsVideoPlayer() {
             sizes="100vw"
             alt=""
             width={1280}
-            height={720}
+            height={1280}
             loading="lazy"
             decoding="async"
             className="absolute inset-0 h-full w-full object-cover sm:transition sm:duration-700 sm:group-hover:scale-[1.02]"
@@ -80,7 +86,7 @@ export function LogisticsVideoPlayer() {
               <Play className="size-7 translate-x-0.5 fill-current sm:size-9" aria-hidden />
             </span>
             <span className="text-[11px] font-semibold tracking-[0.28em] text-white uppercase">
-              Play
+              {pending ? "Loading" : "Play"}
             </span>
           </span>
 
