@@ -1,7 +1,16 @@
 import { NextResponse } from "next/server";
+import {
+  isQuoteQuestion,
+  quoteAnswer,
+  quoteWindow,
+  selectQuotes,
+  type CopilotQuote,
+} from "@/features/command-center/copilot-query";
 import { aiQuerySchema } from "@/features/contact/schemas";
-import { listShipments } from "@/services/shipments-repository";
+import { SERVICE_TYPE_LABELS } from "@/features/quotes/labels";
 import { logger } from "@/lib/logger";
+import { listManagedQuotes } from "@/services/quotes-repository";
+import { listShipments } from "@/services/shipments-repository";
 
 export async function GET() {
   return NextResponse.json({
@@ -21,7 +30,35 @@ export async function POST(request: Request) {
       );
     }
 
-    const q = parsed.data.query.toLowerCase();
+    const query = parsed.data.query;
+    const q = query.toLowerCase();
+
+    if (isQuoteQuestion(query)) {
+      const window = quoteWindow(query);
+      const quotes: CopilotQuote[] = selectQuotes(await listManagedQuotes(), window).map(
+        (quote) => ({
+          id: quote.id,
+          name: quote.name,
+          company: quote.company,
+          origin: quote.origin,
+          destination: quote.destination,
+          status: quote.status,
+          serviceLabel: SERVICE_TYPE_LABELS[quote.serviceType] ?? quote.serviceType,
+          submittedAt: quote.submittedAt,
+        }),
+      );
+      logger.info("ai.query", { query, quotes: quotes.length });
+      return NextResponse.json({
+        success: true,
+        data: {
+          answer: quoteAnswer(quotes, window),
+          matches: [],
+          quotes,
+          insights: [],
+        },
+      });
+    }
+
     const shipments = await listShipments();
     const matches = shipments.filter(
       (s) =>
@@ -41,13 +78,14 @@ export async function POST(request: Request) {
           }.`
         : "No direct shipment matches. Add shipments or refine your query.";
 
-    logger.info("ai.query", { query: parsed.data.query, matches: matches.length });
+    logger.info("ai.query", { query, matches: matches.length });
 
     return NextResponse.json({
       success: true,
       data: {
         answer,
         matches,
+        quotes: [],
         insights: [],
       },
     });

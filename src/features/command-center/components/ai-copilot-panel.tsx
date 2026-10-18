@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Sparkles } from "lucide-react";
@@ -13,6 +14,7 @@ import {
   aiQuerySchema,
 } from "@/features/contact/schemas";
 import { z } from "zod";
+import { formatQuoteWhen, type CopilotQuote } from "@/features/command-center/copilot-query";
 import type { AiInsight, Shipment } from "@/types";
 
 type AiForm = z.infer<typeof aiQuerySchema>;
@@ -20,6 +22,7 @@ type AiForm = z.infer<typeof aiQuerySchema>;
 interface AiResponse {
   answer: string;
   matches: Shipment[];
+  quotes?: CopilotQuote[];
   insights: AiInsight[];
 }
 
@@ -72,7 +75,7 @@ export function AiCopilotPanel() {
           AI Logistics Copilot
         </h2>
         <p className="text-sm text-muted-foreground">
-          Ask about shipments, exceptions, lanes, or clients in natural language.
+          Ask about shipments, quote requests, lanes, or clients.
         </p>
       </div>
 
@@ -85,7 +88,7 @@ export function AiCopilotPanel() {
           htmlFor="query"
           required
           error={errors.query?.message}
-          hint='Examples: "customs hold", "Mumbai", "EWLPL-10001/26-27"'
+          hint='Examples: "quotes in the last 3 days", "customs hold", "Mumbai"'
         >
           <Textarea
             {...register("query")}
@@ -114,6 +117,37 @@ export function AiCopilotPanel() {
             <h3 className="mb-2 font-semibold">Answer</h3>
             <p className="leading-relaxed text-foreground">{result.answer}</p>
           </article>
+
+          {(result.quotes?.length ?? 0) > 0 ? (
+            <div className="rounded-lg border border-border bg-card p-6">
+              <h3 className="mb-4 font-semibold">Quote requests</h3>
+              <ul className="space-y-3">
+                {result.quotes?.map((quote) => (
+                  <li
+                    key={quote.id}
+                    className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-3 last:border-0 last:pb-0"
+                  >
+                    <div>
+                      <Link
+                        href={`/command-center/quotes?quote=${encodeURIComponent(quote.id)}`}
+                        className="font-semibold text-accent hover:underline"
+                      >
+                        {quote.id}
+                      </Link>
+                      <p className="text-sm text-muted-foreground">
+                        {quote.company} · {quote.name}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {quote.origin} → {quote.destination} · {quote.serviceLabel} ·{" "}
+                        {formatQuoteWhen(quote.submittedAt)}
+                      </p>
+                    </div>
+                    <Badge variant="outline">{quote.status}</Badge>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
 
           {result.matches.length > 0 ? (
             <div className="rounded-lg border border-border bg-card p-6">
