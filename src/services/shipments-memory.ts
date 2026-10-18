@@ -20,6 +20,10 @@ export function memoryListShipments(): Shipment[] {
   return shipments.map(mapShipmentRowToListItem);
 }
 
+export function memoryListManagedShipments(): ManagedShipment[] {
+  return shipments.map(mapShipmentRowToManaged);
+}
+
 export function memoryGetShipment(id: string): ManagedShipment | null {
   const row = shipments.find(
     (item) => item.id.toLowerCase() === id.toLowerCase(),

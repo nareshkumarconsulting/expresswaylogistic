@@ -93,7 +93,7 @@ export function AiCopilotPanel() {
           htmlFor="query"
           required
           error={errors.query?.message}
-          hint='Examples: "emails on 14 August", "quote MV4203WZ", "quotes in the last 3 days"'
+          hint='Examples: "emails on 14 August", "quote MV4203WZ", "shipments completed in last 3 months"'
         >
           <Textarea
             {...register("query")}

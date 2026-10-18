@@ -3,6 +3,7 @@ import {
   emailAnswer,
   isEmailQuestion,
   isQuoteQuestion,
+  isShipmentQuestion,
   mentionedDay,
   quoteAnswer,
   quoteReferences,
@@ -10,6 +11,8 @@ import {
   selectByTime,
   selectQuotes,
   selectQuotesByReference,
+  shipmentAnswer,
+  shipmentStatusFilter,
   type CopilotEmail,
   type CopilotQuote,
 } from "@/features/command-center/copilot-query";
@@ -18,7 +21,25 @@ import { SERVICE_TYPE_LABELS } from "@/features/quotes/labels";
 import { logger } from "@/lib/logger";
 import { listEmailIntelligence } from "@/services/email-intelligence-repository";
 import { listManagedQuotes } from "@/services/quotes-repository";
-import { listShipments } from "@/services/shipments-repository";
+import {
+  listManagedShipments,
+  listShipments,
+} from "@/services/shipments-repository";
+import type { ManagedShipment, Shipment } from "@/types";
+
+function toShipmentMatch(shipment: ManagedShipment): Shipment {
+  return {
+    id: shipment.id,
+    origin: shipment.origin,
+    destination: shipment.destination,
+    type: shipment.type,
+    status: shipment.status,
+    eta: shipment.eta,
+    client: shipment.client,
+    predictedEtaHours: shipment.predictedEtaHours,
+    riskScore: shipment.riskScore,
+  };
+}
 
 export async function GET() {
   return NextResponse.json({
@@ -91,6 +112,40 @@ export async function POST(request: Request) {
           answer: quoteAnswer(quotes, window, references),
           matches: [],
           quotes,
+          emails: [],
+          insights: [],
+        },
+      });
+    }
+
+    const status = shipmentStatusFilter(query);
+    const window = quoteWindow(query);
+    const structuredShipmentQuery =
+      isShipmentQuestion(query) && (status != null || window != null);
+
+    if (structuredShipmentQuery) {
+      const managed = await listManagedShipments();
+      const filtered = managed.filter((shipment) => {
+        if (status && shipment.status !== status) return false;
+        if (!window) return true;
+        const at = new Date(
+          status ? shipment.updatedAt : shipment.createdAt,
+        ).getTime();
+        return at >= window.from.getTime() && at <= window.until.getTime();
+      });
+      const matches = filtered.map(toShipmentMatch);
+      logger.info("ai.query", {
+        query,
+        matches: matches.length,
+        status,
+        window: window?.label ?? null,
+      });
+      return NextResponse.json({
+        success: true,
+        data: {
+          answer: shipmentAnswer(matches.length, status, window),
+          matches,
+          quotes: [],
           emails: [],
           insights: [],
         },

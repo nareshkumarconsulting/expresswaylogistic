@@ -17,6 +17,7 @@ import {
   mapShipmentRowToManaged,
   memoryCreateShipment,
   memoryGetShipment,
+  memoryListManagedShipments,
   memoryListShipments,
   memoryUpdateShipment,
   type ShipmentRow,
@@ -156,6 +157,29 @@ export async function listShipments(): Promise<Shipment[]> {
   }
 
   return (data ?? []).map((row) => mapShipmentRowToListItem(mapDbRow(row)));
+}
+
+export async function listManagedShipments(): Promise<ManagedShipment[]> {
+  if (!isSupabaseConfigured()) return memoryListManagedShipments();
+
+  const supabase = createSupabaseAdmin();
+  const { data, error } = await supabase
+    .from("shipments")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    if (isMissingRelationError(error)) {
+      logger.warn("shipments.list_managed.missing_table", {
+        error: error.message,
+      });
+      return memoryListManagedShipments();
+    }
+    logger.error("shipments.list_managed.failed", { error: error.message });
+    throw new Error("Failed to load shipments");
+  }
+
+  return (data ?? []).map((row) => mapShipmentRowToManaged(mapDbRow(row)));
 }
 
 export async function getShipmentById(
