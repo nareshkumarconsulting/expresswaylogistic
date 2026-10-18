@@ -69,6 +69,12 @@ export const voiceAgentRequestSchema = z.object({
   bookingDraft: bookingDraftSchema.optional(),
   quoteDraft: quoteDraftSchema.optional(),
   trackingDraft: trackingDraftSchema.optional(),
+  conversationId: z
+    .string()
+    .regex(/^[A-Za-z0-9_-]{8,80}$/)
+    .optional(),
+  channel: z.enum(["browser", "retell"]).optional(),
+  openingMessage: z.string().min(1).max(500).optional(),
 });
 
 export type VoiceAgentRequest = z.infer<typeof voiceAgentRequestSchema>;
@@ -112,5 +118,6 @@ export type VoiceAgentResponse = {
     quoteDraft: QuoteDraft;
     trackingDraft: TrackingDraft;
     action: VoiceAgentAction;
+    conversationId: string;
   };
 };

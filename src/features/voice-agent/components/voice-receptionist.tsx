@@ -10,6 +10,7 @@ import {
   ChatWidgetFrame,
 } from "@/features/voice-agent/components/chat-widget-frame";
 import { useSpeechReceptionist } from "@/features/voice-agent/hooks/use-speech-receptionist";
+import { createConversationId } from "@/features/voice-agent/record-conversation";
 import type {
   BookingDraft,
   QuoteDraft,
@@ -56,6 +57,7 @@ export function VoiceReceptionistPanel({ open, onClose }: VoiceReceptionistPanel
   ]);
   const pendingRef = useRef<string[]>([]);
   const sendMessageRef = useRef<(raw: string) => Promise<void>>(async () => {});
+  const conversationIdRef = useRef(createConversationId());
 
   const {
     supported,
@@ -131,6 +133,9 @@ export function VoiceReceptionistPanel({ open, onClose }: VoiceReceptionistPanel
       setError(null);
       setAction({ type: "none" });
 
+      const isFirstVisitorTurn = messagesRef.current.every(
+        (entry) => entry.id === "welcome",
+      );
       const userMsg: ChatMessage = {
         id: `u-${Date.now()}`,
         role: "user",
@@ -157,6 +162,9 @@ export function VoiceReceptionistPanel({ open, onClose }: VoiceReceptionistPanel
             bookingDraft: bookingDraftRef.current,
             quoteDraft: quoteDraftRef.current,
             trackingDraft: trackingDraftRef.current,
+            conversationId: conversationIdRef.current,
+            channel: "browser",
+            openingMessage: isFirstVisitorTurn ? WELCOME : undefined,
           }),
           signal: AbortSignal.timeout(12_000),
         });

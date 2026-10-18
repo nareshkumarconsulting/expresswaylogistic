@@ -11,6 +11,7 @@ import {
   type VoiceAgentAction,
   type VoiceAgentResponse,
 } from "@/features/voice-agent/schemas";
+import { recordVoiceAgentTurn } from "@/features/voice-agent/record-conversation";
 import { logger } from "@/lib/logger";
 import { QUOTE_RESPONSE_STATEMENT } from "@/constants/entity";
 
@@ -163,6 +164,18 @@ export async function POST(request: Request) {
       receivedAt: new Date().toISOString(),
     });
 
+    const conversationId = await recordVoiceAgentTurn({
+      conversationId: parsed.data.conversationId,
+      channel: parsed.data.channel,
+      message: parsed.data.message,
+      reply,
+      intent: turn.intent,
+      openingMessage: parsed.data.openingMessage,
+      bookingDraft,
+      quoteDraft,
+      action,
+    });
+
     logger.info("voice-agent.turn", {
       intent: turn.intent,
       action: action.type,
@@ -180,6 +193,7 @@ export async function POST(request: Request) {
         quoteDraft,
         trackingDraft,
         action,
+        conversationId,
       },
     };
 

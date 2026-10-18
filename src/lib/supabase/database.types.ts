@@ -56,6 +56,10 @@ export type BookingBasis =
   | "payment_received"
   | "verbal_ok";
 
+export type AvaChannel = "browser" | "retell";
+export type AvaMessageRole = "user" | "assistant";
+export type AvaOutcome = "none" | "quote" | "appointment" | "tracking";
+
 export type AppointmentSource = "form" | "voice_agent";
 
 export type AppointmentStatus =
@@ -529,6 +533,68 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["shipments"]["Insert"]>;
         Relationships: [];
       };
+      ava_conversations: {
+        Row: {
+          id: string;
+          channel: AvaChannel;
+          external_id: string;
+          visitor_name: string | null;
+          visitor_company: string | null;
+          visitor_email: string | null;
+          visitor_phone: string | null;
+          last_intent: string | null;
+          outcome: AvaOutcome;
+          reference_id: string | null;
+          preview: string;
+          message_count: number;
+          started_at: string;
+          last_message_at: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          channel: AvaChannel;
+          external_id: string;
+          visitor_name?: string | null;
+          visitor_company?: string | null;
+          visitor_email?: string | null;
+          visitor_phone?: string | null;
+          last_intent?: string | null;
+          outcome?: AvaOutcome;
+          reference_id?: string | null;
+          preview?: string;
+          message_count?: number;
+          started_at?: string;
+          last_message_at?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["ava_conversations"]["Insert"]>;
+        Relationships: [];
+      };
+      ava_messages: {
+        Row: {
+          id: string;
+          conversation_id: string;
+          role: AvaMessageRole;
+          content: string;
+          intent: string | null;
+          sequence: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          conversation_id: string;
+          role: AvaMessageRole;
+          content: string;
+          intent?: string | null;
+          sequence: number;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["ava_messages"]["Insert"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -552,6 +618,9 @@ export interface Database {
       client_email_status: ClientEmailStatus;
       shipment_status: ShipmentStatus;
       booking_basis: BookingBasis;
+      ava_channel: AvaChannel;
+      ava_message_role: AvaMessageRole;
+      ava_outcome: AvaOutcome;
     };
     CompositeTypes: Record<string, never>;
   };

@@ -9,6 +9,7 @@ import {
   ChatPromptChips,
   ChatWidgetFrame,
 } from "@/features/voice-agent/components/chat-widget-frame";
+import { createConversationId } from "@/features/voice-agent/record-conversation";
 import type {
   BookingDraft,
   QuoteDraft,
@@ -44,19 +45,55 @@ export function RetellVoicePanel({ open, onClose }: RetellVoicePanelProps) {
   const clientRef = useRef<RetellWebClient | null>(null);
   const scrollerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const conversationIdRef = useRef(createConversationId());
+  const callIdRef = useRef<string | null>(null);
+  const transcriptRef = useRef<TranscriptLine[]>([]);
+  const typedLinesRef = useRef<TranscriptLine[]>([]);
+  const syncTimerRef = useRef<number | null>(null);
+
+  const postLiveTranscript = useCallback((externalId: string, lines: TranscriptLine[]) => {
+    const messages = lines
+      .filter((line) => line.content.trim())
+      .slice(-80)
+      .map((line) => ({
+        role: line.role === "user" ? ("user" as const) : ("assistant" as const),
+        content: line.content.slice(0, 2000),
+      }));
+    if (messages.length === 0) return;
+    void fetch("/api/voice-agent/transcript", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ externalId, messages }),
+      keepalive: true,
+    }).catch(() => undefined);
+  }, []);
+
+  const flushLiveTranscript = useCallback(() => {
+    const externalId = callIdRef.current;
+    if (!externalId) return;
+    postLiveTranscript(externalId, [
+      ...transcriptRef.current,
+      ...typedLinesRef.current,
+    ]);
+  }, [postLiveTranscript]);
 
   const endCall = useCallback(() => {
+    flushLiveTranscript();
     clientRef.current?.stopCall();
     clientRef.current = null;
+    callIdRef.current = null;
     setCallId(null);
     setStatus((prev) => (prev === "idle" ? prev : "ended"));
     setSpeaking(false);
     setMuted(false);
-  }, []);
+  }, [flushLiveTranscript]);
 
   useEffect(() => {
     if (!open) {
       endCall();
+      conversationIdRef.current = createConversationId();
+      transcriptRef.current = [];
+      typedLinesRef.current = [];
       setStatus("idle");
       setTranscript([]);
       setTypedLines([]);
@@ -71,6 +108,25 @@ export function RetellVoicePanel({ open, onClose }: RetellVoicePanelProps) {
   const visibleLines = [...transcript, ...typedLines];
 
   useEffect(() => {
+    transcriptRef.current = transcript;
+  }, [transcript]);
+
+  useEffect(() => {
+    typedLinesRef.current = typedLines;
+  }, [typedLines]);
+
+  useEffect(() => {
+    if (!callId || status !== "live") return;
+    if (syncTimerRef.current) window.clearTimeout(syncTimerRef.current);
+    syncTimerRef.current = window.setTimeout(() => {
+      postLiveTranscript(callId, [...transcript, ...typedLines]);
+    }, 2500);
+    return () => {
+      if (syncTimerRef.current) window.clearTimeout(syncTimerRef.current);
+    };
+  }, [callId, status, transcript, typedLines, postLiveTranscript]);
+
+  useEffect(() => {
     scrollerRef.current?.scrollTo({
       top: scrollerRef.current.scrollHeight,
       behavior: "smooth",
@@ -80,6 +136,8 @@ export function RetellVoicePanel({ open, onClose }: RetellVoicePanelProps) {
   const startCall = async () => {
     setError(null);
     setStatus("connecting");
+    transcriptRef.current = [];
+    typedLinesRef.current = [];
     setTranscript([]);
     setTypedLines([]);
 
@@ -104,13 +162,18 @@ export function RetellVoicePanel({ open, onClose }: RetellVoicePanelProps) {
       const { RetellWebClient: Client } = await import("retell-client-js-sdk");
       const client = new Client();
       clientRef.current = client;
-      setCallId(data.data?.callId ?? null);
+      const nextCallId = data.data?.callId ?? null;
+      if (nextCallId) conversationIdRef.current = nextCallId;
+      callIdRef.current = nextCallId;
+      setCallId(nextCallId);
 
       client.on("call_started", () => {
         setStatus("live");
         inputRef.current?.focus();
       });
       client.on("call_ended", () => {
+        flushLiveTranscript();
+        callIdRef.current = null;
         setStatus("ended");
         setSpeaking(false);
         setCallId(null);
@@ -121,14 +184,14 @@ export function RetellVoicePanel({ open, onClose }: RetellVoicePanelProps) {
       client.on("update", (update: unknown) => {
         const payload = update as { transcript?: TranscriptLine[] };
         if (Array.isArray(payload.transcript)) {
-          setTranscript(
-            payload.transcript
-              .filter((line) => line.content?.trim())
-              .map((line) => ({
-                role: line.role === "user" ? "user" : "agent",
-                content: line.content,
-              })),
-          );
+          const next = payload.transcript
+            .filter((line) => line.content?.trim())
+            .map((line) => ({
+              role: line.role === "user" ? ("user" as const) : ("agent" as const),
+              content: line.content,
+            }));
+          transcriptRef.current = next;
+          setTranscript(next);
         }
       });
       client.on("error", (err: unknown) => {
@@ -139,8 +202,10 @@ export function RetellVoicePanel({ open, onClose }: RetellVoicePanelProps) {
               ? err
               : "Live call error";
         setError(message);
+        flushLiveTranscript();
         client.stopCall();
         clientRef.current = null;
+        callIdRef.current = null;
         setCallId(null);
         setStatus("ended");
       });
@@ -148,6 +213,7 @@ export function RetellVoicePanel({ open, onClose }: RetellVoicePanelProps) {
       await client.startCall({ accessToken });
     } catch (err) {
       clientRef.current = null;
+      callIdRef.current = null;
       setCallId(null);
       setStatus("idle");
       setError(
@@ -190,7 +256,11 @@ export function RetellVoicePanel({ open, onClose }: RetellVoicePanelProps) {
               : "Could not send that to Ava";
           throw new Error(err);
         }
-        setTypedLines((prev) => [...prev, { role: "user", content: message }]);
+        setTypedLines((prev) => {
+          const next = [...prev, { role: "user" as const, content: message }];
+          typedLinesRef.current = next;
+          return next;
+        });
         return;
       }
 
@@ -211,6 +281,8 @@ export function RetellVoicePanel({ open, onClose }: RetellVoicePanelProps) {
           bookingDraft,
           quoteDraft,
           trackingDraft,
+          conversationId: conversationIdRef.current,
+          channel: "retell",
         }),
       });
       const json: unknown = await res.json();
@@ -230,11 +302,15 @@ export function RetellVoicePanel({ open, onClose }: RetellVoicePanelProps) {
       if (!res.ok || !payload?.data?.reply) {
         throw new Error(payload?.error || "Could not send that message");
       }
-      setTypedLines((prev) => [
-        ...prev,
-        { role: "user", content: message },
-        { role: "agent", content: payload.data!.reply! },
-      ]);
+      setTypedLines((prev) => {
+        const next = [
+          ...prev,
+          { role: "user" as const, content: message },
+          { role: "agent" as const, content: payload.data!.reply! },
+        ];
+        typedLinesRef.current = next;
+        return next;
+      });
       if (payload.data.bookingDraft) setBookingDraft(payload.data.bookingDraft);
       if (payload.data.quoteDraft) setQuoteDraft(payload.data.quoteDraft);
       if (payload.data.trackingDraft) setTrackingDraft(payload.data.trackingDraft);

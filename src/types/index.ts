@@ -441,6 +441,36 @@ export interface ClientEmailMessage {
   updatedAt: string;
 }
 
+export type AvaChannel = "browser" | "retell";
+
+export type AvaOutcome = "none" | "quote" | "appointment" | "tracking";
+
+export interface AvaConversation {
+  id: string;
+  channel: AvaChannel;
+  externalId: string;
+  visitorName?: string;
+  visitorCompany?: string;
+  visitorEmail?: string;
+  visitorPhone?: string;
+  lastIntent?: string;
+  outcome: AvaOutcome;
+  referenceId?: string;
+  preview: string;
+  messageCount: number;
+  startedAt: string;
+  lastMessageAt: string;
+}
+
+export interface AvaMessage {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  intent?: string;
+  sequence: number;
+  createdAt: string;
+}
+
 export interface ClientEmailContact {
   email: string;
   name: string;
