@@ -23,12 +23,23 @@ import type { AiInsight, Shipment } from "@/types";
 
 type AiForm = z.infer<typeof aiQuerySchema>;
 
+interface RagSource {
+  id: string;
+  kind: string;
+  title: string;
+  excerpt: string;
+  href?: string;
+  score: number;
+}
+
 interface AiResponse {
   answer: string;
   matches: Shipment[];
   quotes?: CopilotQuote[];
   emails?: CopilotEmail[];
   insights: AiInsight[];
+  sources?: RagSource[];
+  usedLlm?: boolean;
 }
 
 export function AiCopilotPanel() {
@@ -80,7 +91,8 @@ export function AiCopilotPanel() {
           AI Logistics Copilot
         </h2>
         <p className="text-sm text-muted-foreground">
-          Ask about shipments, quote requests, lanes, or clients.
+          Ask about shipments, quote requests, lanes, clients, or company
+          knowledge. Free-form questions use RAG over live ops data and site FAQs.
         </p>
       </div>
 
@@ -119,9 +131,47 @@ export function AiCopilotPanel() {
       {result ? (
         <div className="space-y-4">
           <article className="rounded-lg border border-border bg-muted/40 p-6">
-            <h3 className="mb-2 font-semibold">Answer</h3>
+            <div className="mb-2 flex flex-wrap items-center gap-2">
+              <h3 className="font-semibold">Answer</h3>
+              {result.usedLlm ? (
+                <Badge variant="secondary">RAG + LLM</Badge>
+              ) : (result.sources?.length ?? 0) > 0 ? (
+                <Badge variant="outline">RAG</Badge>
+              ) : null}
+            </div>
             <p className="leading-relaxed text-foreground">{result.answer}</p>
           </article>
+
+          {(result.sources?.length ?? 0) > 0 ? (
+            <div className="rounded-lg border border-border bg-card p-6">
+              <h3 className="mb-4 font-semibold">Retrieved sources</h3>
+              <ul className="space-y-3">
+                {result.sources?.map((source) => (
+                  <li
+                    key={source.id}
+                    className="border-b border-border pb-3 last:border-0 last:pb-0"
+                  >
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Badge variant="outline">{source.kind}</Badge>
+                      {source.href ? (
+                        <Link
+                          href={source.href}
+                          className="font-semibold text-accent hover:underline"
+                        >
+                          {source.title}
+                        </Link>
+                      ) : (
+                        <span className="font-semibold">{source.title}</span>
+                      )}
+                    </div>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      {source.excerpt}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
 
           {(result.emails?.length ?? 0) > 0 ? (
             <div className="rounded-lg border border-border bg-card p-6">

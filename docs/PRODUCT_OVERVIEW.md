@@ -571,12 +571,16 @@ Sensitive APIs under quotes, forwarders, email intelligence (read/update), clien
 
 ```
 Staff → /command-center/ai
-    → Types natural-language question (e.g. "customs hold")
+    → Types natural-language question
     → POST /api/ai/insights { query }
-    → Insight / answer returned in the panel
+    → Structured filters for emails / quotes / shipment counts
+    → Else RAG: retrieve site FAQs + recent shipments/quotes/emails
+    → Optional LLM synthesis (GROQ / Gemini / OpenAI) over retrieved chunks
+    → Answer + matched rows + retrieved sources in the panel
 ```
 
 This assists operations awareness; it does not mutate quotes or send email by itself.
+Lexical retrieval always runs; LLM synthesis requires an AI API key.
 
 ---
 
