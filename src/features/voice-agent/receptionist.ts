@@ -1,6 +1,7 @@
 import { siteConfig } from "@/config/site";
 import { FAQ_ITEMS, INDUSTRIES, PROCESS_STEPS } from "@/constants/content";
 import { SERVICES } from "@/constants/services";
+import { buildSiteCorpus, retrieveDocuments } from "@/features/rag";
 import {
   APPOINTMENT_TYPES,
   MEETING_MODES,
@@ -997,15 +998,18 @@ function greeting(hindi: boolean): string {
 }
 
 function answerFaq(message: string): string | null {
-  const t = normalize(message);
-  const hit = FAQ_ITEMS.find((f) => {
-    const q = normalize(f.question);
-    return (
-      t.includes(q.slice(0, 20)) ||
-      q.split(" ").filter((w) => w.length > 4).some((w) => t.includes(w))
-    );
-  });
-  return hit?.answer ?? null;
+  const hits = retrieveDocuments(buildSiteCorpus(), message, 3);
+  const best = hits[0];
+  if (!best || best.score < 1.2) return null;
+
+  if (best.kind === "faq") {
+    const answerLine = best.text
+      .split("\n")
+      .find((line) => line.startsWith("Answer:"));
+    return answerLine?.replace(/^Answer:\s*/i, "").trim() || best.excerpt;
+  }
+
+  return best.excerpt;
 }
 
 function goodbye(): string {

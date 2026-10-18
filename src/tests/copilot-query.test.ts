@@ -2,12 +2,15 @@ import { describe, expect, it } from "vitest";
 import {
   isEmailQuestion,
   isQuoteQuestion,
+  isShipmentQuestion,
   mentionedDay,
   quoteReferences,
   quoteWindow,
   selectByTime,
   selectQuotes,
   selectQuotesByReference,
+  shipmentAnswer,
+  shipmentStatusFilter,
 } from "@/features/command-center/copilot-query";
 
 const now = new Date("2026-10-18T07:16:00.000Z");
@@ -62,5 +65,33 @@ describe("copilot email questions", () => {
     );
     expect(day?.label).toBe("on 14 Aug 2026");
     expect(selected.map((email) => email.id)).toEqual(["on-day"]);
+  });
+});
+
+describe("copilot shipment questions", () => {
+  it("recognizes completed shipment counts with missing spaces", () => {
+    const query = "How many shipment completed in Last3 months";
+    expect(isShipmentQuestion(query)).toBe(true);
+    expect(shipmentStatusFilter(query)).toBe("Delivered");
+    const window = quoteWindow(query, now);
+    expect(window?.label).toBe("the last 3 months");
+    expect(window?.from.toISOString()).toBe("2026-07-17T18:30:00.000Z");
+    expect(
+      shipmentAnswer(2, shipmentStatusFilter(query), window),
+    ).toBe("2 shipments completed in the last 3 months.");
+  });
+
+  it("keeps delivered shipments inside the last 3 months", () => {
+    const window = quoteWindow("shipments completed in last 3 months", now);
+    const selected = selectByTime(
+      [
+        { id: "recent", updatedAt: "2026-09-01T10:00:00.000Z", status: "Delivered" },
+        { id: "old", updatedAt: "2026-04-01T10:00:00.000Z", status: "Delivered" },
+        { id: "active", updatedAt: "2026-09-15T10:00:00.000Z", status: "In Transit" },
+      ].filter((item) => item.status === "Delivered"),
+      (item) => item.updatedAt,
+      window,
+    );
+    expect(selected.map((item) => item.id)).toEqual(["recent"]);
   });
 });

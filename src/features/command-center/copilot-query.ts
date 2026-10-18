@@ -1,3 +1,5 @@
+import type { ShipmentStatus } from "@/types";
+
 export type CopilotQuote = {
   id: string;
   name: string;
@@ -21,6 +23,22 @@ export function isQuoteQuestion(query: string): boolean {
   return /\b(quotes?|quotations?|rfqs?)\b/i.test(query);
 }
 
+export function isShipmentQuestion(query: string): boolean {
+  return /\b(shipments?|shippings?|consignments?|cargos?)\b/i.test(query);
+}
+
+/** Tolerates typos like "Last3 months" or "last3days". */
+export function normalizeRelativeTimeQuery(query: string): string {
+  return query
+    .toLowerCase()
+    .replace(/\b(last|past|within)(\d+)\b/g, "$1 $2")
+    .replace(/\b(\d+)(days?|weeks?|months?)\b/g, "$1 $2");
+}
+
+function pad(value: number): string {
+  return String(value).padStart(2, "0");
+}
+
 function startOfIstDay(now: Date): Date {
   const day = new Intl.DateTimeFormat("en-CA", {
     timeZone: IST,
@@ -31,8 +49,36 @@ function startOfIstDay(now: Date): Date {
   return new Date(`${day}T00:00:00+05:30`);
 }
 
+function istYmd(now: Date): { year: number; month: number; day: number } {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: IST,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(now);
+  const year = Number(parts.find((part) => part.type === "year")?.value);
+  const month = Number(parts.find((part) => part.type === "month")?.value);
+  const day = Number(parts.find((part) => part.type === "day")?.value);
+  return { year, month, day };
+}
+
+function daysInMonth(year: number, month: number): number {
+  return new Date(Date.UTC(year, month, 0)).getUTCDate();
+}
+
+function monthsBeforeIst(now: Date, months: number): Date {
+  const { year, month, day } = istYmd(now);
+  const total = year * 12 + (month - 1) - months;
+  const nextYear = Math.floor(total / 12);
+  const nextMonth = (total % 12) + 1;
+  const clampedDay = Math.min(day, daysInMonth(nextYear, nextMonth));
+  return new Date(
+    `${nextYear}-${pad(nextMonth)}-${pad(clampedDay)}T00:00:00+05:30`,
+  );
+}
+
 export function quoteWindow(query: string, now = new Date()): QuoteWindow | null {
-  const q = query.toLowerCase();
+  const q = normalizeRelativeTimeQuery(query);
   const startToday = startOfIstDay(now);
 
   if (/\byesterday\b/.test(q)) {
@@ -59,6 +105,31 @@ export function quoteWindow(query: string, now = new Date()): QuoteWindow | null
     }
   }
 
+  const weeksMatch = q.match(/\b(?:last|past|within)\s+(\d+)\s+weeks?\b/);
+  if (weeksMatch) {
+    const weeks = Math.min(Number(weeksMatch[1]), 52);
+    if (weeks >= 1) {
+      const days = weeks * 7;
+      return {
+        from: new Date(startToday.getTime() - (days - 1) * 86_400_000),
+        until: now,
+        label: `the last ${weeks} week${weeks === 1 ? "" : "s"}`,
+      };
+    }
+  }
+
+  const monthsMatch = q.match(/\b(?:last|past|within)\s+(\d+)\s+months?\b/);
+  if (monthsMatch) {
+    const months = Math.min(Number(monthsMatch[1]), 36);
+    if (months >= 1) {
+      return {
+        from: monthsBeforeIst(now, months),
+        until: now,
+        label: `the last ${months} month${months === 1 ? "" : "s"}`,
+      };
+    }
+  }
+
   if (/\blast week\b/.test(q)) {
     return {
       from: new Date(startToday.getTime() - 6 * 86_400_000),
@@ -67,7 +138,51 @@ export function quoteWindow(query: string, now = new Date()): QuoteWindow | null
     };
   }
 
+  if (/\blast month\b/.test(q)) {
+    return {
+      from: monthsBeforeIst(now, 1),
+      until: now,
+      label: "the last month",
+    };
+  }
+
   return null;
+}
+
+const STATUS_ALIASES: Array<{ status: ShipmentStatus; pattern: RegExp }> = [
+  { status: "Delivered", pattern: /\b(completed?|delivered|done|finished)\b/i },
+  { status: "Delayed", pattern: /\bdelay(?:ed|s)?\b/i },
+  { status: "Customs Hold", pattern: /\bcustoms?\b|\bhold\b/i },
+  { status: "In Transit", pattern: /\b(?:in[\s-]?transit|transiting)\b/i },
+  { status: "Processing", pattern: /\bprocess(?:ing|ed)?\b/i },
+];
+
+export function shipmentStatusFilter(query: string): ShipmentStatus | null {
+  for (const entry of STATUS_ALIASES) {
+    if (entry.pattern.test(query)) return entry.status;
+  }
+  return null;
+}
+
+export function shipmentAnswer(
+  count: number,
+  status: ShipmentStatus | null,
+  window: QuoteWindow | null,
+): string {
+  const statusLabel = status
+    ? status === "Delivered"
+      ? "completed"
+      : status.toLowerCase()
+    : null;
+  const scope = [
+    statusLabel ? ` ${statusLabel}` : "",
+    window ? ` in ${window.label}` : "",
+  ].join("");
+
+  if (count === 0) {
+    return `No${statusLabel ? ` ${statusLabel}` : ""} shipments${window ? ` in ${window.label}` : ""} found.`;
+  }
+  return `${count} shipment${count === 1 ? "" : "s"}${scope}.`;
 }
 
 export function selectQuotes<T extends { submittedAt: string }>(
@@ -153,10 +268,6 @@ const MONTH_PATTERN = Object.keys(MONTHS).join("|");
 
 export function isEmailQuestion(query: string): boolean {
   return /\b(e-?mails?|inbox)\b/i.test(query);
-}
-
-function pad(value: number): string {
-  return String(value).padStart(2, "0");
 }
 
 function istYear(now: Date): number {
