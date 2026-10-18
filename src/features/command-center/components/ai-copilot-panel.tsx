@@ -14,7 +14,11 @@ import {
   aiQuerySchema,
 } from "@/features/contact/schemas";
 import { z } from "zod";
-import { formatQuoteWhen, type CopilotQuote } from "@/features/command-center/copilot-query";
+import {
+  formatQuoteWhen,
+  type CopilotEmail,
+  type CopilotQuote,
+} from "@/features/command-center/copilot-query";
 import type { AiInsight, Shipment } from "@/types";
 
 type AiForm = z.infer<typeof aiQuerySchema>;
@@ -23,6 +27,7 @@ interface AiResponse {
   answer: string;
   matches: Shipment[];
   quotes?: CopilotQuote[];
+  emails?: CopilotEmail[];
   insights: AiInsight[];
 }
 
@@ -88,7 +93,7 @@ export function AiCopilotPanel() {
           htmlFor="query"
           required
           error={errors.query?.message}
-          hint='Examples: "quotes in the last 3 days", "customs hold", "Mumbai"'
+          hint='Examples: "emails on 14 August", "quote MV4203WZ", "quotes in the last 3 days"'
         >
           <Textarea
             {...register("query")}
@@ -117,6 +122,31 @@ export function AiCopilotPanel() {
             <h3 className="mb-2 font-semibold">Answer</h3>
             <p className="leading-relaxed text-foreground">{result.answer}</p>
           </article>
+
+          {(result.emails?.length ?? 0) > 0 ? (
+            <div className="rounded-lg border border-border bg-card p-6">
+              <h3 className="mb-4 font-semibold">Emails</h3>
+              <ul className="space-y-3">
+                {result.emails?.map((email) => (
+                  <li
+                    key={email.id}
+                    className="border-b border-border pb-3 last:border-0 last:pb-0"
+                  >
+                    <Link
+                      href={`/command-center/emails?id=${encodeURIComponent(email.id)}`}
+                      className="font-semibold text-accent hover:underline"
+                    >
+                      {email.subject}
+                    </Link>
+                    <p className="text-sm text-muted-foreground">
+                      {email.senderName ? `${email.senderName} · ` : ""}
+                      {email.senderEmail} · {formatQuoteWhen(email.receivedAt)}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
 
           {(result.quotes?.length ?? 0) > 0 ? (
             <div className="rounded-lg border border-border bg-card p-6">
