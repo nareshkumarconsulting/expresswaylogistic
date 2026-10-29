@@ -32,7 +32,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const retellRes = await fetch("https://api.retellai.com/v2/create-web-call", {
+    const retellRes = await fetch("https://api.retellai.com/v3/create-web-call", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${config.apiKey}`,
@@ -44,8 +44,13 @@ export async function POST(request: Request) {
 
     const payload: unknown = await retellRes.json().catch(() => null);
     if (!retellRes.ok || !payload || typeof payload !== "object") {
+      const retellMessage =
+        payload && typeof payload === "object" && "message" in payload
+          ? String((payload as { message?: unknown }).message)
+          : undefined;
       logger.warn("voice-agent.retell.web-call.failed", {
         status: retellRes.status,
+        message: retellMessage,
       });
       return NextResponse.json(
         { success: false, error: "Could not start a live voice call" },
@@ -57,18 +62,25 @@ export async function POST(request: Request) {
     const accessToken =
       typeof record.access_token === "string" ? record.access_token : "";
     const callId = typeof record.call_id === "string" ? record.call_id : "";
-    if (!accessToken) {
+    const transport =
+      record.transport === "livekit" || record.transport === "gateway"
+        ? record.transport
+        : undefined;
+    const iceServers = Array.isArray(record.ice_servers)
+      ? (record.ice_servers as RTCIceServer[])
+      : undefined;
+    if (!accessToken || !callId) {
       return NextResponse.json(
         { success: false, error: "Could not start a live voice call" },
         { status: 502 },
       );
     }
 
-    logger.info("voice-agent.retell.web-call.created", { callId });
+    logger.info("voice-agent.retell.web-call.created", { callId, transport });
 
     return NextResponse.json({
       success: true,
-      data: { accessToken, callId },
+      data: { accessToken, callId, transport, iceServers },
     });
   } catch (error) {
     logger.error("voice-agent.retell.web-call.error", {

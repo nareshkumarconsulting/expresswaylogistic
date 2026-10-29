@@ -2,7 +2,11 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Mic, MicOff, Phone, PhoneOff, Send } from "lucide-react";
-import type { RetellWebClient } from "retell-client-js-sdk";
+import type {
+  RetellWebClient,
+  StartCallConfig,
+  TransportKind,
+} from "retell-client-js-sdk";
 import { Button } from "@/components/atoms/button";
 import {
   ChatBubble,
@@ -151,19 +155,24 @@ export function RetellVoicePanel({ open, onClose }: RetellVoicePanelProps) {
           ? (json as {
               success?: boolean;
               error?: string;
-              data?: { accessToken?: string; callId?: string };
+              data?: {
+                accessToken?: string;
+                callId?: string;
+                transport?: TransportKind;
+                iceServers?: RTCIceServer[];
+              };
             })
           : null;
       const accessToken = data?.data?.accessToken;
-      if (!res.ok || !accessToken) {
+      const nextCallId = data?.data?.callId;
+      if (!res.ok || !accessToken || !nextCallId) {
         throw new Error(data?.error || "Could not start the live call");
       }
 
       const { RetellWebClient: Client } = await import("retell-client-js-sdk");
       const client = new Client();
       clientRef.current = client;
-      const nextCallId = data.data?.callId ?? null;
-      if (nextCallId) conversationIdRef.current = nextCallId;
+      conversationIdRef.current = nextCallId;
       callIdRef.current = nextCallId;
       setCallId(nextCallId);
 
@@ -210,7 +219,17 @@ export function RetellVoicePanel({ open, onClose }: RetellVoicePanelProps) {
         setStatus("ended");
       });
 
-      await client.startCall({ accessToken });
+      const startCallConfig: StartCallConfig = {
+        accessToken,
+        callId: nextCallId,
+      };
+      if (data?.data?.transport) {
+        startCallConfig.transport = data.data.transport;
+      }
+      if (data?.data?.iceServers?.length) {
+        startCallConfig.iceServers = data.data.iceServers;
+      }
+      await client.startCall(startCallConfig);
     } catch (err) {
       clientRef.current = null;
       callIdRef.current = null;
